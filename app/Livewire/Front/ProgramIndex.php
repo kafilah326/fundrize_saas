@@ -38,10 +38,33 @@ class ProgramIndex extends Component
         $this->limit += 5;
     }
 
-    public function applyFilter($akads = [], $categories = [])
+    public function toggleAkad($slug)
     {
-        $this->selectedAkad = array_values($akads);
-        $this->selectedKategori = array_values($categories);
+        if ($slug == 'semua') {
+            $this->selectedAkad = [];
+        } else {
+            if (in_array($slug, $this->selectedAkad)) {
+                $this->selectedAkad = array_diff($this->selectedAkad, [$slug]);
+            } else {
+                $this->selectedAkad[] = $slug;
+            }
+        }
+        $this->selectedAkad = array_values($this->selectedAkad);
+        $this->resetPage();
+    }
+
+    public function toggleKategori($slug)
+    {
+        if ($slug == 'semua') {
+            $this->selectedKategori = [];
+        } else {
+            if (in_array($slug, $this->selectedKategori)) {
+                $this->selectedKategori = array_diff($this->selectedKategori, [$slug]);
+            } else {
+                $this->selectedKategori[] = $slug;
+            }
+        }
+        $this->selectedKategori = array_values($this->selectedKategori);
         $this->resetPage();
     }
 
