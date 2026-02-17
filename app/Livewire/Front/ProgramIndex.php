@@ -35,6 +35,18 @@ class ProgramIndex extends Component
         $this->limit += 5;
     }
 
+    public function applyFilter()
+    {
+        $this->resetPage();
+    }
+
+    public function resetFilter()
+    {
+        $this->selectedAkad = [];
+        $this->selectedKategori = [];
+        $this->resetPage();
+    }
+
     #[Layout('layouts.front')]
     #[Title('Program')]
     public function render()
