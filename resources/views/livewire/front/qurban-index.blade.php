@@ -48,8 +48,7 @@
                 <div x-show="filter === 'semua' || filter === '{{ $animal->category }}'"
                      @click="selected = {{ $animal->id }}; selectedPrice = {{ $animal->price }}"
                      class="qurban-card bg-white border rounded-xl p-3 flex gap-3 cursor-pointer transition-all hover:shadow-md"
-                     :class="selected === {{ $animal->id }} ? 'border-primary bg-orange-50 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'"
-                     style="display: none;" x-transition>
+                     :class="selected === {{ $animal->id }} ? 'border-primary bg-orange-50 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'">
                     
                     <!-- Image -->
                     <div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">

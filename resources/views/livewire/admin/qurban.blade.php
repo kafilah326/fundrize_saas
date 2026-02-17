@@ -88,7 +88,7 @@
                                 @forelse($data as $animal)
                                 <tr class="hover:bg-orange-50/30 transition-colors duration-150 group">
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <img class="h-12 w-12 rounded-xl object-cover shadow-sm group-hover:shadow-md transition-shadow border border-gray-100" src="{{ $animal->image ? Storage::url($animal->image) : 'https://placehold.co/100x100?text=No+Img' }}" alt="">
+                                        <img class="h-12 w-12 rounded-xl object-cover shadow-sm group-hover:shadow-md transition-shadow border border-gray-100" src="{{ $animal->image }}" alt="">
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-semibold text-gray-900">{{ $animal->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
@@ -385,7 +385,7 @@
                                     @if ($image)
                                         <img src="{{ $image->temporaryUrl() }}" class="h-16 w-16 object-cover rounded-lg shadow-sm">
                                     @elseif($existingImage)
-                                        <img src="{{ Storage::url($existingImage) }}" class="h-16 w-16 object-cover rounded-lg shadow-sm">
+                                        <img src="{{ $existingImage }}" class="h-16 w-16 object-cover rounded-lg shadow-sm">
                                     @endif
                                     <input wire:model="image" type="file" class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
                                 </div>
