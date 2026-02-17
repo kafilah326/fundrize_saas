@@ -135,7 +135,7 @@
                                 <div>
                                     <div class="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
                                         <div class="bg-primary h-1.5 rounded-full"
-                                            style="width: {{ min(($program['collected'] / $program['target']) * 100, 100) }}%">
+                                            style="width: {{ $program['target'] > 0 ? min(($program['collected'] / $program['target']) * 100, 100) : 0 }}%">
                                         </div>
                                     </div>
                                     <div class="flex justify-between items-end">
