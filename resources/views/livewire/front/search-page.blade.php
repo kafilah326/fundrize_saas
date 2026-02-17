@@ -114,7 +114,7 @@
         @elseif(count($results) > 0)
             <section id="search-results" class="bg-white px-4 py-4">
                 <div class="flex items-center justify-between mb-4">
-                    <p class="text-xs text-gray-500">Ditemukan <span
+                    <p class="text-xs text-gray-500">Ditemukan<span
                             class="font-semibold text-dark">{{ count($results) }} program</span></p>
                 </div>
                 <div class="space-y-3">
