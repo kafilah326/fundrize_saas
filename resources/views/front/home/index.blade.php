@@ -287,13 +287,7 @@
       </section>
       <section id="program-menu" class="bg-white px-4 py-5 mt-2">
         <h3 class="text-sm font-bold text-dark mb-4">Menu Program</h3>
-        <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2"><button
-            class="flex flex-col items-center gap-2 min-w-[60px]">
-            <div
-              class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-              <i class="fa-solid fa-grip text-white text-lg"></i></div><span
-              class="text-xs font-medium text-primary">Semua</span>
-          </button><button
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2"><button
             class="flex flex-col items-center gap-2 min-w-[60px]">
             <div
               class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
