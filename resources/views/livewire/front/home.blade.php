@@ -169,51 +169,7 @@
             </div>
         </section>
 
-        <!-- Other Programs -->
-        @if($otherPrograms->isNotEmpty())
-        <section id="other-programs" class="bg-white px-4 py-5 mt-2">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-sm font-bold text-dark">Program Lainnya</h3>
-            </div>
-            <div class="space-y-3">
-                @foreach($otherPrograms as $program)
-                <a href="{{ route('program.detail', $program->slug) }}" wire:navigate class="flex gap-3 bg-white rounded-xl border border-gray-100 p-2 block">
-                    <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg">
-                        <img src="{{ $program->image }}" class="w-full h-full object-cover">
-                    </div>
-                    <div class="flex-1 flex flex-col justify-between py-1">
-                        <div>
-                            <h4 class="font-semibold text-sm text-dark mb-1 line-clamp-2">{{ $program->title }}</h4>
-                            <p class="text-xs font-bold text-dark mb-1">Rp {{ number_format($program->collected_amount, 0, ',', '.') }}</p>
-                        </div>
-                        <div>
-                            @if($program->target_amount)
-                            <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                                <div class="bg-primary h-1.5 rounded-full" style="width: {{ $program->progress }}%"></div>
-                            </div>
-                            <div class="flex items-center justify-between">
-                                <span class="text-xs text-gray-500">{{ $program->progress }}% terkumpul</span>
-                                <button class="text-gray-400">
-                                    <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-                                </button>
-                            </div>
-                            @else
-                            <div class="flex items-center justify-between mt-2">
-                                <span class="text-xs font-bold text-primary flex items-center gap-1">
-                                    <i class="fa-solid fa-infinity"></i> Unlimited
-                                </span>
-                                <button class="text-gray-400">
-                                    <i class="fa-solid fa-ellipsis-vertical text-xs"></i>
-                                </button>
-                            </div>
-                            @endif
-                        </div>
-                    </div>
-                </a>
-                @endforeach
-            </div>
-        </section>
-        @endif
+
 
         <!-- About Foundation -->
         <section id="about-foundation" class="bg-white px-4 py-5 mt-2 mb-20">
