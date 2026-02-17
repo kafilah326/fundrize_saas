@@ -132,12 +132,15 @@
             :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}">
             
             <!-- Logo -->
-            <div class="flex items-center justify-center h-16 bg-dark-lighter/50 border-b border-gray-800">
+            <div class="flex items-center justify-center h-20 bg-dark-lighter/50 border-b border-gray-800">
                 <div class="flex items-center space-x-2">
-                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                        <i class="fa-solid fa-hand-holding-heart text-sm"></i>
-                    </div>
-                    <span class="text-lg font-bold tracking-tight text-white">Yayasan<span class="text-primary">Peduli</span></span>
+                    @if($foundation && $foundation->logo)
+                        <img src="{{ $foundation->logo }}" alt="{{ $foundation->name }}" class="h-12 w-auto object-contain">
+                    @else
+                        <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                            <i class="fa-solid fa-hand-holding-heart text-sm"></i>
+                        </div>
+                    @endif
                 </div>
             </div>
 

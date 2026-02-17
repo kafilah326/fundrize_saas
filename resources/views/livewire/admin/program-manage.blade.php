@@ -6,7 +6,7 @@
         <!-- Program Summary Header -->
         <div class="bg-white rounded-2xl p-6 shadow-soft border border-gray-100 flex flex-col md:flex-row gap-6 items-start">
             <div class="flex-shrink-0">
-                <img src="{{ $program->image ? Storage::url($program->image) : 'https://placehold.co/150x150?text=No+Img' }}" 
+                <img src="{{ $program->image }}" 
                      class="w-32 h-32 rounded-xl object-cover shadow-md border border-gray-100" alt="{{ $program->title }}">
             </div>
             <div class="flex-grow">

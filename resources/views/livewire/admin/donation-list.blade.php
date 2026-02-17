@@ -288,7 +288,7 @@
                                 <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Peruntukan Donasi</h4>
                                 @if($selectedPayment->transaction_type == 'program' && $selectedPayment->program)
                                     <div class="p-4 border border-blue-100 rounded-xl bg-blue-50/50 flex items-start">
-                                        <img src="{{ $selectedPayment->program->image ? Storage::url($selectedPayment->program->image) : 'https://placehold.co/50x50' }}" class="w-12 h-12 rounded-lg object-cover mr-4">
+                                        <img src="{{ $selectedPayment->program->image }}" class="w-12 h-12 rounded-lg object-cover mr-4">
                                         <div>
                                             <p class="text-xs text-blue-600 uppercase font-bold mb-1">Program Donasi</p>
                                             <p class="text-sm font-medium text-gray-900">{{ $selectedPayment->program->title }}</p>

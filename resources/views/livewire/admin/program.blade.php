@@ -35,7 +35,7 @@
                             @forelse($programs as $program)
                             <tr class="hover:bg-orange-50/30 transition-colors duration-150 group">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <img class="h-12 w-12 rounded-xl object-cover shadow-sm group-hover:shadow-md transition-shadow border border-gray-100" src="{{ $program->image ? Storage::url($program->image) : 'https://placehold.co/100x100?text=No+Img' }}" alt="">
+                                    <img class="h-12 w-12 rounded-xl object-cover shadow-sm group-hover:shadow-md transition-shadow border border-gray-100" src="{{ $program->image }}" alt="">
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm font-semibold text-gray-900 group-hover:text-primary transition-colors">{{ Str::limit($program->title, 40) }}</div>
@@ -150,7 +150,7 @@
                                         @if ($image)
                                             <img src="{{ $image->temporaryUrl() }}" class="mx-auto h-32 object-cover rounded-lg shadow-sm mb-3">
                                         @elseif($existingImage)
-                                            <img src="{{ Storage::url($existingImage) }}" class="mx-auto h-32 object-cover rounded-lg shadow-sm mb-3">
+                                            <img src="{{ $existingImage }}" class="mx-auto h-32 object-cover rounded-lg shadow-sm mb-3">
                                         @else
                                             <div class="mx-auto h-12 w-12 text-gray-400">
                                                 <i class="fa-solid fa-image text-3xl"></i>
