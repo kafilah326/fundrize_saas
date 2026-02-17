@@ -26,4 +26,30 @@ class FoundationSetting extends Model
         'focus_areas' => 'array',
         'social_media' => 'array',
     ];
+
+    public function getLogoAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return $value;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->url($value);
+    }
+
+    public function getFaviconAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return $value;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->url($value);
+    }
 }

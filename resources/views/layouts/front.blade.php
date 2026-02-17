@@ -10,7 +10,7 @@
         $foundation = \App\Models\FoundationSetting::first();
     @endphp
     @if($foundation && $foundation->favicon)
-        <link rel="icon" type="image/png" href="{{ Storage::url($foundation->favicon) }}">
+        <link rel="icon" type="image/png" href="{{ $foundation->favicon }}">
     @endif
 
     <!-- Tailwind CDN -->

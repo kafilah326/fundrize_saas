@@ -11,7 +11,7 @@
         $foundation = \App\Models\FoundationSetting::first();
     @endphp
     @if($foundation && $foundation->favicon)
-        <link rel="icon" type="image/png" href="{{ Storage::url($foundation->favicon) }}">
+        <link rel="icon" type="image/png" href="{{ $foundation->favicon }}">
     @endif
 
     <!-- Fonts -->
@@ -320,9 +320,9 @@
                                     <i class="fa-solid fa-circle-user mr-2 text-gray-400"></i> Profile
                                 </a>
                                 <div class="border-t border-gray-100"></div>
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('logout') }}" x-data>
                                     @csrf
-                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
+                                    <button type="submit" @click.stop class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors">
                                         <i class="fa-solid fa-right-from-bracket mr-2"></i> Keluar
                                     </button>
                                 </form>

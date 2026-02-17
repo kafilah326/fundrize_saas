@@ -51,7 +51,7 @@
                                     @if ($logo)
                                         <img src="{{ $logo->temporaryUrl() }}" class="h-24 w-24 object-cover rounded-xl shadow-sm border border-white">
                                     @elseif($existingLogo)
-                                        <img src="{{ Storage::url($existingLogo) }}" class="h-24 w-24 object-cover rounded-xl shadow-sm border border-white">
+                                        <img src="{{ $existingLogo }}" class="h-24 w-24 object-cover rounded-xl shadow-sm border border-white">
                                     @else
                                         <div class="h-24 w-24 rounded-xl bg-gray-200 flex items-center justify-center text-gray-400">
                                             <i class="fa-solid fa-image text-3xl"></i>

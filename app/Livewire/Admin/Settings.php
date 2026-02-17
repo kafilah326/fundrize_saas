@@ -115,6 +115,17 @@ class Settings extends Component
         } else {
             FoundationSetting::create($data);
         }
+        
+        // Update local state to reflect changes
+        if (isset($data['logo'])) {
+            $this->existingLogo = $data['logo'];
+            $this->logo = null; // Clear the temporary upload
+        }
+        
+        if (isset($data['favicon'])) {
+            $this->existingFavicon = $data['favicon'];
+            $this->favicon = null; // Clear the temporary upload
+        }
 
         session()->flash('success', 'Profil yayasan berhasil diperbarui.');
     }
