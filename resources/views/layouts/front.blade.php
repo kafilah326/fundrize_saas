@@ -100,6 +100,11 @@
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '{{ $metaPixelId }}');
             fbq('track', 'PageView');
+
+            // Track PageView on Livewire navigation
+            document.addEventListener('livewire:navigated', function () {
+                fbq('track', 'PageView');
+            });
         </script>
         <noscript><img height="1" width="1" style="display:none"
         src="https://www.facebook.com/tr?id={{ $metaPixelId }}&ev=PageView&noscript=1"
