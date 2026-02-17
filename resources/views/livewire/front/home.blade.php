@@ -2,11 +2,7 @@
     <header id="header" class="bg-white shadow-sm sticky top-0 z-50">
         <div class="px-4 py-3 flex items-center justify-between">
             <div class="flex items-center gap-3">
-                <img src="{{ $foundation->logo }}" alt="Logo" class="w-10 h-10 object-contain">
-                <div>
-                    <h1 class="text-sm font-bold text-dark">{{ $foundation->name }}</h1>
-                    <p class="text-xs text-gray-500">{{ $foundation->tagline }}</p>
-                </div>
+                <img src="{{ $foundation->logo }}" alt="Logo" class="w-14 h-14 object-contain">
             </div>
             <a href="{{ route('search.index') }}" wire:navigate class="w-9 h-9 flex items-center justify-center bg-light rounded-full">
                 <i class="fa-solid fa-magnifying-glass text-gray-600 text-sm"></i>
