@@ -1,0 +1,181 @@
+<?php
+
+namespace App\Livewire\Admin;
+
+use Livewire\Component;
+use Livewire\WithPagination;
+use Livewire\WithFileUploads;
+use App\Models\Banner as BannerModel;
+use Illuminate\Support\Facades\Storage;
+
+class Banner extends Component
+{
+    use WithPagination;
+    use WithFileUploads;
+
+    public $search = '';
+    public $perPage = 5;
+    public $isOpen = false;
+    public $confirmingDeletion = false;
+
+    // Form fields
+    public $bannerId;
+    public $title;
+    public $image;
+    public $existingImage;
+    public $link_url;
+    public $cta_text;
+    public $start_date;
+    public $end_date;
+    public $priority = 0;
+    public $is_active = true;
+    public $description;
+    public $placement = 'home';
+
+    protected $rules = [
+        'title' => 'required|min:3',
+        'image' => 'nullable|image|max:2048', // 2MB Max
+        'link_url' => 'nullable|url',
+        'cta_text' => 'nullable|string|max:255',
+        'start_date' => 'nullable|date',
+        'end_date' => 'nullable|date|after_or_equal:start_date',
+        'priority' => 'integer|min:0',
+        'is_active' => 'boolean',
+        'description' => 'nullable|string',
+        'placement' => 'required|in:home,qurban,qurban_tabungan',
+    ];
+
+    public function render()
+    {
+        $banners = BannerModel::where('title', 'like', '%' . $this->search . '%')
+            ->orderBy('priority', 'asc') // Order by priority first
+            ->orderBy('created_at', 'desc')
+            ->paginate($this->perPage);
+
+        return view('livewire.admin.banner', [
+            'banners' => $banners
+        ])->layout('layouts.admin');
+    }
+
+    public function create()
+    {
+        $this->resetInputFields();
+        $this->openModal();
+    }
+
+    public function openModal()
+    {
+        $this->isOpen = true;
+    }
+
+    public function closeModal()
+    {
+        $this->isOpen = false;
+        $this->resetInputFields();
+    }
+
+    private function resetInputFields()
+    {
+        $this->bannerId = null;
+        $this->title = '';
+        $this->image = null;
+        $this->existingImage = null;
+        $this->link_url = '';
+        $this->cta_text = '';
+        $this->start_date = '';
+        $this->end_date = '';
+        $this->priority = 0;
+        $this->is_active = true;
+        $this->description = '';
+        $this->placement = 'home';
+        $this->resetValidation();
+    }
+
+    public function store()
+    {
+        $rules = $this->rules;
+        
+        // Image required only on create
+        if (!$this->bannerId) {
+            $rules['image'] = 'required|image|max:2048';
+        }
+
+        $this->validate($rules);
+
+        $data = [
+            'title' => $this->title,
+            'link_url' => $this->link_url,
+            'cta_text' => $this->cta_text,
+            'start_date' => $this->start_date ?: null,
+            'end_date' => $this->end_date ?: null,
+            'priority' => $this->priority,
+            'is_active' => $this->is_active,
+            'description' => $this->description,
+            'placement' => $this->placement,
+        ];
+
+        if ($this->image) {
+            // Delete old image if updating
+            if ($this->bannerId && $this->existingImage) {
+                Storage::disk('public')->delete($this->existingImage);
+            }
+            
+            $imageName = $this->image->store('banners', 'public');
+            $data['image'] = $imageName;
+        }
+
+        BannerModel::updateOrCreate(['id' => $this->bannerId], $data);
+
+        session()->flash('success', $this->bannerId ? 'Banner updated successfully.' : 'Banner created successfully.');
+
+        $this->closeModal();
+    }
+
+    public function edit($id)
+    {
+        $banner = BannerModel::findOrFail($id);
+        $this->bannerId = $id;
+        $this->title = $banner->title;
+        $this->existingImage = $banner->image;
+        $this->link_url = $banner->link_url;
+        $this->cta_text = $banner->cta_text;
+        $this->start_date = $banner->start_date ? $banner->start_date->format('Y-m-d') : null;
+        $this->end_date = $banner->end_date ? $banner->end_date->format('Y-m-d') : null;
+        $this->priority = $banner->priority;
+        $this->is_active = $banner->is_active;
+        $this->description = $banner->description;
+        $this->placement = $banner->placement;
+
+        $this->openModal();
+    }
+
+    public function confirmDelete($id)
+    {
+        $this->bannerId = $id;
+        $this->confirmingDeletion = true;
+    }
+
+    public function delete()
+    {
+        if ($this->bannerId) {
+            $banner = BannerModel::find($this->bannerId);
+            if ($banner) {
+                if ($banner->image) {
+                    Storage::disk('public')->delete($banner->image);
+                }
+                $banner->delete();
+                session()->flash('success', 'Banner deleted successfully.');
+            }
+        }
+        $this->confirmingDeletion = false;
+        $this->bannerId = null;
+    }
+
+    public function toggleStatus($id)
+    {
+        $banner = BannerModel::findOrFail($id);
+        $banner->is_active = !$banner->is_active;
+        $banner->save();
+        session()->flash('success', 'Banner status updated.');
+    }
+}

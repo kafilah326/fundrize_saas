@@ -1,0 +1,64 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Payment extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'external_id',
+        'transaction_type', // program, qurban_langsung, qurban_tabungan
+        'user_id',
+        'program_id',
+        'qurban_order_id',
+        'qurban_saving_id',
+        'unique_code',
+        'customer_name',
+        'customer_email',
+        'customer_phone',
+        'payment_type',
+        'amount',
+        'admin_fee',
+        'total',
+        'payment_method',
+        'status',
+        'xendit_invoice_id',
+        'xendit_invoice_url',
+        'checkout_data',
+        'paid_at',
+        'expired_at',
+    ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+    
+    public function program()
+    {
+        return $this->belongsTo(Program::class);
+    }
+    
+    public function qurbanOrder()
+    {
+        return $this->belongsTo(QurbanOrder::class);
+    }
+    
+    public function qurbanSaving()
+    {
+        return $this->belongsTo(QurbanSaving::class);
+    }
+
+    protected $casts = [
+        'checkout_data' => 'array',
+        'paid_at' => 'datetime',
+        'expired_at' => 'datetime',
+        'amount' => 'decimal:2',
+        'admin_fee' => 'decimal:2',
+        'total' => 'decimal:2',
+    ];
+}
