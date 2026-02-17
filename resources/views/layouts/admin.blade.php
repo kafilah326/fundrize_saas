@@ -201,6 +201,13 @@
                     Qurban
                 </a>
 
+                <a href="{{ route('admin.maintenance-fee') }}" 
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
+                   @if(request()->routeIs('admin.maintenance-fee*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    <i class="fa-solid fa-file-invoice-dollar w-6 text-center mr-3 text-lg @if(request()->routeIs('admin.maintenance-fee*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
+                    Maintenance Fee
+                </a>
+
                 <div class="pt-6 pb-2">
                     <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Pengaturan</p>
                 </div>
