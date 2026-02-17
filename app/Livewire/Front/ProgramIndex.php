@@ -8,9 +8,12 @@ use Livewire\Component;
 use App\Models\Program;
 use App\Models\Category;
 use App\Models\AkadType;
+use Livewire\WithPagination;
 
 class ProgramIndex extends Component
 {
+    use WithPagination;
+
     public $categories;
     public $akads;
     public $selectedAkad = [];

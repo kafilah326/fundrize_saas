@@ -2,10 +2,10 @@
 
 namespace App\Livewire\Front;
 
+use App\Models\Program;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use App\Models\Program;
 
 class SearchPage extends Component
 {
@@ -17,31 +17,53 @@ class SearchPage extends Component
             return [];
         }
 
-        return Program::where('is_active', true)
-            ->where(function($q) {
-                $q->where('title', 'like', '%' . $this->query . '%')
-                  ->orWhereHas('categories', function($c) {
-                      $c->where('name', 'like', '%' . $this->query . '%');
-                  });
+        $programs = Program::where('is_active', true)
+            ->where(function ($q) {
+                $q->where('title', 'like', '%'.$this->query.'%')
+                    ->orWhereHas('categories', function ($c) {
+                        $c->where('name', 'like', '%'.$this->query.'%');
+                    });
             })
             ->get();
+
+        return $this->mapPrograms($programs);
     }
 
     public function getUrgentProgramsProperty()
     {
-        return Program::where('is_active', true)
+        $programs = Program::where('is_active', true)
             ->where('is_urgent', true)
             ->orderBy('end_date', 'asc')
             ->take(2)
             ->get();
+
+        return $this->mapPrograms($programs);
     }
 
     public function getFeaturedProgramsProperty()
     {
-        return Program::where('is_active', true)
+        $programs = Program::where('is_active', true)
             ->orderBy('donor_count', 'desc')
             ->take(2)
             ->get();
+
+        return $this->mapPrograms($programs);
+    }
+
+    protected function mapPrograms($programs)
+    {
+        return $programs->map(function ($program) {
+            return [
+                'title' => $program->title,
+                'slug' => $program->slug,
+                'image' => $program->image,
+                'days_left' => $program->days_left,
+                'target' => $program->target_amount,
+                'collected' => $program->collected_amount,
+                'donor_count' => $program->donor_count,
+                'category' => $program->categories->first()->name ?? 'Umum',
+            ];
+        });
     }
 
     #[Layout('layouts.front')]
@@ -51,7 +73,7 @@ class SearchPage extends Component
         return view('livewire.front.search-page', [
             'results' => $this->filteredPrograms,
             'urgentPrograms' => $this->urgentPrograms,
-            'featuredPrograms' => $this->featuredPrograms
+            'featuredPrograms' => $this->featuredPrograms,
         ]);
     }
 }
