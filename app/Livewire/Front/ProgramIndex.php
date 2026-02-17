@@ -38,8 +38,10 @@ class ProgramIndex extends Component
         $this->limit += 5;
     }
 
-    public function applyFilter()
+    public function applyFilter($akads = [], $categories = [])
     {
+        $this->selectedAkad = array_values($akads);
+        $this->selectedKategori = array_values($categories);
         $this->resetPage();
     }
 

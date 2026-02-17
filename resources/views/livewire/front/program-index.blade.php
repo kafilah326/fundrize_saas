@@ -46,7 +46,10 @@
 
     applyFilter() {
         this.showFilter = false;
-        $wire.applyFilter();
+        // Convert Proxy to plain array just in case
+        let akads = JSON.parse(JSON.stringify(this.selectedAkad));
+        let categories = JSON.parse(JSON.stringify(this.selectedKategori));
+        $wire.applyFilter(akads, categories);
     },
 
     get filterCount() {
