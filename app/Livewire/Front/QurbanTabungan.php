@@ -21,7 +21,7 @@ class QurbanTabungan extends Component
             ->orderBy('created_at', 'desc')
             ->first();
 
-        $this->settings = QurbanTabunganSetting::firstOrFail();
+        $this->settings = QurbanTabunganSetting::first() ?? new QurbanTabunganSetting();
     }
 
     #[Layout('layouts.front')]

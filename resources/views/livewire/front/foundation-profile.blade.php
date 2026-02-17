@@ -31,7 +31,11 @@
                 <div>
                     <h4 class="text-sm font-semibold text-primary mb-2">Misi</h4>
                     <ul class="text-sm text-gray-700 space-y-1">
-                        @foreach($foundation->mission ?? [] as $mission)
+                        @php
+                            $missions = is_string($foundation->mission) ? json_decode($foundation->mission, true) : $foundation->mission;
+                            $missions = is_array($missions) ? $missions : [];
+                        @endphp
+                        @foreach($missions as $mission)
                         <li class="flex items-start gap-2">
                             <i class="fa-solid fa-check text-primary text-xs mt-0.5"></i>
                             <span>{{ $mission }}</span>
