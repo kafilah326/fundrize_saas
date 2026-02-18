@@ -56,7 +56,7 @@ class ProfileEdit extends Component
         if ($this->photo) {
             // Store in public/avatars
             $path = $this->photo->store('avatars', 'public');
-            $data['avatar'] = Storage::url($path);
+            $data['avatar'] = $path; // Store relative path, not URL
         }
 
         $user->update($data);

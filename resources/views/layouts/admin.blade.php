@@ -299,12 +299,16 @@
                                     <p class="text-sm font-semibold text-gray-700 group-hover:text-primary transition-colors">{{ Auth::user()->name }}</p>
                                     <p class="text-xs text-gray-500">Administrator</p>
                                 </div>
-                                <img class="h-10 w-10 rounded-full object-cover border-2 border-white shadow-sm group-hover:border-primary transition-all" 
-                                     src="{{ Auth::user()->avatar ? Storage::url(Auth::user()->avatar) : 'https://ui-avatars.com/api/?name='.urlencode(Auth::user()->name).'&background=FF6B35&color=fff' }}" 
-                                     alt="{{ Auth::user()->name }}">
+                                <div class="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold border-2 border-white shadow-sm group-hover:border-primary transition-all overflow-hidden">
+                                    @if(Auth::user()->avatar)
+                                        <img src="{{ Storage::url(Auth::user()->avatar) }}" alt="{{ Auth::user()->initials }}" class="w-full h-full object-cover">
+                                    @else
+                                        {{ Auth::user()->initials }}
+                                    @endif
+                                </div>
                                 <i class="fa-solid fa-chevron-down text-xs text-gray-400 group-hover:text-primary transition-colors"></i>
                             </button>
-
+                            
                             <!-- Dropdown Menu -->
                             <div x-show="open" @click.away="open = false" 
                                  x-transition:enter="transition ease-out duration-100"

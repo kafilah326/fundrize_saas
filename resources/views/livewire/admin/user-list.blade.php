@@ -45,7 +45,13 @@
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0 h-10 w-10">
-                                            <img class="h-10 w-10 rounded-full object-cover border border-gray-100 shadow-sm" src="{{ $user->avatar ? Storage::url($user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=random' }}" alt="">
+                                            <div class="h-10 w-10 rounded-full bg-primary text-white flex items-center justify-center text-sm font-bold border border-gray-100 shadow-sm overflow-hidden">
+                                                @if($user->avatar)
+                                                    <img src="{{ Storage::url($user->avatar) }}" alt="{{ $user->initials }}" class="w-full h-full object-cover">
+                                                @else
+                                                    {{ $user->initials }}
+                                                @endif
+                                            </div>
                                         </div>
                                         <div class="ml-4">
                                             <div class="text-sm font-semibold text-gray-900">{{ $user->name }}</div>
@@ -196,7 +202,13 @@
                     </div>
                     
                     <div class="flex items-center mb-8">
-                        <img class="h-20 w-20 rounded-full object-cover mr-5 border-2 border-white shadow-md" src="{{ $selectedUser->avatar ? Storage::url($selectedUser->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($selectedUser->name).'&background=random' }}" alt="">
+                        <div class="h-20 w-20 rounded-full bg-primary text-white flex items-center justify-center text-xl font-bold border-2 border-white shadow-md overflow-hidden mr-5">
+                            @if($selectedUser->avatar)
+                                <img src="{{ Storage::url($selectedUser->avatar) }}" alt="{{ $selectedUser->initials }}" class="w-full h-full object-cover">
+                            @else
+                                {{ $selectedUser->initials }}
+                            @endif
+                        </div>
                         <div>
                             <h4 class="text-2xl font-bold text-gray-900">{{ $selectedUser->name }}</h4>
                             <p class="text-gray-500 mb-1">{{ $selectedUser->email }}</p>

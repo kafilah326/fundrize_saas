@@ -5,14 +5,16 @@
         <section id="avatar-section" class="bg-white px-4 py-6">
             <div class="flex flex-col items-center gap-3">
                 <div class="relative w-24 h-24">
-                    <div class="w-24 h-24 rounded-full overflow-hidden bg-gray-200">
+                    <div class="w-24 h-24 rounded-full overflow-hidden bg-primary text-white flex items-center justify-center text-3xl font-bold border-2 border-white shadow-lg">
                         @if ($photo)
                             <img src="{{ $photo->temporaryUrl() }}" alt="New Avatar Preview" class="w-full h-full object-cover">
+                        @elseif($avatar)
+                            <img src="{{ Storage::url($avatar) }}" alt="{{ Auth::user()->initials }}" class="w-full h-full object-cover">
                         @else
-                            <img src="{{ $avatar ?? 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg' }}" alt="User Avatar" class="w-full h-full object-cover">
+                            {{ Auth::user()->initials }}
                         @endif
                     </div>
-                    <label for="photo-upload" class="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg cursor-pointer">
+                    <label for="photo-upload" class="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-lg cursor-pointer hover:bg-orange-600 transition-colors">
                         <i class="fa-solid fa-camera text-white text-xs"></i>
                     </label>
                     <input type="file" wire:model="photo" id="photo-upload" class="hidden" accept="image/*">
