@@ -50,6 +50,11 @@ class Home extends Component
     #[Title('Home')]
     public function render()
     {
-        return view('livewire.front.home');
+        return view('livewire.front.home')->layout('layouts.front', [
+            'title' => $this->foundation->name,
+            'metaDescription' => strip_tags($this->foundation->about),
+            'metaKeywords' => 'donasi, yayasan, sedekah, zakat, infaq, qurban, galang dana, crowdfunding, ' . $this->foundation->name,
+            'metaImage' => $this->foundation->logo,
+        ]);
     }
 }

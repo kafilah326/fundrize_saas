@@ -26,9 +26,13 @@ class ProgramDetail extends Component
     }
 
     #[Layout('layouts.front')]
-    #[Title('Detail Program')]
     public function render()
     {
-        return view('livewire.front.program-detail');
+        return view('livewire.front.program-detail')->layout('layouts.front', [
+            'title' => $this->program->title . ' - Yayasan Peduli',
+            'metaDescription' => \Illuminate\Support\Str::limit(strip_tags($this->program->description), 160),
+            'metaImage' => $this->program->image,
+            'metaKeywords' => 'donasi, ' . implode(', ', $this->program->categories->pluck('name')->toArray()) . ', ' . $this->program->title,
+        ]);
     }
 }

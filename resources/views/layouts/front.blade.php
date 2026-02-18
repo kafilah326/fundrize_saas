@@ -4,7 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ?? 'Yayasan Peduli' }}</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>{{ $title ?? $foundation->name ?? 'Yayasan Peduli' }}</title>
+    <meta name="description" content="{{ $metaDescription ?? strip_tags($foundation->about ?? '') ?? 'Yayasan Peduli adalah platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.' }}">
+    <meta name="keywords" content="{{ $metaKeywords ?? 'donasi, yayasan, sedekah, zakat, infaq, qurban, galang dana, crowdfunding' }}">
+    <meta name="author" content="{{ $metaAuthor ?? $foundation->name ?? 'Yayasan Peduli' }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $title ?? 'Yayasan Peduli - Berbagi Kebaikan' }}">
+    <meta property="og:description" content="{{ $metaDescription ?? 'Yayasan Peduli adalah platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.' }}">
+    <meta property="og:image" content="{{ $metaImage ?? asset('images/default-og.jpg') }}">
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="{{ url()->current() }}">
+    <meta property="twitter:title" content="{{ $title ?? 'Yayasan Peduli - Berbagi Kebaikan' }}">
+    <meta property="twitter:description" content="{{ $metaDescription ?? 'Yayasan Peduli adalah platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.' }}">
+    <meta property="twitter:image" content="{{ $metaImage ?? asset('images/default-og.jpg') }}">
     
     @php
         $foundation = \App\Models\FoundationSetting::first();

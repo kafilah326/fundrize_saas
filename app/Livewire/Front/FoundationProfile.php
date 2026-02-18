@@ -20,6 +20,11 @@ class FoundationProfile extends Component
     #[Title('Profil Yayasan')]
     public function render()
     {
-        return view('livewire.front.foundation-profile');
+        return view('livewire.front.foundation-profile')->layout('layouts.front', [
+            'title' => 'Tentang Kami - ' . $this->foundation->name,
+            'metaDescription' => strip_tags($this->foundation->about),
+            'metaKeywords' => 'profil yayasan, tentang kami, visi misi, ' . $this->foundation->name,
+            'metaImage' => $this->foundation->logo,
+        ]);
     }
 }

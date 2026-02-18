@@ -99,6 +99,10 @@ class ProgramIndex extends Component
         return view('livewire.front.program-index', [
             'programs' => $programs,
             'totalPrograms' => $totalPrograms,
+        ])->layout('layouts.front', [
+            'title' => 'Daftar Program Donasi - Yayasan Peduli',
+            'metaDescription' => 'Temukan berbagai program donasi, sedekah, zakat, dan infaq yang dapat Anda bantu melalui Yayasan Peduli.',
+            'metaKeywords' => 'donasi, sedekah, zakat, infaq, galang dana, yayasan peduli, program sosial',
         ]);
     }
 }
