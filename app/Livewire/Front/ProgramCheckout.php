@@ -64,7 +64,7 @@ class ProgramCheckout extends Component
                 'program_id' => $this->program->id,
                 'program_name' => $this->program->title,
                 'amount' => $this->showCustomAmount ? (int)$this->customAmount : $this->amount,
-                'name' => $this->isAnonymous ? 'Hamba Allah' : $this->name,
+                'name' => $this->name,
                 'phone' => $this->phone,
                 'email' => $this->email,
                 'is_anonymous' => $this->isAnonymous,

@@ -43,17 +43,9 @@ class QurbanCheckout extends Component
 
     public function updatedIsAnonymous($value)
     {
-        if ($value) {
-            $this->name = 'Hamba Allah';
-            $this->qurbanName = 'Hamba Allah';
-        } else {
-            if (Auth::check()) {
-                $this->name = Auth::user()->name;
-            } else {
-                $this->name = '';
-            }
-            $this->qurbanName = '';
-        }
+        // Don't change the actual name fields — is_anonymous flag
+        // is already stored in session and used for display purposes.
+        // Keep the real name so it's saved to the database.
     }
 
     public function submit()
