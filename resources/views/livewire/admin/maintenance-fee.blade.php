@@ -67,7 +67,7 @@
                                     Detail
                                 </button>
                                 
-                                @if($monthData['status'] != 'paid' && $monthData['fee_maintenance'] > 0)
+                                @if($monthData['status'] != 'paid' && $monthData['fee_maintenance'] > 0 && !$monthData['is_current_month'])
                                 <button wire:click="showPayment({{ $monthData['month_num'] }})" class="text-white bg-primary hover:bg-primary-hover px-3 py-1 rounded-lg text-xs transition-colors shadow-sm">
                                     Bayar
                                 </button>

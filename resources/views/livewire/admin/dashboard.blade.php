@@ -79,106 +79,108 @@
         </div>
     </div>
 
-    <!-- Recent Donations & Top Programs -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <!-- Recent Donations -->
-        <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                <h3 class="text-lg font-bold text-gray-800">Donasi Terbaru</h3>
-                <a href="{{ route('admin.donations') }}" class="text-sm font-medium text-primary hover:text-primary-hover transition-colors">Lihat Semua <i class="fa-solid fa-arrow-right ml-1"></i></a>
-            </div>
-            <div class="p-0">
-                @if($recentDonations->count() > 0)
-                    <div class="divide-y divide-gray-100">
-                        @foreach($recentDonations as $payment)
-                        <div class="p-4 hover:bg-gray-50 transition-colors flex items-center space-x-4">
-                            <div class="flex-shrink-0">
-                                <img class="h-10 w-10 rounded-full border border-gray-200" src="https://ui-avatars.com/api/?name={{ urlencode($payment->customer_name ?? 'Hamba Allah') }}&background=random&color=fff" alt="">
-                            </div>
-                            <div class="flex-1 min-w-0">
-                                <p class="text-sm font-semibold text-gray-900 truncate">
-                                    {{ $payment->customer_name ?? 'Hamba Allah' }}
-                                </p>
-                                <p class="text-xs text-gray-500 truncate flex items-center">
-                                    <span class="truncate max-w-[150px]">{{ $payment->program->title ?? 'Program Dihapus' }}</span>
-                                    <span class="mx-1">•</span>
-                                    <span>{{ $payment->created_at->diffForHumans() }}</span>
-                                </p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-sm font-bold text-gray-900">
-                                    Rp {{ number_format($payment->amount, 0, ',', '.') }}
-                                </p>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                    Paid
-                                </span>
-                            </div>
-                        </div>
-                        @endforeach
-                    </div>
-                @else
-                    <div class="p-8 text-center">
-                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
-                            <i class="fa-solid fa-inbox text-gray-400 text-xl"></i>
-                        </div>
-                        <p class="text-gray-500">Belum ada donasi terbaru.</p>
-                    </div>
-                @endif
-            </div>
+    <!-- Bar Chart Section -->
+    <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100">
+        <div class="flex items-center justify-between mb-6">
+            <h3 class="text-lg font-bold text-gray-800">Transaksi Bulan Ini</h3>
+            <span class="text-sm text-gray-500">{{ now()->format('F Y') }}</span>
         </div>
-
-        <!-- Top Programs -->
-        <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden">
-            <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
-                <h3 class="text-lg font-bold text-gray-800">Program Populer</h3>
-                <a href="{{ route('admin.programs') }}" class="text-sm font-medium text-primary hover:text-primary-hover transition-colors">Lihat Semua <i class="fa-solid fa-arrow-right ml-1"></i></a>
-            </div>
-            <div class="p-6">
-                @if($topPrograms->count() > 0)
-                    <div class="space-y-6">
-                        @foreach($topPrograms as $index => $program)
-                        <div class="relative">
-                            <div class="flex justify-between items-end mb-2">
-                                <div class="flex items-center overflow-hidden">
-                                    <span class="flex-shrink-0 w-6 h-6 rounded-full bg-gray-100 text-gray-500 text-xs font-bold flex items-center justify-center mr-3">
-                                        {{ ($topPrograms->currentPage() - 1) * $topPrograms->perPage() + $loop->iteration }}
-                                    </span>
-                                    <span class="text-sm font-medium text-gray-700 truncate block">{{ $program->title }}</span>
+        
+        <div class="relative h-64 w-full">
+            @if(count($chartData) > 0)
+                <div class="flex items-end justify-between h-full space-x-2">
+                    @php
+                        $maxTotal = max(array_column($chartData, 'total'));
+                        $maxTotal = $maxTotal == 0 ? 1 : $maxTotal; // Prevent division by zero
+                    @endphp
+                    @foreach($chartData as $data)
+                        <div class="flex flex-col items-center flex-1 group relative h-full justify-end">
+                            <!-- Tooltip -->
+                            <div class="absolute bottom-full mb-2 hidden group-hover:block z-10 w-full text-center">
+                                <div class="bg-gray-800 text-white text-[10px] rounded py-1 px-1 whitespace-nowrap mx-auto inline-block">
+                                    Rp {{ number_format($data['total'], 0, ',', '.') }}
                                 </div>
-                                <span class="text-sm font-bold text-gray-900 ml-2 whitespace-nowrap">Rp {{ number_format($program->collected_amount, 0, ',', '.') }}</span>
                             </div>
                             
-                            <div class="relative pt-1">
-                                <div class="flex mb-2 items-center justify-between">
-                                    <div></div> <!-- spacer -->
-                                    <div class="text-right">
-                                        <span class="text-xs font-semibold inline-block text-primary">
-                                            {{ $program->target_amount > 0 ? round(($program->collected_amount / $program->target_amount) * 100) : 0 }}%
-                                        </span>
-                                    </div>
-                                </div>
-                                <div class="overflow-hidden h-2 mb-4 text-xs flex rounded-full bg-gray-100">
-                                    @php
-                                        $percentage = $program->target_amount > 0 ? ($program->collected_amount / $program->target_amount) * 100 : 0;
-                                    @endphp
-                                    <div style="width:{{ min($percentage, 100) }}%" class="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-gradient-to-r from-primary to-secondary rounded-full transition-all duration-500"></div>
+                            <!-- Bar -->
+                            <div class="w-full bg-blue-50 rounded-t-sm relative overflow-hidden group-hover:bg-blue-100 transition-colors flex items-end" 
+                                 style="height: 100%;">
+                                <div class="w-full bg-primary transition-all duration-500 ease-out rounded-t-sm hover:bg-primary-hover" 
+                                     style="height: {{ $maxTotal > 0 ? ($data['total'] / $maxTotal) * 100 : 0 }}%;">
                                 </div>
                             </div>
+                            
+                            <!-- Label -->
+                            <div class="mt-2 text-[9px] text-gray-400 rotate-0 sm:rotate-0 truncate w-full text-center">
+                                {{ \Carbon\Carbon::createFromFormat('d M', $data['date'])->format('d') }}
+                            </div>
                         </div>
-                        @endforeach
-                    </div>
-                    <div class="mt-6">
-                        {{ $topPrograms->links() }}
-                    </div>
-                @else
-                    <div class="p-8 text-center">
-                        <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
-                            <i class="fa-solid fa-chart-bar text-gray-400 text-xl"></i>
+                    @endforeach
+                </div>
+            @else
+                <div class="flex items-center justify-center h-full text-gray-400">
+                    No transaction data for this month.
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Today's Transactions List -->
+    <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden">
+        <div class="px-6 py-5 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+            <h3 class="text-lg font-bold text-gray-800">Transaksi Hari Ini</h3>
+            <span class="text-sm font-medium text-gray-500">{{ now()->format('d F Y') }}</span>
+        </div>
+        <div class="p-0">
+            @if($todayTransactions->count() > 0)
+                <div class="divide-y divide-gray-100">
+                    @foreach($todayTransactions as $payment)
+                    <div class="p-4 hover:bg-gray-50 transition-colors flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                <i class="fa-solid fa-receipt"></i>
+                            </div>
                         </div>
-                        <p class="text-gray-500">Belum ada data program.</p>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-semibold text-gray-900 truncate">
+                                {{ $payment->customer_name ?? 'Hamba Allah' }}
+                            </p>
+                            <p class="text-xs text-gray-500 truncate flex items-center">
+                                <span class="truncate max-w-[200px]">
+                                    @if($payment->transaction_type == 'program')
+                                        {{ $payment->program->title ?? 'Donasi Program' }}
+                                    @elseif($payment->transaction_type == 'qurban_langsung')
+                                        Qurban: {{ $payment->qurbanOrder->animal->name ?? 'Hewan' }}
+                                    @elseif($payment->transaction_type == 'qurban_tabungan')
+                                        Tabungan Qurban
+                                    @else
+                                        {{ ucfirst($payment->transaction_type) }}
+                                    @endif
+                                </span>
+                                <span class="mx-1">•</span>
+                                <span>{{ $payment->created_at->format('H:i') }}</span>
+                            </p>
+                        </div>
+                        <div class="text-right">
+                            <p class="text-sm font-bold text-gray-900">
+                                Rp {{ number_format($payment->amount, 0, ',', '.') }}
+                            </p>
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
+                                Paid
+                            </span>
+                        </div>
                     </div>
-                @endif
-            </div>
+                    @endforeach
+                </div>
+            @else
+                <div class="p-8 text-center">
+                    <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 mb-3">
+                        <i class="fa-solid fa-inbox text-gray-400 text-xl"></i>
+                    </div>
+                    <p class="text-gray-500">Belum ada transaksi hari ini.</p>
+                </div>
+            @endif
         </div>
     </div>
 </div>
+

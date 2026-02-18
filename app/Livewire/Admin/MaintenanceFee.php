@@ -145,8 +145,14 @@ class MaintenanceFee extends Component
     {
         $months = [];
         $feePercentage = (float) env('SYSTEM_FEE_PERCENTAGE', 0);
+        $currentMonth = Carbon::now()->month;
+        $currentYear = Carbon::now()->year;
 
-        for ($m = 1; $m <= 12; $m++) {
+        // If filtering by current year, only show up to current month
+        // If filtering by past years, show all 12 months
+        $limitMonth = ($this->year == $currentYear) ? $currentMonth : 12;
+
+        for ($m = 1; $m <= $limitMonth; $m++) {
             $monthName = Carbon::createFromDate($this->year, $m, 1)->translatedFormat('F');
             
             // Calculate totals
@@ -174,8 +180,9 @@ class MaintenanceFee extends Component
                 ->first();
 
             $status = $record ? $record->status : 'pending';
-            // Determine if playable (has amount > 0 and not fully paid)
-            // But user said "list fee yang harus di bayarkan". If 0, no need to pay.
+            
+            // Determine if button should be hidden (for current active month)
+            $isCurrentMonth = ($this->year == $currentYear && $m == $currentMonth);
             
             $months[] = [
                 'month_num' => $m,
@@ -184,8 +191,12 @@ class MaintenanceFee extends Component
                 'fee_maintenance' => $feeMaintenance,
                 'status' => $status,
                 'record' => $record,
+                'is_current_month' => $isCurrentMonth,
             ];
         }
+
+        // Sort months descending (latest first)
+        $months = array_reverse($months);
 
         return view('livewire.admin.maintenance-fee', [
             'months' => $months,
