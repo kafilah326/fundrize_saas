@@ -58,7 +58,7 @@
                     @foreach($banners as $banner)
                     <!-- Slide -->
                     <div class="min-w-full">
-                        <div class="relative h-[180px] overflow-hidden rounded-2xl">
+                        <div class="relative aspect-video overflow-hidden rounded-2xl">
                             <img src="{{ Storage::url($banner->image) }}" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-4">
@@ -119,7 +119,7 @@
             <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
                 @foreach($featuredPrograms as $program)
                 <a href="{{ route('program.detail', $program->slug) }}" wire:navigate class="min-w-[260px] bg-white rounded-2xl shadow-sm border border-gray-100 block">
-                    <div class="h-[146px] overflow-hidden rounded-t-2xl">
+                    <div class="aspect-video overflow-hidden rounded-t-2xl">
                         <img src="{{ $program->image }}" class="w-full h-full object-cover">
                     </div>
                     <div class="p-3">
