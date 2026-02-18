@@ -19,7 +19,7 @@
                 <button wire:click="setTab('savings')"
                     class="px-6 py-4 text-sm font-medium rounded-t-xl transition-all duration-200 border-b-2 
                     {{ $activeTab === 'savings' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
-                    <i class="fa-solid fa-piggy-bank mr-2"></i> Tabungan
+                    <i class="fa-solid fa-wallet mr-2"></i> Tabungan
                 </button>
                 <button wire:click="setTab('content')"
                     class="px-6 py-4 text-sm font-medium rounded-t-xl transition-all duration-200 border-b-2 
@@ -41,7 +41,7 @@
                     <button wire:click="setAnimalType('tabungan')"
                         class="px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200
                     {{ $animalType === 'tabungan' ? 'bg-primary text-white shadow-md' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                        <i class="fa-solid fa-piggy-bank mr-1.5"></i> Qurban Tabungan
+                        <i class="fa-solid fa-wallet mr-1.5"></i> Qurban Tabungan
                     </button>
                 </div>
             @endif
@@ -244,9 +244,47 @@
                                                         @endphp
 
                                                         @if ($hasTemplate)
-                                                            <button
-                                                                wire:click="sendFollowup({{ $order->payment->id }}, '{{ $seqKey }}')"
-                                                                wire:confirm="Kirim pesan followup {{ $seqIndex }} ke {{ $order->donor_name }}?"
+                                                            @php
+                                                                $rawContent = $hasTemplate->content;
+                                                                // Common Replacements
+                                                                $rawContent = str_replace(
+                                                                    '{{ nama }}',
+                                                                    $order->donor_name ?? 'Hamba Allah',
+                                                                    $rawContent,
+                                                                );
+                                                                $rawContent = str_replace(
+                                                                    '{{ tanggal }}',
+                                                                    $order->created_at->translatedFormat('d F Y'),
+                                                                    $rawContent,
+                                                                );
+
+                                                                // Specific Replacements for Qurban Order
+                                                                $rawContent = str_replace(
+                                                                    '{{ jenis_hewan }}',
+                                                                    $order->animal->name ?? '-',
+                                                                    $rawContent,
+                                                                );
+                                                                $rawContent = str_replace(
+                                                                    '{{ tipe_qurban }}',
+                                                                    $order->animal->type ?? '-',
+                                                                    $rawContent,
+                                                                );
+                                                                $rawContent = str_replace(
+                                                                    '{{ harga }}',
+                                                                    'Rp ' . number_format($order->amount, 0, ',', '.'),
+                                                                    $rawContent,
+                                                                );
+                                                                $rawContent = str_replace(
+                                                                    '{{ link_pembayaran }}',
+                                                                    route('payment.status', [
+                                                                        'id' => $order->payment->external_id ?? '',
+                                                                    ]),
+                                                                    $rawContent,
+                                                                );
+                                                                $waLink = $this->getFollowupUrl($order, $seqKey, 'order');
+                                                            @endphp
+
+                                                            <a href="{{ $waLink }}" target="_blank"
                                                                 class="w-7 h-7 rounded-full flex items-center justify-center transition-all relative group {{ $btnClass }}"
                                                                 title="{{ ($isSent ? 'Terkirim - ' : ($isFailed ? 'Gagal - ' : 'Kirim ')) . ($hasTemplate->name ?? 'Follow Up ' . $seqIndex) }}">
                                                                 <i class="fa-brands fa-whatsapp text-lg"></i>
@@ -267,7 +305,7 @@
                                                                         {{ $seqIndex }}
                                                                     </span>
                                                                 @endif
-                                                            </button>
+                                                            </a>
                                                         @else
                                                             <span
                                                                 class="w-7 h-7 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center cursor-not-allowed select-none relative"
@@ -409,9 +447,11 @@ if ($isSent) {
                                                         @endphp
 
                                                         @if ($hasTemplate)
-                                                            <button
-                                                                wire:click="sendFollowup({{ $latestPayment->id }}, '{{ $seqKey }}')"
-                                                                wire:confirm="Kirim pesan followup {{ $seqIndex }} ke {{ $saving->donor_name }}?"
+                                                            @php
+                                                                $waLink = $this->getFollowupUrl($saving, $seqKey, 'saving');
+                                                            @endphp
+
+                                                            <a href="{{ $waLink }}" target="_blank"
                                                                 class="w-7 h-7 rounded-full flex items-center justify-center transition-all relative group {{ $btnClass }}"
                                                                 title="{{ ($isSent ? 'Terkirim - ' : ($isFailed ? 'Gagal - ' : 'Kirim ')) . ($hasTemplate->name ?? 'Follow Up ' . $seqIndex) }}">
                                                                 <i class="fa-brands fa-whatsapp text-lg"></i>
@@ -432,7 +472,7 @@ if ($isSent) {
                                                                         {{ $seqIndex }}
                                                                     </span>
                                                                 @endif
-                                                            </button>
+                                                            </a>
                                                         @else
                                                             <span
                                                                 class="w-7 h-7 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center cursor-not-allowed select-none relative"
@@ -798,7 +838,8 @@ if ($isSent) {
                                 <div class="flex items-center mb-2">
                                     <div
                                         class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3">
-                                        <i class="fa-solid fa-cow"></i></div>
+                                        <i class="fa-solid fa-cow"></i>
+                                    </div>
                                     <div>
                                         <p class="font-semibold">{{ $selectedOrder->animal->name ?? '-' }}</p>
                                         <p class="text-xs text-gray-500">Tahun {{ $selectedOrder->hijri_year }} H</p>

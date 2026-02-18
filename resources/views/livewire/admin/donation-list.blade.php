@@ -172,9 +172,131 @@
                                                 @endphp
 
                                                 @if ($hasTemplate)
-                                                    <button
-                                                        wire:click="sendFollowup({{ $payment->id }}, '{{ $seqKey }}')"
-                                                        wire:confirm="Kirim pesan followup {{ $seqIndex }} ke {{ $payment->customer_name }}?"
+                                                    @php
+                                                        $rawContent = $hasTemplate->content;
+                                                        // Common Replacements
+                                                        $rawContent = str_replace(
+                                                            '{{ nama }}',
+                                                            $payment->customer_name ?? 'Hamba Allah',
+                                                            $rawContent,
+                                                        );
+                                                        $rawContent = str_replace(
+                                                            '{{ tanggal }}',
+                                                            $payment->created_at->translatedFormat('d F Y'),
+                                                            $rawContent,
+                                                        );
+
+                                                        // Specific Replacements
+                                                        if (
+                                                            $payment->transaction_type == 'program' &&
+                                                            $payment->program
+                                                        ) {
+                                                            $rawContent = str_replace(
+                                                                '{{ program }}',
+                                                                $payment->program->title,
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ nilai_donasi }}',
+                                                                'Rp ' . number_format($payment->amount, 0, ',', '.'),
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ link_donasi }}',
+                                                                route('program.detail', $payment->program->slug),
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ link_pembayaran }}',
+                                                                route('payment.status', [
+                                                                    'id' => $payment->external_id,
+                                                                ]),
+                                                                $rawContent,
+                                                            );
+                                                        } elseif (
+                                                            $payment->transaction_type == 'qurban_langsung' &&
+                                                            $payment->qurbanOrder
+                                                        ) {
+                                                            $rawContent = str_replace(
+                                                                '{{ jenis_hewan }}',
+                                                                $payment->qurbanOrder->animal->name ?? '-',
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ tipe_qurban }}',
+                                                                $payment->qurbanOrder->animal->type ?? '-',
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ harga }}',
+                                                                'Rp ' . number_format($payment->amount, 0, ',', '.'),
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ link_pembayaran }}',
+                                                                route('payment.status', [
+                                                                    'id' => $payment->external_id,
+                                                                ]),
+                                                                $rawContent,
+                                                            );
+                                                        } elseif (
+                                                            $payment->transaction_type == 'qurban_tabungan' &&
+                                                            $payment->qurbanSaving
+                                                        ) {
+                                                            $rawContent = str_replace(
+                                                                '{{ target_tabungan }}',
+                                                                'Rp ' .
+                                                                    number_format(
+                                                                        $payment->qurbanSaving->target_amount,
+                                                                        0,
+                                                                        ',',
+                                                                        '.',
+                                                                    ),
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ saldo_saat_ini }}',
+                                                                'Rp ' .
+                                                                    number_format(
+                                                                        $payment->qurbanSaving->saved_amount,
+                                                                        0,
+                                                                        ',',
+                                                                        '.',
+                                                                    ),
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ sisa_pembayaran }}',
+                                                                'Rp ' .
+                                                                    number_format(
+                                                                        $payment->qurbanSaving->target_amount -
+                                                                            $payment->qurbanSaving->saved_amount,
+                                                                        0,
+                                                                        ',',
+                                                                        '.',
+                                                                    ),
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ link_topup }}',
+                                                                route(
+                                                                    'qurban.savings.detail',
+                                                                    $payment->qurbanSaving->id,
+                                                                ),
+                                                                $rawContent,
+                                                            );
+                                                            $rawContent = str_replace(
+                                                                '{{ link_pembayaran }}',
+                                                                route('payment.status', [
+                                                                    'id' => $payment->external_id,
+                                                                ]),
+                                                                $rawContent,
+                                                            );
+                                                        }
+                                                        $waLink = $this->getFollowupUrl($payment, $seqKey);
+                                                    @endphp
+
+                                                    <a href="{{ $waLink }}" target="_blank"
                                                         class="w-7 h-7 rounded-full flex items-center justify-center transition-all relative group {{ $btnClass }}"
                                                         title="{{ ($isSent ? 'Terkirim - ' : ($isFailed ? 'Gagal - ' : 'Kirim ')) . ($hasTemplate->name ?? 'Follow Up ' . $seqIndex) }}">
                                                         <i class="fa-brands fa-whatsapp text-lg"></i>
@@ -194,7 +316,7 @@
                                                                 {{ $seqIndex }}
                                                             </span>
                                                         @endif
-                                                    </button>
+                                                    </a>
                                                 @else
                                                     <span
                                                         class="w-7 h-7 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center cursor-not-allowed select-none relative"
@@ -472,7 +594,7 @@
                                             <div class="flex items-center mb-2">
                                                 <div
                                                     class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center mr-3">
-                                                    <i class="fa-solid fa-piggy-bank"></i>
+                                                    <i class="fa-solid fa-wallet"></i>
                                                 </div>
                                                 <div>
                                                     <p class="text-xs text-purple-600 uppercase font-bold">Tabungan

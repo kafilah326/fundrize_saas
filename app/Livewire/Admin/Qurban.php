@@ -309,6 +309,92 @@ class Qurban extends Component
         session()->flash('success', 'Konten halaman Tabungan Qurban berhasil disimpan.');
     }
 
+    public function getFollowupUrl($model, $sequence, $type)
+    {
+        static $templates = null;
+        if ($templates === null) {
+            $templates = BankFollowup::where('is_active', true)->get();
+        }
+
+        // Mapping types from caller to DB types
+        // $type passed from view: 'order' -> 'qurban' in DB
+        // 'saving' -> 'tabungan_qurban' in DB
+        
+        $dbType = ($type === 'order') ? 'qurban' : 'tabungan_qurban';
+
+        // Find Template
+        $template = $templates->where('type', $dbType)
+            ->where('followup_sequence', $sequence)
+            ->first();
+
+        if (!$template) {
+            return '#';
+        }
+
+        $content = $template->content;
+
+        if ($type === 'order') {
+            // $model is QurbanOrder
+            $order = $model;
+            
+            // Common Replacements
+            $content = str_replace('{{nama}}', $order->donor_name ?? 'Hamba Allah', $content);
+            $content = str_replace('{{tanggal}}', $order->created_at->translatedFormat('d F Y'), $content);
+            
+            // Specific Replacements for Qurban Order
+            $content = str_replace('{{jenis_hewan}}', $order->animal->name ?? '-', $content);
+            $content = str_replace('{{tipe_qurban}}', $order->animal->type ?? '-', $content);
+            $paymentAmount = $order->payment ? $order->payment->amount : 0;
+            $content = str_replace('{{harga}}', 'Rp ' . number_format($paymentAmount, 0, ',', '.'), $content);
+            
+            if ($order->payment) {
+                $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $order->payment->external_id]), $content);
+            }
+
+            // Phone Formatting
+            $phone = $order->payment ? $order->payment->customer_phone : ''; 
+            if (empty($phone)) $phone = $order->whatsapp;
+
+        } elseif ($type === 'saving') {
+             // $model is QurbanSaving
+             $saving = $model;
+
+             // Logic to find latest payment context
+             $latestDeposit = $saving->deposits()->latest()->first();
+             $latestPayment = $latestDeposit ? $latestDeposit->payment : null;
+
+             $content = str_replace('{{nama}}', $saving->donor_name ?? 'Hamba Allah', $content);
+             $content = str_replace('{{tanggal}}', now()->translatedFormat('d F Y'), $content); 
+             if ($latestPayment) {
+                  $content = str_replace('{{tanggal}}', $latestPayment->created_at->translatedFormat('d F Y'), $content);
+             }
+
+             // Specific Replacements for Qurban Saving
+             $content = str_replace('{{target_tabungan}}', 'Rp ' . number_format($saving->target_amount, 0, ',', '.'), $content);
+             $content = str_replace('{{saldo_saat_ini}}', 'Rp ' . number_format($saving->saved_amount, 0, ',', '.'), $content);
+             $content = str_replace('{{sisa_pembayaran}}', 'Rp ' . number_format($saving->target_amount - $saving->saved_amount, 0, ',', '.'), $content);
+             $content = str_replace('{{link_topup}}', route('qurban.savings.detail', $saving->id), $content);
+             
+             if ($latestPayment) {
+                 $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $latestPayment->external_id]), $content);
+             }
+
+             // Phone Formatting
+             $phone = $saving->whatsapp;
+             if ($latestPayment) {
+                 $phone = $latestPayment->customer_phone;
+             } elseif (empty($phone) && $saving->user) {
+                 $phone = $saving->user->whatsapp;
+             }
+        }
+
+        if (str_starts_with($phone, '0')) {
+            $phone = '62' . substr($phone, 1);
+        }
+        
+        return "https://wa.me/{$phone}?text=" . urlencode($content);
+    }
+
     public function sendFollowup($paymentId, $sequence)
     {
         $payment = Payment::with(['program', 'qurbanOrder.animal', 'qurbanSaving'])->find($paymentId);
