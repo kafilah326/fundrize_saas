@@ -38,13 +38,13 @@
                             @if($banners->count() > 0)
                                 <tr class="bg-blue-50">
                                     <td colspan="8" class="px-6 py-2 text-xs text-blue-600 font-mono text-center">
-                                        Debug: Found {{ $banners->total() }} banners in DB. Showing page {{ $banners->currentPage() }} of {{ $banners->lastPage() }}.
+                                        Debug: Found {{ $banners->count() }} banners directly from DB.
                                     </td>
                                 </tr>
                             @else
                                 <tr class="bg-red-50">
                                     <td colspan="8" class="px-6 py-2 text-xs text-red-600 font-mono text-center">
-                                        Debug: No banners found in collection. Total: {{ $banners->total() }}
+                                        Debug: No banners found in collection. Count: {{ $banners->count() }}
                                     </td>
                                 </tr>
                             @endif
@@ -113,10 +113,10 @@
                 </div>
             </div>
 
-            <!-- Pagination -->
-            <div class="mt-6">
+            <!-- Pagination (Disabled for now) -->
+            {{-- <div class="mt-6">
                 {{ $banners->links() }}
-            </div>
+            </div> --}}
         </div>
     </div>
 

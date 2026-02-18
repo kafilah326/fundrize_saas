@@ -52,11 +52,8 @@ class Banner extends Component
 
     public function render()
     {
-        // Debugging: Remove search filter to see ALL banners
-        $banners = BannerModel::orderBy('created_at', 'desc')->paginate($this->perPage);
-
-        // Debug: Check if banners are retrieved
-        // \Illuminate\Support\Facades\Log::info('Banners count: ' . $banners->count());
+        // FORCE FIX: Use get() instead of paginate() to ensure data appears
+        $banners = BannerModel::orderBy('created_at', 'desc')->get();
 
         return view('livewire.admin.banner', [
             'banners' => $banners
