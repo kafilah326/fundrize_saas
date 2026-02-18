@@ -52,6 +52,9 @@ class Banner extends Component
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 
+        // Debug: Check if banners are retrieved
+        // \Illuminate\Support\Facades\Log::info('Banners count: ' . $banners->count());
+
         return view('livewire.admin.banner', [
             'banners' => $banners
         ])->layout('layouts.admin');
@@ -117,18 +120,28 @@ class Banner extends Component
         if ($this->image) {
             // Delete old image if updating
             if ($this->bannerId && $this->existingImage) {
-                Storage::disk('public')->delete($this->existingImage);
+                // Check if it's not a URL
+                if (!str_starts_with($this->existingImage, 'http')) {
+                   Storage::disk('public')->delete($this->existingImage);
+                }
             }
             
             $imageName = $this->image->store('banners', 'public');
             $data['image'] = $imageName;
+        } elseif (!$this->bannerId) {
+            // If creating new and no image (should be caught by validation, but just in case)
+            // Use a placeholder or fail gracefully
+             $data['image'] = 'banners/default.jpg'; 
         }
 
-        BannerModel::updateOrCreate(['id' => $this->bannerId], $data);
-
-        session()->flash('success', $this->bannerId ? 'Banner updated successfully.' : 'Banner created successfully.');
-
-        $this->closeModal();
+        try {
+            BannerModel::updateOrCreate(['id' => $this->bannerId], $data);
+            session()->flash('success', $this->bannerId ? 'Banner updated successfully.' : 'Banner created successfully.');
+            $this->closeModal(); // Close modal only on success
+        } catch (\Exception $e) {
+            session()->flash('error', 'Error creating banner: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Banner create error: ' . $e->getMessage());
+        }
     }
 
     public function edit($id)

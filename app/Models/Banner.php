@@ -9,19 +9,8 @@ class Banner extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'image',
-        'placement',
-        'description',
-        'link_url',
-        'cta_text',
-        'start_date',
-        'end_date',
-        'priority',
-        'is_active',
-    ];
-
+    protected $guarded = []; // Allow all fields to be filled for now
+    
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
