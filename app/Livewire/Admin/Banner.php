@@ -45,6 +45,11 @@ class Banner extends Component
         'placement' => 'required|in:home,qurban,qurban_tabungan',
     ];
 
+    public function mount()
+    {
+        $this->resetPage();
+    }
+
     public function render()
     {
         // Debugging: Remove search filter to see ALL banners
