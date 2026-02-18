@@ -24,7 +24,7 @@
     <main id="main-content" class="pb-24">
         <!-- Media Section -->
         <section id="media-section">
-            <div class="w-full aspect-video overflow-hidden">
+            <div class="w-full aspect-square overflow-hidden">
                 <img class="w-full h-full object-cover" src="{{ $program->image }}" alt="{{ $program->title }}" />
             </div>
         </section>
