@@ -38,12 +38,25 @@ class Banner extends Model
     {
         return $query->where('is_active', true)
             ->where(function ($q) {
-                $q->whereNull('start_date')
-                  ->orWhere('start_date', '<=', now());
+                $q->where('start_date', '<=', now())
+                  ->orWhereNull('start_date');
             })
             ->where(function ($q) {
-                $q->whereNull('end_date')
-                  ->orWhere('end_date', '>=', now());
+                $q->where('end_date', '>=', now())
+                  ->orWhereNull('end_date');
             });
+    }
+
+    public function getImageAttribute($value)
+    {
+        if (!$value) {
+            return 'https://placehold.co/600x400?text=No+Banner';
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return $value;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->url($value);
     }
 }
