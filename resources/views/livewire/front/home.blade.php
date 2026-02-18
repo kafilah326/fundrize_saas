@@ -116,9 +116,9 @@
                 <h3 class="text-sm font-bold text-dark">Program Unggulan</h3>
                 <a href="{{ route('program.index') }}" wire:navigate class="text-xs text-primary font-semibold">Lihat Semua</a>
             </div>
-            <div class="flex flex-col gap-3">
+            <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
                 @foreach($featuredPrograms as $program)
-                <a href="{{ route('program.detail', $program->slug) }}" wire:navigate class="flex bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm p-3 gap-3 hover:shadow-md transition-shadow">
+                <a href="{{ route('program.detail', $program->slug) }}" wire:navigate class="min-w-[280px] bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm p-3 gap-3 flex flex-row hover:shadow-md transition-shadow">
                     <!-- Image Left -->
                     <div class="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
                         <img src="{{ $program->image }}" class="w-full h-full object-cover">
