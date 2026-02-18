@@ -37,7 +37,6 @@ class Home extends Component
             ->get();
 
         $this->otherPrograms = Program::where('is_active', true)
-            ->where('is_featured', false)
             ->latest()
             ->take(5)
             ->get();
