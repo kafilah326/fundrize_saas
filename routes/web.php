@@ -107,6 +107,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/meta-setting', \App\Livewire\Admin\MetaSetting::class)->name('meta-setting');
     Route::get('/maintenance-fee', \App\Livewire\Admin\MaintenanceFee::class)->name('maintenance-fee');
     Route::get('/bank-followup', \App\Livewire\Admin\BankFollowup::class)->name('bank-followup');
+    Route::get('/whatsapp-template', \App\Livewire\Admin\WhatsappTemplate::class)->name('whatsapp-template');
 
     // Quill Editor Image Upload
     Route::post('/upload-editor-image', [\App\Http\Controllers\EditorImageUploadController::class, 'store'])->name('upload-editor-image');
