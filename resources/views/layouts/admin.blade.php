@@ -135,7 +135,7 @@
             <div class="flex items-center justify-center h-20 bg-dark-lighter/50 border-b border-gray-800">
                 <div class="flex items-center space-x-2">
                     @if($foundation && $foundation->logo)
-                        <img src="{{ $foundation->logo }}" alt="{{ $foundation->name }}" class="h-12 w-auto object-contain">
+                        <img src="{{ $foundation->logo }}" alt="{{ $foundation->name }}" class="h-12 w-auto object-contain brightness-0 invert">
                     @else
                         <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center text-white font-bold text-lg shadow-lg">
                             <i class="fa-solid fa-hand-holding-heart text-sm"></i>
