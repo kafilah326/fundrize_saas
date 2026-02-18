@@ -1,6 +1,6 @@
 {
-  "version": "1.3.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur baru yang signifikan berupa sistem manajemen template pesan WhatsApp yang memungkinkan admin mengatur isi pesan secara dinamis melalui dashboard tanpa mengubah kode program.",
-  "updatedAt": "2026-02-18T23:10:50.842Z"
+  "version": "1.3.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Default karena error API",
+  "updatedAt": "2026-02-18T23:33:41.942Z"
 }

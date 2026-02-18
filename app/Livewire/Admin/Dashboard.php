@@ -58,7 +58,6 @@ class Dashboard extends Component
 
         // Today's Transactions
         $todayTransactions = Payment::with(['program', 'user', 'qurbanOrder', 'qurbanSaving'])
-            ->where('status', 'paid')
             ->whereDate('created_at', Carbon::today())
             ->latest()
             ->get();

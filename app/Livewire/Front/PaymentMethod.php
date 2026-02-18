@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Front;
 
+use App\Models\AdminNotification;
 use App\Models\BankAccount;
 use App\Models\Donation;
 use App\Models\Payment;
@@ -13,7 +14,6 @@ use App\Services\WhatsAppNotificationService;
 use App\Services\XenditService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -21,10 +21,15 @@ use Livewire\Component;
 class PaymentMethod extends Component
 {
     public $type;
+
     public $amount;
+
     public $selectedMethod;
+
     public $paymentGroup = 'bank_transfer'; // 'bank_transfer' or 'xendit'
+
     public $adminFee = 0;
+
     public $total = 0;
 
     public $programName = '';
@@ -32,21 +37,21 @@ class PaymentMethod extends Component
     public function mount()
     {
         $checkout = session('checkout');
-        
-        if (!$checkout) {
+
+        if (! $checkout) {
             return redirect()->route('home');
         }
 
         $this->type = $checkout['type'];
 
         // Enforce login for Qurban Tabungan
-        if ($this->type === 'qurban_tabungan' && !Auth::check()) {
+        if ($this->type === 'qurban_tabungan' && ! Auth::check()) {
             return redirect()->route('login');
         }
 
         $this->amount = $checkout['amount'];
         $this->programName = $checkout['program_name'] ?? $checkout['target_name'] ?? 'Donasi Program';
-        
+
         // Set default method
         $firstBank = BankAccount::where('is_active', true)->orderBy('sort_order')->first();
         if ($firstBank) {
@@ -56,7 +61,7 @@ class PaymentMethod extends Component
             $this->selectedMethod = 'xendit';
             $this->paymentGroup = 'xendit';
         }
-        
+
         $this->calculateTotal();
     }
 
@@ -100,7 +105,7 @@ class PaymentMethod extends Component
     public function pay(XenditService $xenditService, WhatsAppNotificationService $waService)
     {
         $checkout = session('checkout');
-        $trxId = 'TRX-' . date('YmdHis') . '-' . rand(1000, 9999);
+        $trxId = 'TRX-'.date('YmdHis').'-'.rand(1000, 9999);
         $uniqueCode = null;
         $finalTotal = $this->total;
 
@@ -135,6 +140,14 @@ class PaymentMethod extends Component
         }
 
         $payment = Payment::create($paymentData);
+
+        // Notify admin of new transaction (triggers 1.mp3 sound)
+        AdminNotification::notify(
+            'new_transaction',
+            'Transaksi Baru!',
+            'Transaksi '.$trxId.' sebesar Rp '.number_format($finalTotal).' dari '.($checkout['name'] ?? 'Hamba Allah'),
+            ['payment_id' => $payment->id, 'amount' => $finalTotal, 'transaction_id' => $trxId]
+        );
 
         // 3. Create Specific Transaction Record
         if ($this->type === 'program') {
@@ -172,7 +185,7 @@ class PaymentMethod extends Component
                 'payment_method' => $this->selectedMethod,
                 'status' => 'pending',
             ]);
-            
+
             // Link payment to order
             $payment->update(['qurban_order_id' => $order->id]);
         } elseif ($this->type === 'qurban_tabungan') {
@@ -182,13 +195,13 @@ class PaymentMethod extends Component
             if (isset($checkout['saving_id'])) {
                 $saving = QurbanSaving::find($checkout['saving_id']);
             }
-            
-            if (!$saving) {
+
+            if (! $saving) {
                 $saving = QurbanSaving::firstOrCreate(
                     [
                         'user_id' => Auth::id(),
                         'target_animal_type' => $checkout['target'],
-                        'status' => 'active'
+                        'status' => 'active',
                     ],
                     [
                         'target_amount' => $checkout['target_price'],
@@ -211,7 +224,7 @@ class PaymentMethod extends Component
                 'payment_method' => $this->selectedMethod,
                 'status' => 'pending',
             ]);
-            
+
             // Link payment to saving
             $payment->update(['qurban_saving_id' => $saving->id]);
         }
@@ -224,7 +237,7 @@ class PaymentMethod extends Component
             $metaService = app(MetaConversionService::class);
             $metaService->sendInitiateCheckout($payment);
         } catch (\Exception $e) {
-            Log::error('Meta CAPI InitiateCheckout Error: ' . $e->getMessage());
+            Log::error('Meta CAPI InitiateCheckout Error: '.$e->getMessage());
         }
 
         // 6. Handle Payment Gateway
@@ -248,15 +261,16 @@ class PaymentMethod extends Component
 
             } catch (\Exception $e) {
                 // Log error
-                Log::error('Xendit Error: ' . $e->getMessage());
+                Log::error('Xendit Error: '.$e->getMessage());
                 session()->flash('error', 'Gagal membuat pembayaran otomatis. Silakan coba lagi atau gunakan transfer bank.');
+
                 return;
             }
         }
 
         // For Bank Transfer
         session(['transaction_id' => $trxId]); // Save trx_id to session for status page lookup
-        
+
         return redirect()->route('payment.status', ['id' => $trxId]);
     }
 
@@ -269,7 +283,7 @@ class PaymentMethod extends Component
             ->get();
 
         return view('livewire.front.payment-method', [
-            'bankAccounts' => $bankAccounts
+            'bankAccounts' => $bankAccounts,
         ]);
     }
 }

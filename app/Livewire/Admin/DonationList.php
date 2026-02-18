@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\AdminNotification;
 use App\Models\BankFollowup;
 use App\Models\Donation;
 use App\Models\Payment;
@@ -283,6 +284,14 @@ class DonationList extends Component
                 }
             }
         }
+
+        // Notify admin of confirmed payment (triggers 2.mp3 sound)
+        AdminNotification::notify(
+            'payment_success',
+            'Pembayaran Dikonfirmasi!',
+            'Pembayaran ' . $payment->external_id . ' sebesar Rp ' . number_format($payment->total) . ' dikonfirmasi manual (Bank Transfer)',
+            ['payment_id' => $payment->id, 'amount' => $payment->total]
+        );
 
         session()->flash('success', 'Pembayaran berhasil dikonfirmasi.');
 
