@@ -17,7 +17,7 @@ class Program extends Component
     use WithFileUploads;
 
     public $search = '';
-    public $perPage = 5;
+    public $perPage = 10;
     public $isOpen = false;
     public $confirmingDeletion = false;
 

@@ -10,6 +10,8 @@ class BankFollowup extends Component
 {
     use WithPagination;
 
+    public $perPage = 10;
+
     public $name;
     public $content;
     public $type = 'donasi';
@@ -46,7 +48,7 @@ class BankFollowup extends Component
                       ->orWhere('type', 'like', '%' . $this->search . '%');
             })
             ->latest()
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         return view('livewire.admin.bank-followup', [
             'followups' => $followups

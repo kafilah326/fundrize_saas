@@ -32,7 +32,7 @@ class Qurban extends Component
     public $activeTab = 'animals'; // animals, orders, savings, content
     public $animalType = 'langsung'; // langsung | tabungan (sub-tab within animals)
     public $search = '';
-    public $perPage = 5;
+    public $perPage = 10;
 
     // Export Modal
     public $isExportModalOpen = false;

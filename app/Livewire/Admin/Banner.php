@@ -14,7 +14,7 @@ class Banner extends Component
     use WithFileUploads;
 
     public $search = '';
-    public $perPage = 5;
+    public $perPage = 10;
     public $isOpen = false;
     public $confirmingDeletion = false;
 
@@ -52,8 +52,7 @@ class Banner extends Component
 
     public function render()
     {
-        // FORCE FIX: Use get() instead of paginate() to ensure data appears
-        $banners = BannerModel::orderBy('created_at', 'desc')->get();
+        $banners = BannerModel::orderBy('created_at', 'desc')->paginate($this->perPage);
 
         return view('livewire.admin.banner', [
             'banners' => $banners

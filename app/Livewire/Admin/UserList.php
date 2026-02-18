@@ -14,7 +14,7 @@ class UserList extends Component
 
     public $search = '';
     public $roleFilter = '';
-    public $perPage = 5;
+    public $perPage = 10;
 
     // Detail Modal
     public $selectedUser = null;

@@ -27,7 +27,7 @@ class DonationList extends Component
     }
 
     public $search = '';
-    public $perPage = 5;
+    public $perPage = 10;
     public $statusFilter = '';
     public $typeFilter = 'program'; // Default to program donations
 

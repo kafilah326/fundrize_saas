@@ -1,0 +1,6 @@
+{
+  "version": "1.1.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan fitur baru berupa kontrol jumlah data per halaman (perPage) yang bersifat backward compatible di berbagai modul admin, serta penyesuaian nilai default paginasi.",
+  "updatedAt": "2026-02-18T21:47:29.782Z"
+}
