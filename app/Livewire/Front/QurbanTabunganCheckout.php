@@ -40,6 +40,7 @@ class QurbanTabunganCheckout extends Component
                 'price' => (float) $animal->price,
                 'desc' => $animal->description,
                 'category' => $animal->category,
+                'image' => $animal->image,
             ];
         }
 
