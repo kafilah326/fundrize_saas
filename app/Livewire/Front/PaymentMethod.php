@@ -176,27 +176,35 @@ class PaymentMethod extends Component
             // Link payment to order
             $payment->update(['qurban_order_id' => $order->id]);
         } elseif ($this->type === 'qurban_tabungan') {
+            $saving = null;
+
             // Find existing saving or create new
-            $saving = QurbanSaving::firstOrCreate(
-                [
-                    'user_id' => Auth::id(),
-                    'target_animal_type' => $checkout['target'],
-                    'status' => 'active'
-                ],
-                [
-                    'target_amount' => $checkout['target_price'],
-                    'saved_amount' => 0,
-                    'target_hijri_year' => '1447', // Next year
-                    'donor_name' => $checkout['name'],
-                    'whatsapp' => $checkout['whatsapp'],
-                    'qurban_name' => $checkout['qurban_name'],
-                    'reminder_enabled' => $checkout['reminder_enabled'] ?? false,
-                    'reminder_frequency' => $checkout['reminder_frequency'] ?? 'bulanan',
-                ]
-            );
+            if (isset($checkout['saving_id'])) {
+                $saving = QurbanSaving::find($checkout['saving_id']);
+            }
+            
+            if (!$saving) {
+                $saving = QurbanSaving::firstOrCreate(
+                    [
+                        'user_id' => Auth::id(),
+                        'target_animal_type' => $checkout['target'],
+                        'status' => 'active'
+                    ],
+                    [
+                        'target_amount' => $checkout['target_price'],
+                        'saved_amount' => 0,
+                        'target_hijri_year' => '1447',
+                        'donor_name' => $checkout['name'],
+                        'whatsapp' => $checkout['whatsapp'],
+                        'qurban_name' => $checkout['qurban_name'],
+                        'reminder_enabled' => $checkout['reminder_enabled'] ?? false,
+                        'reminder_frequency' => $checkout['reminder_frequency'] ?? 'bulanan',
+                    ]
+                );
+            }
 
             // Create deposit record
-            QurbanSavingsDeposit::create([
+            $deposit = QurbanSavingsDeposit::create([
                 'qurban_saving_id' => $saving->id,
                 'transaction_id' => $trxId,
                 'amount' => $this->amount,

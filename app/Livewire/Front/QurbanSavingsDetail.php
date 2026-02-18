@@ -7,9 +7,12 @@ use Livewire\Attributes\Title;
 use Livewire\Component;
 use App\Models\QurbanSaving;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\HasDepositModal;
 
 class QurbanSavingsDetail extends Component
 {
+    use HasDepositModal;
+
     public $savingsId;
     public $saving;
 

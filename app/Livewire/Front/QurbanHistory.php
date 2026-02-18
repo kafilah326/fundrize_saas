@@ -8,9 +8,12 @@ use Livewire\Component;
 use App\Models\QurbanOrder;
 use App\Models\QurbanSaving;
 use Illuminate\Support\Facades\Auth;
+use App\Traits\HasDepositModal;
 
 class QurbanHistory extends Component
 {
+    use HasDepositModal;
+
     public $orders;
     public $savings;
 

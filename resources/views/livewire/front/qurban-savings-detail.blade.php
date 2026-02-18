@@ -22,14 +22,54 @@
                 <p class="text-sm text-gray-600 mt-2">{{ $saving->progress }}% terkumpul • Sisa Rp {{ number_format($saving->target_amount - $saving->saved_amount, 0, ',', '.') }}</p>
             </div>
             <div class="flex gap-2">
-                <a href="{{ route('qurban.tabungan.checkout') }}" wire:navigate class="flex-1 bg-primary hover:bg-orange-600 text-white font-semibold py-3 rounded-lg text-sm text-center flex items-center justify-center gap-1">
+                <button wire:click="openDepositModal({{ $saving->id }})" class="flex-1 bg-primary hover:bg-orange-600 text-white font-semibold py-3 rounded-lg text-sm text-center flex items-center justify-center gap-1">
                     <i class="fa-solid fa-plus mr-1"></i> Setor Lagi
-                </a>
+                </button>
                 <button class="bg-white border border-primary text-primary font-semibold py-3 px-4 rounded-lg text-sm hover:bg-orange-50 transition-colors">
                     <i class="fa-solid fa-share-alt"></i>
                 </button>
             </div>
         </section>
+
+        <!-- Deposit Modal -->
+        @if($showDepositModal)
+        <div class="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+            <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" wire:click="closeDepositModal"></div>
+            
+            <div class="bg-white w-full max-w-[460px] rounded-t-2xl sm:rounded-2xl p-5 relative z-10 transform transition-all">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-dark">Setor Tabungan</h3>
+                    <button wire:click="closeDepositModal" class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200">
+                        <i class="fa-solid fa-xmark text-gray-600"></i>
+                    </button>
+                </div>
+
+                <div class="mb-4">
+                    <label class="text-sm font-semibold text-gray-700 mb-2 block">Pilih Nominal Setor</label>
+                    <div class="grid grid-cols-2 gap-2 mb-3">
+                        @foreach([50000, 100000, 250000, 500000] as $amount)
+                        <button wire:click="setDepositAmount({{ $amount }})" 
+                            class="py-2.5 px-3 rounded-lg text-sm font-semibold transition-colors {{ $depositAmount == $amount && !$showCustomDepositInput ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                            Rp {{ number_format($amount, 0, ',', '.') }}
+                        </button>
+                        @endforeach
+                    </div>
+
+                    <div class="relative">
+                        <label class="text-xs font-medium text-gray-600 mb-1.5 block">Nominal Lainnya</label>
+                        <div class="flex items-center gap-2 border border-gray-300 rounded-lg px-3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary transition-all {{ $showCustomDepositInput ? 'ring-2 ring-primary/30 border-primary' : '' }}">
+                            <span class="text-sm text-gray-600">Rp</span>
+                            <input type="text" wire:model.live="customDepositAmount" wire:focus="setDepositAmount('custom')" placeholder="Minimal Rp 10.000" class="flex-1 py-2.5 text-sm focus:outline-none w-full bg-transparent">
+                        </div>
+                    </div>
+                </div>
+
+                <button wire:click="submitDeposit" class="w-full bg-primary text-white py-3 rounded-xl text-sm font-bold shadow-lg active:scale-95 transition-transform hover:bg-primary/90">
+                    Lanjut Pembayaran
+                </button>
+            </div>
+        </div>
+        @endif
 
         <section id="info-section" class="bg-white px-4 py-5 mb-2">
             <h3 class="text-sm font-bold text-dark mb-3">Informasi Tabungan</h3>

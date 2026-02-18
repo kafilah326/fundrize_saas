@@ -21,7 +21,19 @@
                             <h3 class="text-sm font-semibold text-dark">{{ $order->animal->name }}</h3>
                             <p class="text-xs text-gray-600 mt-0.5">{{ $order->hijri_year }}</p>
                         </div>
-                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded capitalize">{{ $order->status }}</span>
+                        @php
+                            $statusColors = [
+                                'pending' => 'bg-yellow-100 text-yellow-800',
+                                'paid' => 'bg-green-100 text-green-800',
+                                'success' => 'bg-green-100 text-green-800',
+                                'settled' => 'bg-green-100 text-green-800',
+                                'failed' => 'bg-red-100 text-red-800',
+                                'cancelled' => 'bg-red-100 text-red-800',
+                                'expired' => 'bg-gray-100 text-gray-800',
+                            ];
+                            $colorClass = $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800';
+                        @endphp
+                        <span class="px-2 py-1 {{ $colorClass }} text-xs font-medium rounded capitalize">{{ $order->status }}</span>
                     </div>
                     <div class="flex items-center justify-between">
                         <p class="text-sm font-bold text-dark">Rp {{ number_format($order->amount, 0, ',', '.') }}</p>
@@ -57,14 +69,54 @@
                     <p class="text-xs text-gray-600 mt-1.5">{{ $savings->progress }}% terkumpul</p>
                 </div>
                 <div class="flex gap-2">
-                    <a href="{{ route('qurban.tabungan.checkout') }}" wire:navigate class="flex-1 bg-primary hover:bg-orange-600 text-white font-semibold py-3 rounded-lg text-sm text-center">
+                    <button wire:click="openDepositModal({{ $savings->id }})" class="flex-1 bg-primary hover:bg-orange-600 text-white font-semibold py-3 rounded-lg text-sm text-center">
                         Setor Sekarang
-                    </a>
+                    </button>
                     <a href="{{ route('qurban.savings.detail', $savings->id) }}" wire:navigate class="flex-1 bg-white border border-primary text-primary font-semibold py-3 rounded-lg text-sm text-center">
                         Lihat Detail
                     </a>
                 </div>
             </div>
+
+            <!-- Deposit Modal -->
+            @if($showDepositModal)
+            <div class="fixed inset-0 z-50 flex items-end justify-center sm:items-center">
+                <div class="fixed inset-0 bg-black/50 backdrop-blur-sm transition-opacity" wire:click="closeDepositModal"></div>
+                
+                <div class="bg-white w-full max-w-[460px] rounded-t-2xl sm:rounded-2xl p-5 relative z-10 transform transition-all">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-dark">Setor Tabungan</h3>
+                        <button wire:click="closeDepositModal" class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full hover:bg-gray-200">
+                            <i class="fa-solid fa-xmark text-gray-600"></i>
+                        </button>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="text-sm font-semibold text-gray-700 mb-2 block">Pilih Nominal Setor</label>
+                        <div class="grid grid-cols-2 gap-2 mb-3">
+                            @foreach([50000, 100000, 250000, 500000] as $amount)
+                            <button wire:click="setDepositAmount({{ $amount }})" 
+                                class="py-2.5 px-3 rounded-lg text-sm font-semibold transition-colors {{ $depositAmount == $amount && !$showCustomDepositInput ? 'bg-primary text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200' }}">
+                                Rp {{ number_format($amount, 0, ',', '.') }}
+                            </button>
+                            @endforeach
+                        </div>
+
+                        <div class="relative">
+                            <label class="text-xs font-medium text-gray-600 mb-1.5 block">Nominal Lainnya</label>
+                            <div class="flex items-center gap-2 border border-gray-300 rounded-lg px-3 focus-within:ring-2 focus-within:ring-primary/30 focus-within:border-primary transition-all {{ $showCustomDepositInput ? 'ring-2 ring-primary/30 border-primary' : '' }}">
+                                <span class="text-sm text-gray-600">Rp</span>
+                                <input type="text" wire:model.live="customDepositAmount" wire:focus="setDepositAmount('custom')" placeholder="Minimal Rp 10.000" class="flex-1 py-2.5 text-sm focus:outline-none w-full bg-transparent">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button wire:click="submitDeposit" class="w-full bg-primary text-white py-3 rounded-xl text-sm font-bold shadow-lg active:scale-95 transition-transform hover:bg-primary/90">
+                        Lanjut Pembayaran
+                    </button>
+                </div>
+            </div>
+            @endif
 
             <div id="savings-history">
                 <h3 class="text-sm font-semibold text-dark mb-3">Riwayat Setoran</h3>
@@ -76,7 +128,19 @@
                                 <p class="text-xs text-gray-600">{{ $deposit->created_at->format('d M Y • H:i') }}</p>
                                 <p class="text-sm font-semibold text-dark mt-1">Rp {{ number_format($deposit->amount, 0, ',', '.') }}</p>
                             </div>
-                            <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded capitalize">{{ $deposit->status }}</span>
+                            @php
+                                $depositStatusColors = [
+                                    'pending' => 'bg-yellow-100 text-yellow-800',
+                                    'paid' => 'bg-green-100 text-green-800',
+                                    'success' => 'bg-green-100 text-green-800',
+                                    'settled' => 'bg-green-100 text-green-800',
+                                    'failed' => 'bg-red-100 text-red-800',
+                                    'cancelled' => 'bg-red-100 text-red-800',
+                                    'expired' => 'bg-gray-100 text-gray-800',
+                                ];
+                                $depositColorClass = $depositStatusColors[$deposit->status] ?? 'bg-gray-100 text-gray-800';
+                            @endphp
+                            <span class="px-2 py-1 {{ $depositColorClass }} text-xs font-medium rounded capitalize">{{ $deposit->status }}</span>
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="text-xs text-gray-600">{{ $deposit->payment_method }}</span>
