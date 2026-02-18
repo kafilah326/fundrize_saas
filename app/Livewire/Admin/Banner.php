@@ -47,10 +47,8 @@ class Banner extends Component
 
     public function render()
     {
-        $banners = BannerModel::where('title', 'like', '%' . $this->search . '%')
-            ->orderBy('priority', 'asc') // Order by priority first
-            ->orderBy('created_at', 'desc')
-            ->paginate($this->perPage);
+        // Debugging: Remove search filter to see ALL banners
+        $banners = BannerModel::orderBy('created_at', 'desc')->paginate($this->perPage);
 
         // Debug: Check if banners are retrieved
         // \Illuminate\Support\Facades\Log::info('Banners count: ' . $banners->count());

@@ -59,7 +59,7 @@
                     <!-- Slide -->
                     <div class="min-w-full">
                         <div class="relative aspect-video overflow-hidden rounded-2xl">
-                            <img src="{{ Storage::url($banner->image) }}" class="w-full h-full object-cover">
+                            <img src="{{ $banner->image }}" class="w-full h-full object-cover">
                             <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                             <div class="absolute bottom-0 left-0 right-0 p-4">
                                 <h2 class="text-white font-bold text-base mb-2 line-clamp-2">{{ $banner->title }}</h2>
