@@ -32,8 +32,8 @@ class Home extends Component
 
         $this->featuredPrograms = Program::where('is_active', true)
             ->where('is_featured', true)
-            ->skip(3) // Skip the ones in slider
-            ->take(3)
+            ->latest()
+            ->take(5)
             ->get();
 
         $this->otherPrograms = Program::where('is_active', true)

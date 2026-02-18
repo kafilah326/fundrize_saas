@@ -116,27 +116,38 @@
                 <h3 class="text-sm font-bold text-dark">Program Unggulan</h3>
                 <a href="{{ route('program.index') }}" wire:navigate class="text-xs text-primary font-semibold">Lihat Semua</a>
             </div>
-            <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+            <div class="flex flex-col gap-3">
                 @foreach($featuredPrograms as $program)
-                <a href="{{ route('program.detail', $program->slug) }}" wire:navigate class="min-w-[260px] bg-white rounded-2xl shadow-sm border border-gray-100 block">
-                    <div class="aspect-video overflow-hidden rounded-t-2xl">
+                <a href="{{ route('program.detail', $program->slug) }}" wire:navigate class="flex bg-white rounded-xl border border-gray-100 overflow-hidden shadow-sm p-3 gap-3 hover:shadow-md transition-shadow">
+                    <!-- Image Left -->
+                    <div class="w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-100">
                         <img src="{{ $program->image }}" class="w-full h-full object-cover">
                     </div>
-                    <div class="p-3">
-                        <h4 class="font-semibold text-sm text-dark mb-2 line-clamp-2">{{ $program->title }}</h4>
-                        <p class="text-xs font-bold text-dark mb-1">Rp {{ number_format($program->collected_amount, 0, ',', '.') }}</p>
-                        @if($program->target_amount)
-                        <div class="w-full bg-gray-200 rounded-full h-1.5 mb-2">
-                            <div class="bg-primary h-1.5 rounded-full" style="width: {{ $program->progress }}%"></div>
+                    
+                    <!-- Content Right -->
+                    <div class="flex-1 flex flex-col justify-between">
+                        <div>
+                            <h4 class="font-semibold text-sm text-dark mb-1 line-clamp-2">{{ $program->title }}</h4>
+                            <p class="text-xs font-bold text-dark mb-1">Rp {{ number_format($program->collected_amount, 0, ',', '.') }}</p>
                         </div>
-                        <p class="text-xs text-gray-500">Donasi Terkumpul</p>
-                        @else
-                        <div class="flex items-center gap-1 mt-2 mb-1 text-primary">
-                            <i class="fa-solid fa-infinity text-sm"></i>
-                            <span class="text-xs font-bold">Unlimited</span>
+                        
+                        <div>
+                            @if($program->target_amount)
+                                <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1">
+                                    <div class="bg-primary h-1.5 rounded-full" style="width: {{ $program->progress }}%"></div>
+                                </div>
+                                <div class="flex justify-between items-center text-[10px] text-gray-500">
+                                    <span>Terkumpul</span>
+                                    <span>{{ $program->progress }}%</span>
+                                </div>
+                            @else
+                                <div class="flex items-center gap-1 text-primary">
+                                    <i class="fa-solid fa-infinity text-xs"></i>
+                                    <span class="text-[10px] font-bold">Unlimited</span>
+                                </div>
+                                <p class="text-[10px] text-gray-500">Donasi Terkumpul</p>
+                            @endif
                         </div>
-                        <p class="text-xs text-gray-500">Donasi Terkumpul</p>
-                        @endif
                     </div>
                 </a>
                 @endforeach

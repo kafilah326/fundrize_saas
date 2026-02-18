@@ -34,21 +34,6 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-100">
-                            {{-- Debug Output --}}
-                            @if($banners->count() > 0)
-                                <tr class="bg-blue-50">
-                                    <td colspan="8" class="px-6 py-2 text-xs text-blue-600 font-mono text-center">
-                                        Debug: Found {{ $banners->count() }} banners directly from DB.
-                                    </td>
-                                </tr>
-                            @else
-                                <tr class="bg-red-50">
-                                    <td colspan="8" class="px-6 py-2 text-xs text-red-600 font-mono text-center">
-                                        Debug: No banners found in collection. Count: {{ $banners->count() }}
-                                    </td>
-                                </tr>
-                            @endif
-
                             @forelse($banners as $banner)
                             <tr class="hover:bg-orange-50/30 transition-colors duration-150 group">
                                 <td class="px-6 py-4 whitespace-nowrap">
