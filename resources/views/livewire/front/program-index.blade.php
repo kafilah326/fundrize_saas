@@ -107,11 +107,11 @@
                 @foreach ($programs as $program)
                     <!-- Program Item -->
                     <a wire:key="program-{{ $program->id }}" href="{{ route('program.detail', $program->slug) }}" wire:navigate
-                        class="flex flex-col bg-white rounded-xl border border-gray-100 overflow-hidden block">
-                        <div class="w-full aspect-video overflow-hidden">
+                        class="flex gap-3 bg-white rounded-xl border border-gray-100 p-2 block">
+                        <div class="w-24 h-24 aspect-square flex-shrink-0 overflow-hidden rounded-lg">
                             <img src="{{ $program->image }}" class="w-full h-full object-cover">
                         </div>
-                        <div class="p-3 flex-1 flex flex-col justify-between">
+                        <div class="flex-1 flex flex-col justify-between py-1">
                             <div>
                                 <h4 class="font-semibold text-sm text-dark mb-1 line-clamp-2">{{ $program->title }}
                                 </h4>
