@@ -12,13 +12,22 @@ use App\Models\QurbanSavingsDeposit;
 use App\Models\Payment;
 use App\Models\QurbanDocumentation;
 use App\Models\QurbanTabunganSetting;
+use App\Models\BankFollowup;
 use App\Services\MetaConversionService;
+use App\Services\StarSenderService;
 use Illuminate\Support\Facades\Storage;
 
 class Qurban extends Component
 {
     use WithPagination;
     use WithFileUploads;
+
+    protected $starSender;
+
+    public function boot(StarSenderService $starSender)
+    {
+        $this->starSender = $starSender;
+    }
 
     public $activeTab = 'animals'; // animals, orders, savings, content
     public $animalType = 'langsung'; // langsung | tabungan (sub-tab within animals)
@@ -300,6 +309,74 @@ class Qurban extends Component
         session()->flash('success', 'Konten halaman Tabungan Qurban berhasil disimpan.');
     }
 
+    public function sendFollowup($paymentId, $sequence)
+    {
+        $payment = Payment::with(['program', 'qurbanOrder.animal', 'qurbanSaving'])->find($paymentId);
+        
+        if (!$payment) {
+            $this->dispatch('alert', type: 'error', message: 'Data pembayaran tidak ditemukan.');
+            return;
+        }
+
+        // Determine Type
+        $type = match($payment->transaction_type) {
+            'program' => 'donasi',
+            'qurban_langsung' => 'qurban',
+            'qurban_tabungan' => 'tabungan_qurban',
+            default => 'donasi',
+        };
+
+        // Find Template
+        $template = BankFollowup::where('type', $type)
+            ->where('followup_sequence', $sequence)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$template) {
+            $this->dispatch('alert', type: 'error', message: 'Template followup tidak ditemukan.');
+            return;
+        }
+
+        $content = $template->content;
+
+        // Common Replacements
+        $content = str_replace('{{nama}}', $payment->customer_name ?? 'Hamba Allah', $content);
+        $content = str_replace('{{tanggal}}', $payment->created_at->translatedFormat('d F Y'), $content);
+        
+        // Specific Replacements based on type
+        if ($type == 'donasi' && $payment->program) {
+            $content = str_replace('{{program}}', $payment->program->title, $content);
+            $content = str_replace('{{nilai_donasi}}', 'Rp ' . number_format($payment->amount, 0, ',', '.'), $content);
+            $content = str_replace('{{link_donasi}}', route('program.detail', $payment->program->slug), $content);
+            $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
+        } elseif ($type == 'qurban' && $payment->qurbanOrder) {
+            $content = str_replace('{{jenis_hewan}}', $payment->qurbanOrder->animal->name ?? '-', $content);
+            $content = str_replace('{{tipe_qurban}}', $payment->qurbanOrder->animal->type ?? '-', $content);
+            $content = str_replace('{{harga}}', 'Rp ' . number_format($payment->amount, 0, ',', '.'), $content);
+            $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
+        } elseif ($type == 'tabungan_qurban' && $payment->qurbanSaving) {
+             $content = str_replace('{{target_tabungan}}', 'Rp ' . number_format($payment->qurbanSaving->target_amount, 0, ',', '.'), $content);
+             $content = str_replace('{{saldo_saat_ini}}', 'Rp ' . number_format($payment->qurbanSaving->saved_amount, 0, ',', '.'), $content);
+             $content = str_replace('{{sisa_pembayaran}}', 'Rp ' . number_format($payment->qurbanSaving->target_amount - $payment->qurbanSaving->saved_amount, 0, ',', '.'), $content);
+             $content = str_replace('{{link_topup}}', route('qurban.savings.detail', $payment->qurbanSaving->id), $content);
+             $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
+        }
+
+        // Send via StarSender Service
+        $result = $this->starSender->sendMessage(
+            $payment->customer_phone, 
+            $content, 
+            'followup_' . $sequence, 
+            $payment->id
+        );
+
+        if ($result['status']) {
+            $this->dispatch('alert', type: 'success', message: 'Pesan Followup berhasil dikirim.');
+        } else {
+            $this->dispatch('alert', type: 'error', message: 'Gagal mengirim pesan: ' . ($result['message'] ?? 'Unknown error'));
+        }
+    }
+
     public function setAnimalType($type)
     {
         $this->animalType = $type;
@@ -310,6 +387,7 @@ class Qurban extends Component
     public function render()
     {
         $data = [];
+        $followups = BankFollowup::where('is_active', true)->get()->groupBy('type');
 
         if ($this->activeTab === 'animals') {
             $data = QurbanAnimal::where('type', $this->animalType)
@@ -317,7 +395,7 @@ class Qurban extends Component
                 ->orderBy('created_at', 'desc')
                 ->paginate($this->perPage);
         } elseif ($this->activeTab === 'orders') {
-            $data = QurbanOrder::with(['user', 'animal'])
+            $data = QurbanOrder::with(['user', 'animal', 'payment.whatsappMessageLogs'])
                 ->where(function ($query) {
                     $query->where('transaction_id', 'like', '%' . $this->search . '%')
                         ->orWhere('donor_name', 'like', '%' . $this->search . '%');
@@ -325,14 +403,46 @@ class Qurban extends Component
                 ->latest()
                 ->paginate($this->perPage);
         } elseif ($this->activeTab === 'savings') {
-            $data = QurbanSaving::with(['user'])
+            // For Savings tab, we display SAVINGS ACCOUNTS, not individual payments directly in the main table usually.
+            // But if the user wants FU on savings, maybe they mean FU on the saving account progress?
+            // Or FU on specific deposits?
+            // The table currently shows QurbanSaving models.
+            // A QurbanSaving has many deposits (Payments).
+            // Usually FU is per transaction.
+            // BUT, if the request is "FU column", maybe it means FU for the Saving Account owner?
+            // Let's assume we can send FU to the Saving User.
+            // BUT, BankFollowup templates are usually transaction-based placeholders (nilai_donasi, etc).
+            // If we are on 'savings' tab, we list ACCOUNTS. 
+            // If we send FU, which transaction/payment do we link it to? The latest deposit? Or just the Account?
+            // The `sendFollowup` method expects a `paymentId`.
+            // So if we add FU to the Savings list, we might need to change logic to support Sending FU to a Saving Account (not a specific payment).
+            // However, the requested templates (BankFollowup) are heavily payment-centric (nilai_donasi, link_pembayaran).
+            // WAIT, `DonationList` uses `Payment` model.
+            // `QurbanOrder` has `payment`. So for 'orders' tab, we can pass `$order->payment->id`.
+            // `QurbanSaving` is an ACCOUNT. It has `deposits` (Payments).
+            // Maybe for savings tab, we want to follow up about their "Saving Progress"?
+            // If so, we need to pass a valid Payment ID to `sendFollowup` OR refactor `sendFollowup` to handle Savings ID.
+            // But `sendFollowup` currently fetches `Payment::find($paymentId)`.
+            // Let's modify `sendFollowup` or the calling logic.
+            // For now, let's implement for 'orders' tab easily.
+            // For 'savings' tab, let's see. If I click FU on a Saving Row, what should happen?
+            // Maybe follow up on their latest deposit? Or a general "Please Top Up" message?
+            // The templates are 'tabungan_qurban'.
+            // If I look at `DonationList`, type 'qurban_tabungan' uses: target_tabungan, saldo_saat_ini, sisa_pembayaran, link_topup.
+            // These fields exist on `QurbanSaving` model directly (or calculated).
+            // So we don't necessarily need a specific Payment for the *content*, but `sendFollowup` expects a Payment to find the user/phone.
+            // `QurbanSaving` has `user_id` and `customer_phone` (via user or direct).
+            // Let's check `QurbanSaving` model.
+            
+            $data = QurbanSaving::with(['user', 'deposits']) // deposits needed?
                 ->where('donor_name', 'like', '%' . $this->search . '%')
                 ->latest()
                 ->paginate($this->perPage);
         }
 
         return view('livewire.admin.qurban', [
-            'data' => $data
+            'data' => $data,
+            'followups' => $followups
         ])->layout('layouts.admin');
     }
 

@@ -129,6 +129,7 @@
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Hewan</th>
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Atas Nama</th>
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">FU</th>
                                     <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
@@ -148,6 +149,61 @@
                                         <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full {{ $order->status == 'paid' ? 'bg-green-100 text-green-800' : ($order->status == 'pending' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800') }}">
                                             {{ ucfirst($order->status) }}
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        @if($order->payment)
+                                            <div class="flex justify-center space-x-1">
+                                                @php
+                                                    $typeTemplates = $followups['qurban'] ?? collect();
+                                                @endphp
+
+                                                @foreach(['FollowUp1' => 1, 'FollowUp2' => 2, 'FollowUp3' => 3, 'FollowUp4' => 4] as $seqKey => $seqIndex)
+                                                    @php
+                                                        $hasTemplate = $typeTemplates->where('followup_sequence', $seqKey)->first();
+                                                        $isSent = $order->payment->whatsappMessageLogs->where('event_type', 'followup_' . $seqKey)->where('status', 'sent')->isNotEmpty();
+                                                        $isFailed = $order->payment->whatsappMessageLogs->where('event_type', 'followup_' . $seqKey)->where('status', 'failed')->isNotEmpty();
+                                                        
+                                                        $btnClass = 'bg-gray-100 text-gray-500';
+                                                        if ($isSent) {
+                                                            $btnClass = 'bg-blue-600 text-white';
+                                                        } elseif ($isFailed) {
+                                                            $btnClass = 'bg-red-100 text-red-600 border border-red-200';
+                                                        } elseif ($hasTemplate) {
+                                                            $btnClass = 'bg-green-100 text-green-600 hover:bg-green-600 hover:text-white';
+                                                        }
+                                                    @endphp
+
+                                                    @if($hasTemplate)
+                                                        <button wire:click="sendFollowup({{ $order->payment->id }}, '{{ $seqKey }}')"
+                                                           wire:confirm="Kirim pesan followup {{ $seqIndex }} ke {{ $order->donor_name }}?"
+                                                           class="w-7 h-7 rounded-full flex items-center justify-center transition-all relative group {{ $btnClass }}"
+                                                           title="{{ ($isSent ? 'Terkirim - ' : ($isFailed ? 'Gagal - ' : 'Kirim ')) . ($hasTemplate->name ?? 'Follow Up ' . $seqIndex) }}">
+                                                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                                                            @if($isSent)
+                                                                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white border border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-[9px] font-bold">
+                                                                    <i class="fa-solid fa-check text-[7px]"></i>
+                                                                </span>
+                                                            @elseif($isFailed)
+                                                                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white border border-red-600 text-red-600 rounded-full flex items-center justify-center text-[9px] font-bold">
+                                                                    <i class="fa-solid fa-exclamation text-[7px]"></i>
+                                                                </span>
+                                                            @else
+                                                                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white border border-green-600 text-green-600 rounded-full flex items-center justify-center text-[9px] font-bold group-hover:border-white group-hover:text-green-600">
+                                                                    {{ $seqIndex }}
+                                                                </span>
+                                                            @endif
+                                                        </button>
+                                                    @else
+                                                        <span class="w-7 h-7 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center cursor-not-allowed select-none relative" title="Template belum tersedia">
+                                                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                                                            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-gray-100 border border-gray-300 text-gray-400 rounded-full flex items-center justify-center text-[9px] font-bold">
+                                                                {{ $seqIndex }}
+                                                            </span>
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button wire:click="showOrder({{ $order->id }})" class="text-primary hover:text-primary-hover font-medium flex items-center justify-end gap-1 ml-auto">
@@ -170,6 +226,7 @@
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Terkumpul</th>
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Progress</th>
                                     <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                    <th class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">FU</th>
                                     <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                                 </tr>
                             </thead>
@@ -191,6 +248,88 @@
                                         <span class="px-2.5 py-0.5 inline-flex text-xs leading-5 font-semibold rounded-full {{ $saving->status == 'completed' ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800' }}">
                                             {{ ucfirst($saving->status) }}
                                         </span>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-center">
+                                        <div class="flex justify-center space-x-1">
+                                            @php
+                                                // For Savings, we don't have a single "Payment".
+                                                // We will send FU based on the SAVING ACCOUNT context.
+                                                // However, sendFollowup requires a paymentId currently.
+                                                // To fix this properly, we need to adapt sendFollowup or pass a proxy payment.
+                                                // BUT, looking at DonationList, the logic is: Payment -> QurbanSaving.
+                                                // So if we find the LATEST payment for this saving, we can use it?
+                                                // QurbanSaving hasMany deposits (QurbanSavingsDeposit).
+                                                // QurbanSavingsDeposit has belongsTo Payment.
+                                                
+                                                // Let's get the latest successful deposit/payment to use as context.
+                                                // If no deposits yet, we can't really send "transaction based" FU easily without a Payment record.
+                                                // But wait, the templates might be generic "Ayo nabung".
+                                                // If no payment exists, we can't use 'paymentId'.
+                                                
+                                                // WORKAROUND: We will try to find the latest deposit's payment.
+                                                // If no deposit, maybe we can't send FU yet (as it's usually "Follow Up Pembayaran" or "Progress").
+                                                // Actually, let's grab the latest payment from deposits.
+                                                
+                                                $latestDeposit = $saving->deposits()->latest()->first();
+                                                $latestPayment = $latestDeposit ? $latestDeposit->payment : null;
+                                                
+                                                $typeTemplates = $followups['tabungan_qurban'] ?? collect();
+                                            @endphp
+
+                                            @if($latestPayment)
+                                                @foreach(['FollowUp1' => 1, 'FollowUp2' => 2, 'FollowUp3' => 3, 'FollowUp4' => 4] as $seqKey => $seqIndex)
+                                                    @php
+                                                        $hasTemplate = $typeTemplates->where('followup_sequence', $seqKey)->first();
+                                                        // Check logs on the latest payment? Or any payment for this saving?
+                                                        // Ideally logs should be linked to the Saving Account too, but currently linked to Payment.
+                                                        // Let's check logs on the latest payment for now.
+                                                        
+                                                        $isSent = $latestPayment->whatsappMessageLogs->where('event_type', 'followup_' . $seqKey)->where('status', 'sent')->isNotEmpty();
+                                                        $isFailed = $latestPayment->whatsappMessageLogs->where('event_type', 'followup_' . $seqKey)->where('status', 'failed')->isNotEmpty();
+                                                        
+                                                        $btnClass = 'bg-gray-100 text-gray-500';
+                                                        if ($isSent) {
+                                                            $btnClass = 'bg-blue-600 text-white';
+                                                        } elseif ($isFailed) {
+                                                            $btnClass = 'bg-red-100 text-red-600 border border-red-200';
+                                                        } elseif ($hasTemplate) {
+                                                            $btnClass = 'bg-green-100 text-green-600 hover:bg-green-600 hover:text-white';
+                                                        }
+                                                    @endphp
+
+                                                    @if($hasTemplate)
+                                                        <button wire:click="sendFollowup({{ $latestPayment->id }}, '{{ $seqKey }}')"
+                                                           wire:confirm="Kirim pesan followup {{ $seqIndex }} ke {{ $saving->donor_name }}?"
+                                                           class="w-7 h-7 rounded-full flex items-center justify-center transition-all relative group {{ $btnClass }}"
+                                                           title="{{ ($isSent ? 'Terkirim - ' : ($isFailed ? 'Gagal - ' : 'Kirim ')) . ($hasTemplate->name ?? 'Follow Up ' . $seqIndex) }}">
+                                                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                                                            @if($isSent)
+                                                                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white border border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-[9px] font-bold">
+                                                                    <i class="fa-solid fa-check text-[7px]"></i>
+                                                                </span>
+                                                            @elseif($isFailed)
+                                                                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white border border-red-600 text-red-600 rounded-full flex items-center justify-center text-[9px] font-bold">
+                                                                    <i class="fa-solid fa-exclamation text-[7px]"></i>
+                                                                </span>
+                                                            @else
+                                                                <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white border border-green-600 text-green-600 rounded-full flex items-center justify-center text-[9px] font-bold group-hover:border-white group-hover:text-green-600">
+                                                                    {{ $seqIndex }}
+                                                                </span>
+                                                            @endif
+                                                        </button>
+                                                    @else
+                                                        <span class="w-7 h-7 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center cursor-not-allowed select-none relative" title="Template belum tersedia">
+                                                            <i class="fa-brands fa-whatsapp text-lg"></i>
+                                                            <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-gray-100 border border-gray-300 text-gray-400 rounded-full flex items-center justify-center text-[9px] font-bold">
+                                                                {{ $seqIndex }}
+                                                            </span>
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            @else
+                                                <span class="text-xs text-gray-400 italic">Belum ada transaksi</span>
+                                            @endif
+                                        </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                         <button wire:click="showSaving({{ $saving->id }})" class="text-primary hover:text-primary-hover font-medium flex items-center justify-end gap-1 ml-auto">

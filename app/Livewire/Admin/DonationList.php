@@ -10,11 +10,21 @@ use App\Models\Program;
 use App\Models\QurbanOrder;
 use App\Models\QurbanSaving;
 use App\Models\QurbanSavingsDeposit;
+use App\Models\BankFollowup;
 use App\Services\MetaConversionService;
+use App\Services\StarSenderService;
+use Illuminate\Support\Facades\Log;
 
 class DonationList extends Component
 {
     use WithPagination;
+
+    protected $starSender;
+
+    public function boot(StarSenderService $starSender)
+    {
+        $this->starSender = $starSender;
+    }
 
     public $search = '';
     public $perPage = 5;
@@ -41,9 +51,77 @@ class DonationList extends Component
         $this->resetPage();
     }
 
+    public function sendFollowup($paymentId, $sequence)
+    {
+        $payment = Payment::with(['program', 'qurbanOrder.animal', 'qurbanSaving'])->find($paymentId);
+        
+        if (!$payment) {
+            $this->dispatch('alert', type: 'error', message: 'Data pembayaran tidak ditemukan.');
+            return;
+        }
+
+        // Determine Type
+        $type = match($payment->transaction_type) {
+            'program' => 'donasi',
+            'qurban_langsung' => 'qurban',
+            'qurban_tabungan' => 'tabungan_qurban',
+            default => 'donasi',
+        };
+
+        // Find Template
+        $template = BankFollowup::where('type', $type)
+            ->where('followup_sequence', $sequence)
+            ->where('is_active', true)
+            ->first();
+
+        if (!$template) {
+            $this->dispatch('alert', type: 'error', message: 'Template followup tidak ditemukan.');
+            return;
+        }
+
+        $content = $template->content;
+
+        // Common Replacements
+        $content = str_replace('{{nama}}', $payment->customer_name ?? 'Hamba Allah', $content);
+        $content = str_replace('{{tanggal}}', $payment->created_at->translatedFormat('d F Y'), $content);
+        
+        // Specific Replacements based on type
+        if ($type == 'donasi' && $payment->program) {
+            $content = str_replace('{{program}}', $payment->program->title, $content);
+            $content = str_replace('{{nilai_donasi}}', 'Rp ' . number_format($payment->amount, 0, ',', '.'), $content);
+            $content = str_replace('{{link_donasi}}', route('program.detail', $payment->program->slug), $content);
+            $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
+        } elseif ($type == 'qurban' && $payment->qurbanOrder) {
+            $content = str_replace('{{jenis_hewan}}', $payment->qurbanOrder->animal->name ?? '-', $content);
+            $content = str_replace('{{tipe_qurban}}', $payment->qurbanOrder->animal->type ?? '-', $content);
+            $content = str_replace('{{harga}}', 'Rp ' . number_format($payment->amount, 0, ',', '.'), $content);
+            $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
+        } elseif ($type == 'tabungan_qurban' && $payment->qurbanSaving) {
+             $content = str_replace('{{target_tabungan}}', 'Rp ' . number_format($payment->qurbanSaving->target_amount, 0, ',', '.'), $content);
+             $content = str_replace('{{saldo_saat_ini}}', 'Rp ' . number_format($payment->qurbanSaving->saved_amount, 0, ',', '.'), $content);
+             $content = str_replace('{{sisa_pembayaran}}', 'Rp ' . number_format($payment->qurbanSaving->target_amount - $payment->qurbanSaving->saved_amount, 0, ',', '.'), $content);
+             $content = str_replace('{{link_topup}}', route('qurban.savings.detail', $payment->qurbanSaving->id), $content);
+             $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
+        }
+
+        // Send via StarSender Service
+        $result = $this->starSender->sendMessage(
+            $payment->customer_phone, 
+            $content, 
+            'followup_' . $sequence, 
+            $payment->id
+        );
+
+        if ($result['status']) {
+            $this->dispatch('alert', type: 'success', message: 'Pesan Followup berhasil dikirim.');
+        } else {
+            $this->dispatch('alert', type: 'error', message: 'Gagal mengirim pesan: ' . ($result['message'] ?? 'Unknown error'));
+        }
+    }
+
     public function render()
     {
-        $payments = Payment::with(['user', 'program', 'qurbanOrder', 'qurbanSaving'])
+        $payments = Payment::with(['user', 'program', 'qurbanOrder', 'qurbanSaving', 'whatsappMessageLogs'])
             ->where(function($query) {
                 $query->where('customer_name', 'like', '%' . $this->search . '%')
                     ->orWhere('customer_email', 'like', '%' . $this->search . '%')
@@ -58,8 +136,11 @@ class DonationList extends Component
             ->latest()
             ->paginate($this->perPage);
 
+        $followups = BankFollowup::where('is_active', true)->get()->groupBy('type');
+
         return view('livewire.admin.donation-list', [
-            'payments' => $payments
+            'payments' => $payments,
+            'followups' => $followups
         ])->layout('layouts.admin');
     }
 

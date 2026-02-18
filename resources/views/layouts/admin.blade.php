@@ -243,6 +243,13 @@
                     Meta Setting
                 </a>
 
+                <a href="{{ route('admin.bank-followup') }}" 
+                   class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
+                   @if(request()->routeIs('admin.bank-followup*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    <i class="fa-solid fa-clipboard-list w-6 text-center mr-3 text-lg @if(request()->routeIs('admin.bank-followup*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
+                    Bank Followup
+                </a>
+
                 <a href="{{ route('admin.whatsapp') }}" 
                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
                    @if(request()->routeIs('admin.whatsapp*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">

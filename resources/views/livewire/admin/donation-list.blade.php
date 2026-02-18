@@ -46,6 +46,7 @@
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tipe</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Jumlah</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Status</th>
+                                <th scope="col" class="px-6 py-4 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">FU</th>
                                 <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">Tanggal</th>
                                 <th scope="col" class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase tracking-wider">Aksi</th>
                             </tr>
@@ -88,6 +89,71 @@
                                     @else
                                         <span class="px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">Failed</span>
                                     @endif
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center justify-center space-x-1">
+                                        @php
+                                            // Determine the correct key for $followups array based on transaction_type
+                                            $followupType = match($payment->transaction_type) {
+                                                'program' => 'donasi',
+                                                'qurban_langsung' => 'qurban',
+                                                'qurban_tabungan' => 'tabungan_qurban',
+                                                default => 'donasi',
+                                            };
+                                            
+                                            // Get templates for this type from the passed $followups collection
+                                            // Note: $followups is grouped by 'type', so we access it via the key
+                                            $typeTemplates = $followups[$followupType] ?? collect();
+                                        @endphp
+
+                                        @foreach(['FollowUp1' => 1, 'FollowUp2' => 2, 'FollowUp3' => 3, 'FollowUp4' => 4] as $seqKey => $seqIndex)
+                                            @php
+                                                $hasTemplate = $typeTemplates->where('followup_sequence', $seqKey)->first();
+                                                // Check if a message log exists for this payment and sequence
+                                                $isSent = $payment->whatsappMessageLogs->where('event_type', 'followup_' . $seqKey)->where('status', 'sent')->isNotEmpty();
+                                                $isFailed = $payment->whatsappMessageLogs->where('event_type', 'followup_' . $seqKey)->where('status', 'failed')->isNotEmpty();
+                                                
+                                                // Determine button color
+                                                $btnClass = 'bg-gray-100 text-gray-500';
+                                                if ($isSent) {
+                                                    $btnClass = 'bg-blue-600 text-white';
+                                                } elseif ($isFailed) {
+                                                    $btnClass = 'bg-red-100 text-red-600 border border-red-200';
+                                                } elseif ($hasTemplate) {
+                                                    $btnClass = 'bg-green-100 text-green-600 hover:bg-green-600 hover:text-white';
+                                                }
+                                            @endphp
+
+                                            @if($hasTemplate)
+                                                <button wire:click="sendFollowup({{ $payment->id }}, '{{ $seqKey }}')"
+                                                   wire:confirm="Kirim pesan followup {{ $seqIndex }} ke {{ $payment->customer_name }}?"
+                                                   class="w-7 h-7 rounded-full flex items-center justify-center transition-all relative group {{ $btnClass }}"
+                                                   title="{{ ($isSent ? 'Terkirim - ' : ($isFailed ? 'Gagal - ' : 'Kirim ')) . ($hasTemplate->name ?? 'Follow Up ' . $seqIndex) }}">
+                                                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                                                    @if($isSent)
+                                                        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white border border-blue-600 text-blue-600 rounded-full flex items-center justify-center text-[9px] font-bold">
+                                                            <i class="fa-solid fa-check text-[7px]"></i>
+                                                        </span>
+                                                    @elseif($isFailed)
+                                                        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white border border-red-600 text-red-600 rounded-full flex items-center justify-center text-[9px] font-bold">
+                                                            <i class="fa-solid fa-exclamation text-[7px]"></i>
+                                                        </span>
+                                                    @else
+                                                        <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-white border border-green-600 text-green-600 rounded-full flex items-center justify-center text-[9px] font-bold group-hover:border-white group-hover:text-green-600">
+                                                            {{ $seqIndex }}
+                                                        </span>
+                                                    @endif
+                                                </button>
+                                            @else
+                                                <span class="w-7 h-7 rounded-full bg-gray-50 text-gray-300 flex items-center justify-center cursor-not-allowed select-none relative" title="Template belum tersedia">
+                                                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                                                    <span class="absolute -top-1 -right-1 w-3.5 h-3.5 bg-gray-100 border border-gray-300 text-gray-400 rounded-full flex items-center justify-center text-[9px] font-bold">
+                                                        {{ $seqIndex }}
+                                                    </span>
+                                                </span>
+                                            @endif
+                                        @endforeach
+                                    </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                     {{ $payment->created_at->format('d M Y H:i') }}
