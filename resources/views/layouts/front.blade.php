@@ -28,6 +28,28 @@
     
     @php
         $foundation = \App\Models\FoundationSetting::first();
+        $primaryColor = \App\Models\AppSetting::get('theme_color', '#FF6B35');
+        // Calculate a lighter shade for backgrounds (similar to orange-50/100)
+        // If secondary_color is set, use it. Otherwise, calculate a tint.
+        $secondaryColor = \App\Models\AppSetting::get('secondary_color');
+        
+        if (!$secondaryColor) {
+            // Simple tint generation
+            $hex = ltrim($primaryColor, '#');
+            if (strlen($hex) == 3) {
+                $hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+            }
+            $r = hexdec(substr($hex, 0, 2));
+            $g = hexdec(substr($hex, 2, 2));
+            $b = hexdec(substr($hex, 4, 2));
+            
+            // Mix with white (90% white)
+            $r = (int) ($r + (255 - $r) * 0.9);
+            $g = (int) ($g + (255 - $g) * 0.9);
+            $b = (int) ($b + (255 - $b) * 0.9);
+            
+            $secondaryColor = sprintf("#%02x%02x%02x", $r, $g, $b);
+        }
     @endphp
     @if($foundation && $foundation->favicon)
         <link rel="icon" type="image/png" href="{{ $foundation->favicon }}">
@@ -40,8 +62,23 @@
             theme: {
                 extend: {
                     colors: {
-                        primary: '#FF6B35',
-                        secondary: '#FFA07A',
+                        primary: '{{ $primaryColor }}',
+                        secondary: '{{ $secondaryColor }}', // Used as a tint/background color
+                        dark: '#1A1A1A',
+                        light: '#F8F9FA',
+                        // Override orange-50 to use our secondary color (or a very light version of primary)
+                        orange: {
+                            50: '{{ $secondaryColor }}',
+                            100: '{{ $secondaryColor }}', // Fallback for slightly darker tints if needed
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
                         dark: '#1A1A1A',
                         light: '#F8F9FA'
                     },

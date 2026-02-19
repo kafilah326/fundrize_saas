@@ -21,6 +21,11 @@
                     {{ $activeTab === 'api' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
                     <i class="fa-solid fa-plug mr-2"></i> API & Integrasi
                 </button>
+                <button wire:click="setTab('appearance')" 
+                    class="px-6 py-4 text-sm font-medium rounded-t-xl transition-all duration-200 border-b-2 
+                    {{ $activeTab === 'appearance' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
+                    <i class="fa-solid fa-paintbrush mr-2"></i> Tampilan
+                </button>
             </nav>
         </div>
 
@@ -234,6 +239,83 @@
                     <div class="mt-8 flex justify-end">
                         <button type="submit" class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:-translate-y-0.5 inline-flex items-center">
                             <i class="fa-solid fa-save mr-2"></i> Simpan Pengaturan API
+                        </button>
+                    </div>
+                </form>
+
+            <!-- Appearance Tab -->
+            @elseif($activeTab === 'appearance')
+                <form wire:submit.prevent="saveAppearance" 
+                      x-data="{ 
+                          themeColor: @entangle('theme_color'), 
+                          secondaryColor: @entangle('secondary_color') 
+                      }">
+                    <div class="space-y-8">
+                        <div class="bg-orange-50/50 rounded-2xl border border-orange-100 p-6">
+                            <div class="flex items-center mb-6">
+                                <span class="w-8 h-8 rounded-lg bg-orange-100 text-orange-600 flex items-center justify-center mr-3">
+                                    <i class="fa-solid fa-palette text-lg"></i>
+                                </span>
+                                <h3 class="text-lg font-bold text-orange-900">Warna Tema</h3>
+                            </div>
+                            
+                            <div class="space-y-6">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Warna Utama (Primary)</label>
+                                        <div class="flex items-center space-x-4">
+                                            <input x-model="themeColor" type="color" class="h-12 w-24 p-1 rounded-lg border border-gray-300 cursor-pointer">
+                                            <div class="flex-1">
+                                                <input x-model="themeColor" type="text" class="w-full rounded-xl border-gray-300 focus:border-primary focus:ring-primary/20 bg-white focus:bg-white transition-colors uppercase" placeholder="#FF6B35">
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-2">Warna ini akan digunakan untuk tombol, link, dan elemen penting lainnya di halaman depan.</p>
+                                        @error('theme_color') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Warna Sekunder (Background Tint)</label>
+                                        <div class="flex items-center space-x-4">
+                                            <input x-model="secondaryColor" type="color" class="h-12 w-24 p-1 rounded-lg border border-gray-300 cursor-pointer">
+                                            <div class="flex-1">
+                                                <input x-model="secondaryColor" type="text" class="w-full rounded-xl border-gray-300 focus:border-primary focus:ring-primary/20 bg-white focus:bg-white transition-colors uppercase" placeholder="#FDF2EB">
+                                            </div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 mt-2">Warna ini menggantikan warna latar belakang lembut (seperti orange-50). Sebaiknya pilih warna yang sangat muda/pucat.</p>
+                                        @error('secondary_color') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                                    </div>
+                                </div>
+
+                                <div class="bg-white p-4 rounded-xl border border-orange-200 shadow-sm mt-4">
+                                    <h4 class="text-sm font-bold text-gray-800 mb-3">Preview</h4>
+                                    <div class="space-y-3">
+                                        <button type="button" class="w-full py-2.5 px-4 rounded-xl text-white font-bold shadow-lg transition-all" 
+                                                :style="'background-color: ' + themeColor">
+                                            Tombol Utama
+                                        </button>
+                                        <div class="p-3 rounded-lg border border-dashed border-gray-300" 
+                                             :style="'background-color: ' + secondaryColor">
+                                            <p class="text-sm font-medium" :style="'color: ' + themeColor">Contoh Background Sekunder</p>
+                                        </div>
+                                        <div class="flex items-center space-x-2">
+                                            <span class="text-sm font-medium text-gray-600">Link text:</span>
+                                            <a href="#" class="font-medium underline" :style="'color: ' + themeColor">Contoh Link</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="pt-4 border-t border-orange-200">
+                                    <button type="button" wire:click="resetThemeColor" onclick="return confirm('Kembalikan ke warna default?') || event.stopImmediatePropagation()" class="text-sm text-gray-500 hover:text-gray-700 flex items-center transition-colors">
+                                        <i class="fa-solid fa-rotate-left mr-2"></i> Reset ke Default ({{ $default_theme_color }} / {{ $default_secondary_color }})
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button type="submit" class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:-translate-y-0.5 inline-flex items-center">
+                            <i class="fa-solid fa-save mr-2"></i> Simpan Tampilan
                         </button>
                     </div>
                 </form>

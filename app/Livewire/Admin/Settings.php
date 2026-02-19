@@ -35,6 +35,12 @@ class Settings extends Component
     public $xendit_secret_key;
     public $xendit_webhook_token;
 
+    // Appearance Fields
+    public $theme_color;
+    public $default_theme_color = '#FF6B35';
+    public $secondary_color;
+    public $default_secondary_color = '#FDF2EB'; // Very light orange/cream
+
     protected $rules = [
         'name' => 'required|string',
         'email' => 'required|email',
@@ -63,6 +69,10 @@ class Settings extends Component
         // Load API Settings
         $this->xendit_secret_key = AppSetting::get('xendit_secret_key');
         $this->xendit_webhook_token = AppSetting::get('xendit_webhook_token');
+
+        // Load Appearance Settings
+        $this->theme_color = AppSetting::get('theme_color', $this->default_theme_color);
+        $this->secondary_color = AppSetting::get('secondary_color', $this->default_secondary_color);
     }
 
     public function setTab($tab)
@@ -211,5 +221,76 @@ class Settings extends Component
         AppSetting::set('xendit_webhook_token', $this->xendit_webhook_token);
 
         session()->flash('success', 'Pengaturan API berhasil diperbarui.');
+    }
+
+    // Appearance Methods
+    public function saveAppearance()
+    {
+        $this->validate([
+            'theme_color' => 'required|string',
+            'secondary_color' => 'required|string',
+        ]);
+
+        // Simpan ke database jika ada method set di AppSetting
+        AppSetting::updateOrCreate(
+            ['key' => 'theme_color'],
+            [
+                'value' => $this->theme_color,
+                'group' => 'appearance',
+                'type' => 'text',
+                'label' => 'Theme Primary Color',
+                'description' => 'Warna utama tampilan depan'
+            ]
+        );
+
+        AppSetting::updateOrCreate(
+            ['key' => 'secondary_color'],
+            [
+                'value' => $this->secondary_color,
+                'group' => 'appearance',
+                'type' => 'text',
+                'label' => 'Theme Secondary/Background Color',
+                'description' => 'Warna latar belakang (tint) untuk elemen sekunder'
+            ]
+        );
+        
+        // Hapus cache agar perubahan langsung terlihat
+        \Illuminate\Support\Facades\Cache::forget('app_setting_theme_color');
+        \Illuminate\Support\Facades\Cache::forget('app_setting_secondary_color');
+
+        session()->flash('success', 'Pengaturan tampilan berhasil diperbarui.');
+    }
+
+    public function resetThemeColor()
+    {
+        $this->theme_color = $this->default_theme_color;
+        $this->secondary_color = $this->default_secondary_color;
+        
+        AppSetting::updateOrCreate(
+            ['key' => 'theme_color'],
+            [
+                'value' => $this->default_theme_color,
+                'group' => 'appearance',
+                'type' => 'text',
+                'label' => 'Theme Primary Color',
+                'description' => 'Warna utama tampilan depan'
+            ]
+        );
+
+        AppSetting::updateOrCreate(
+            ['key' => 'secondary_color'],
+            [
+                'value' => $this->default_secondary_color,
+                'group' => 'appearance',
+                'type' => 'text',
+                'label' => 'Theme Secondary/Background Color',
+                'description' => 'Warna latar belakang (tint) untuk elemen sekunder'
+            ]
+        );
+        
+        \Illuminate\Support\Facades\Cache::forget('app_setting_theme_color');
+        \Illuminate\Support\Facades\Cache::forget('app_setting_secondary_color');
+        
+        session()->flash('success', 'Warna tema dikembalikan ke default.');
     }
 }
