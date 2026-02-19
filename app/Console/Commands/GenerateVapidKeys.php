@@ -3,30 +3,45 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
-use Minishlink\WebPush\VAPID;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Crypt;
+use Illuminate\Support\Facades\DB;
+use Minishlink\WebPush\VAPID;
 
 class GenerateVapidKeys extends Command
 {
-    protected $signature = 'webpush:generate-keys';
-    protected $description = 'Generate VAPID keys for Web Push Notifications';
+    protected $signature = 'webpush:generate-keys {--public= : Manual Public Key} {--private= : Manual Private Key}';
+
+    protected $description = 'Generate or Set VAPID keys for Web Push Notifications';
 
     public function handle()
     {
-        $this->info('Generating VAPID keys...');
+        $manualPublic = $this->option('public');
+        $manualPrivate = $this->option('private');
+
+        if ($manualPublic && $manualPrivate) {
+            $this->info('Setting provided VAPID keys...');
+            $keys = ['publicKey' => $manualPublic, 'privateKey' => $manualPrivate];
+        } else {
+            $this->info('Generating VAPID keys...');
+            try {
+                $keys = VAPID::createVapidKeys();
+            } catch (\Exception $e) {
+                $this->error('Error generating keys: '.$e->getMessage());
+                $this->info('Try generating manually with: npx web-push generate-vapid-keys');
+                $this->info('Then run: php artisan webpush:generate-keys --public=KEY --private=KEY');
+
+                return;
+            }
+        }
 
         try {
-            $keys = VAPID::createVapidKeys();
-            
             $this->saveSetting('vapid_public_key', $keys['publicKey']);
             $this->saveSetting('vapid_private_key', $keys['privateKey'], true);
-            
-            $this->info('VAPID keys generated and stored in app_settings.');
-            $this->line('Public Key: ' . $keys['publicKey']);
+
+            $this->info('VAPID keys stored in app_settings.');
+            $this->line('Public Key: '.$keys['publicKey']);
         } catch (\Exception $e) {
-            $this->error('Error generating keys: ' . $e->getMessage());
-            $this->error($e->getTraceAsString());
+            $this->error('Error saving keys: '.$e->getMessage());
         }
     }
 
