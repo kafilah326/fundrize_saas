@@ -120,3 +120,6 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/api/push/subscribe', [PushSubscriptionController::class, 'subscribe'])->name('push.subscribe');
     Route::post('/api/push/unsubscribe', [PushSubscriptionController::class, 'unsubscribe'])->name('push.unsubscribe');
 });
+
+// Dynamic PWA Manifest
+Route::get('/manifest.json', [\App\Http\Controllers\ManifestController::class, 'index']);

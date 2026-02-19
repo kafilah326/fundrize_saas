@@ -175,7 +175,7 @@ class PaymentMethod extends Component
                 'donor_name' => $checkout['name'],
                 'whatsapp' => $checkout['whatsapp'],
                 'email' => $checkout['email'],
-                'qurban_name' => $checkout['qurban_name'],
+                'qurban_name' => $checkout['qurban_name'] ?? $checkout['name'],
                 'address' => $checkout['address'],
                 'city' => $checkout['city'],
                 'postal_code' => $checkout['postal_code'],
@@ -209,7 +209,7 @@ class PaymentMethod extends Component
                         'target_hijri_year' => '1447',
                         'donor_name' => $checkout['name'],
                         'whatsapp' => $checkout['whatsapp'],
-                        'qurban_name' => $checkout['qurban_name'],
+                        'qurban_name' => $checkout['qurban_name'] ?? $checkout['name'],
                         'reminder_enabled' => $checkout['reminder_enabled'] ?? false,
                         'reminder_frequency' => $checkout['reminder_frequency'] ?? 'bulanan',
                     ]
