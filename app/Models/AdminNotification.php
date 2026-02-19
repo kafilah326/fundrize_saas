@@ -32,5 +32,18 @@ class AdminNotification extends Model
             'message' => $message,
             'data' => $data,
         ]);
+
+        // Send Web Push Notification
+        try {
+            app(\App\Services\WebPushService::class)->sendToAll(
+                $title,
+                $message,
+                $type
+            );
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Web Push Error: ' . $e->getMessage());
+        }
+
+        return $notification;
     }
 }
