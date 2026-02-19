@@ -26,7 +26,7 @@ class AdminNotification extends Model
      */
     public static function notify(string $type, string $title, string $message, ?array $data = null): self
     {
-        return static::create([
+        $notification = static::create([
             'type' => $type,
             'title' => $title,
             'message' => $message,

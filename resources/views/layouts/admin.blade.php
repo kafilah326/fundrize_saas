@@ -614,16 +614,16 @@
                                                                 'X-CSRF-TOKEN': document
                                                                     .querySelector(
                                                                         'meta[name="csrf-token"]'
-                                                                        )
+                                                                    )
                                                                     .getAttribute(
                                                                         'content'
-                                                                        )
+                                                                    )
                                                             },
                                                             body: formData
                                                         });
 
                                                     if (!response.ok)
-                                                    throw new Error(
+                                                        throw new Error(
                                                             'Upload failed');
 
                                                     const data = await response
@@ -647,11 +647,13 @@
                                                         'Error uploading image:',
                                                         error);
                                                     alert(
-                                                        'Gagal mengupload gambar. Silakan coba lagi.');
+                                                        'Gagal mengupload gambar. Silakan coba lagi.'
+                                                    );
                                                 }
                                             } else {
                                                 alert(
-                                                    'Hanya file gambar yang diperbolehkan.');
+                                                    'Hanya file gambar yang diperbolehkan.'
+                                                );
                                             }
                                         };
                                     }
@@ -688,6 +690,28 @@
         });
     </script>
     @livewireScripts
+    <!-- Service Worker & Push Notification -->
+    <script type="module">
+        import {
+            subscribeUserToPush
+        } from '/js/push-notification.js';
+
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('/sw.js').then(function(registration) {
+                    console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                }, function(err) {
+                    console.log('ServiceWorker registration failed: ', err);
+                });
+            });
+        }
+
+        // Expose to window for button access
+        window.subscribePush = subscribeUserToPush;
+
+        // Load VAPID public key
+        window.vapidPublicKey = "{{ \App\Models\AppSetting::get('vapid_public_key') }}";
+    </script>
 </body>
 
 </html>

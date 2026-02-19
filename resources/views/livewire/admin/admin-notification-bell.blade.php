@@ -36,12 +36,20 @@
                     <p class="text-white/80 text-xs mt-0.5">{{ $unreadCount }} belum dibaca</p>
                 @endif
             </div>
-            @if ($unreadCount > 0)
-                <button wire:click="markAllAsRead"
-                    class="text-xs text-white/90 hover:text-white bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition-all font-medium">
-                    Tandai semua dibaca
+            <div class="flex items-center gap-2">
+                <button
+                    onclick="window.subscribePush().then(res => res ? alert('Notifikasi diaktifkan!') : alert('Gagal mengaktifkan / sudah aktif'))"
+                    class="text-xs text-white/90 hover:text-white underline mr-2">
+                    <i class="fa-solid fa-bell-slash mr-1"></i> Aktifkan Push
                 </button>
-            @endif
+
+                @if ($unreadCount > 0)
+                    <button wire:click="markAllAsRead"
+                        class="text-xs text-white/90 hover:text-white bg-white/20 hover:bg-white/30 px-3 py-1.5 rounded-lg transition-all font-medium">
+                        Tandai dibaca
+                    </button>
+                @endif
+            </div>
         </div>
 
         {{-- Notification List --}}

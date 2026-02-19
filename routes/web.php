@@ -1,32 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\XenditWebhookController;
+use App\Livewire\Auth\ForgotPassword;
+use App\Livewire\Auth\Login;
+use App\Livewire\Auth\Register;
+use App\Livewire\Front\ChangePassword;
+use App\Livewire\Front\FoundationLegality;
+use App\Livewire\Front\FoundationProfile;
 use App\Livewire\Front\Home;
-use App\Livewire\Front\ProgramIndex;
-use App\Livewire\Front\ProgramDetail;
-use App\Livewire\Front\ProgramCheckout;
-use App\Livewire\Front\QurbanIndex;
-use App\Livewire\Front\QurbanCheckout;
-use App\Livewire\Front\QurbanTabungan;
-use App\Livewire\Front\QurbanTabunganCheckout;
-use App\Livewire\Front\QurbanHistory;
-use App\Livewire\Front\QurbanTransactionDetail;
-use App\Livewire\Front\QurbanSavingsDetail;
 use App\Livewire\Front\MyDonation;
 use App\Livewire\Front\PaymentMethod;
 use App\Livewire\Front\Profile;
 use App\Livewire\Front\ProfileEdit;
-use App\Livewire\Front\ChangePassword;
-use App\Livewire\Front\FoundationProfile;
-use App\Livewire\Front\FoundationLegality;
+use App\Livewire\Front\ProgramCheckout;
+use App\Livewire\Front\ProgramDetail;
+use App\Livewire\Front\ProgramIndex;
+use App\Livewire\Front\QurbanCheckout;
+use App\Livewire\Front\QurbanHistory;
+use App\Livewire\Front\QurbanIndex;
+use App\Livewire\Front\QurbanSavingsDetail;
+use App\Livewire\Front\QurbanTabungan;
+use App\Livewire\Front\QurbanTabunganCheckout;
+use App\Livewire\Front\QurbanTransactionDetail;
 use App\Livewire\Front\Report;
 use App\Livewire\Front\SearchPage;
-use App\Http\Controllers\XenditWebhookController;
-
-use App\Livewire\Auth\Login;
-use App\Livewire\Auth\Register;
-use App\Livewire\Auth\ForgotPassword;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,9 +50,9 @@ Route::post('/logout', function () {
     Auth::logout();
     session()->invalidate();
     session()->regenerateToken();
+
     return redirect('/');
 })->name('logout');
-
 
 Route::get('/', Home::class)->name('home');
 Route::get('/search', SearchPage::class)->name('search.index');
@@ -78,7 +77,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/qurban/savings/{id}', QurbanSavingsDetail::class)->name('qurban.savings.detail');
 
     Route::get('/my-donation', MyDonation::class)->name('my-donation.index');
-    
+
     Route::get('/profile', Profile::class)->name('profile.index');
     Route::get('/profile/edit', ProfileEdit::class)->name('profile.edit');
     Route::get('/profile/change-password', ChangePassword::class)->name('profile.change-password');
@@ -114,3 +113,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 Route::get('/login-required', \App\Livewire\Front\LoginRequired::class)->name('login.required');
+// Web Push Notification Routes
+use App\Http\Controllers\PushSubscriptionController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/api/push/subscribe', [PushSubscriptionController::class, 'subscribe'])->name('push.subscribe');
+    Route::post('/api/push/unsubscribe', [PushSubscriptionController::class, 'unsubscribe'])->name('push.unsubscribe');
+});
