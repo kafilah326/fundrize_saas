@@ -1,6 +1,6 @@
 {
-  "version": "1.4.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur manifest PWA dinamis yang memungkinkan perubahan logo dan nama aplikasi secara otomatis melalui database, serta adanya perbaikan logika pada proses checkout.",
-  "updatedAt": "2026-02-19T00:14:44.478Z"
+  "version": "1.4.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini bersifat perbaikan (bug fix) pada nama kolom database yang dipanggil ('amount' menjadi 'total') serta peningkatan tampilan UI (badge status) tanpa merubah fungsi dasar atau kompatibilitas API.",
+  "updatedAt": "2026-02-19T00:48:39.657Z"
 }

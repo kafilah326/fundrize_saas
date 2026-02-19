@@ -3,7 +3,8 @@
 
 <div class="space-y-8">
     <!-- Welcome Banner -->
-    <div class="bg-gradient-to-r from-primary to-secondary rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+    <div
+        class="bg-gradient-to-r from-primary to-secondary rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
         <div class="relative z-10">
             <h2 class="text-2xl font-bold mb-1">Assalamualaikum, {{ Auth::user()->name }}!</h2>
             <p class="text-white/90">Semoga harimu menyenangkan. Berikut adalah ringkasan aktivitas yayasan hari ini.</p>
@@ -21,7 +22,8 @@
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Total Donations -->
-        <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
+        <div
+            class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500 mb-1">Total Donasi Terkumpul</p>
@@ -29,7 +31,8 @@
                         Rp {{ number_format($totalDonations, 0, ',', '.') }}
                     </h3>
                 </div>
-                <div class="h-12 w-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-xl group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
+                <div
+                    class="h-12 w-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-xl group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
                     <i class="fa-solid fa-money-bill-wave"></i>
                 </div>
             </div>
@@ -41,7 +44,8 @@
         </div>
 
         <!-- Active Programs -->
-        <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
+        <div
+            class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500 mb-1">Program Aktif</p>
@@ -49,7 +53,8 @@
                         {{ $activePrograms }} <span class="text-sm font-normal text-gray-400">Kampanye</span>
                     </h3>
                 </div>
-                <div class="h-12 w-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                <div
+                    class="h-12 w-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
                     <i class="fa-solid fa-hand-holding-heart"></i>
                 </div>
             </div>
@@ -59,7 +64,8 @@
         </div>
 
         <!-- Total Donors -->
-        <div class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
+        <div
+            class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-sm font-medium text-gray-500 mb-1">Total Donatur</p>
@@ -67,7 +73,8 @@
                         {{ $totalDonors }} <span class="text-sm font-normal text-gray-400">Orang</span>
                     </h3>
                 </div>
-                <div class="h-12 w-12 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
+                <div
+                    class="h-12 w-12 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
                     <i class="fa-solid fa-users"></i>
                 </div>
             </div>
@@ -85,31 +92,32 @@
             <h3 class="text-lg font-bold text-gray-800">Transaksi Bulan Ini</h3>
             <span class="text-sm text-gray-500">{{ now()->format('F Y') }}</span>
         </div>
-        
+
         <div class="relative h-64 w-full">
-            @if(count($chartData) > 0)
+            @if (count($chartData) > 0)
                 <div class="flex items-end justify-between h-full space-x-2">
                     @php
                         $maxTotal = max(array_column($chartData, 'total'));
                         $maxTotal = $maxTotal == 0 ? 1 : $maxTotal; // Prevent division by zero
                     @endphp
-                    @foreach($chartData as $data)
+                    @foreach ($chartData as $data)
                         <div class="flex flex-col items-center flex-1 group relative h-full justify-end">
                             <!-- Tooltip -->
                             <div class="absolute bottom-full mb-2 hidden group-hover:block z-10 w-full text-center">
-                                <div class="bg-gray-800 text-white text-[10px] rounded py-1 px-1 whitespace-nowrap mx-auto inline-block">
+                                <div
+                                    class="bg-gray-800 text-white text-[10px] rounded py-1 px-1 whitespace-nowrap mx-auto inline-block">
                                     Rp {{ number_format($data['total'], 0, ',', '.') }}
                                 </div>
                             </div>
-                            
+
                             <!-- Bar -->
-                            <div class="w-full bg-blue-50 rounded-t-sm relative overflow-hidden group-hover:bg-blue-100 transition-colors flex items-end" 
-                                 style="height: 100%;">
-                                <div class="w-full bg-primary transition-all duration-500 ease-out rounded-t-sm hover:bg-primary-hover" 
-                                     style="height: {{ $maxTotal > 0 ? ($data['total'] / $maxTotal) * 100 : 0 }}%;">
+                            <div class="w-full bg-blue-50 rounded-t-sm relative overflow-hidden group-hover:bg-blue-100 transition-colors flex items-end"
+                                style="height: 100%;">
+                                <div class="w-full bg-primary transition-all duration-500 ease-out rounded-t-sm hover:bg-primary-hover"
+                                    style="height: {{ $maxTotal > 0 ? ($data['total'] / $maxTotal) * 100 : 0 }}%;">
                                 </div>
                             </div>
-                            
+
                             <!-- Label -->
                             <div class="mt-2 text-[9px] text-gray-400 rotate-0 sm:rotate-0 truncate w-full text-center">
                                 {{ \Carbon\Carbon::createFromFormat('d M', $data['date'])->format('d') }}
@@ -132,44 +140,64 @@
             <span class="text-sm font-medium text-gray-500">{{ now()->format('d F Y') }}</span>
         </div>
         <div class="p-0">
-            @if($todayTransactions->count() > 0)
+            @if ($todayTransactions->count() > 0)
                 <div class="divide-y divide-gray-100">
-                    @foreach($todayTransactions as $payment)
-                    <div class="p-4 hover:bg-gray-50 transition-colors flex items-center space-x-4">
-                        <div class="flex-shrink-0">
-                            <div class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                <i class="fa-solid fa-receipt"></i>
+                    @foreach ($todayTransactions as $payment)
+                        <div class="p-4 hover:bg-gray-50 transition-colors flex items-center space-x-4">
+                            <div class="flex-shrink-0">
+                                <div
+                                    class="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                    <i class="fa-solid fa-receipt"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-sm font-semibold text-gray-900 truncate">
+                                    {{ $payment->customer_name ?? 'Hamba Allah' }}
+                                </p>
+                                <p class="text-xs text-gray-500 truncate flex items-center">
+                                    <span class="truncate max-w-[200px]">
+                                        @if ($payment->transaction_type == 'program')
+                                            {{ $payment->program->title ?? 'Donasi Program' }}
+                                        @elseif($payment->transaction_type == 'qurban_langsung')
+                                            Qurban: {{ $payment->qurbanOrder->animal->name ?? 'Hewan' }}
+                                        @elseif($payment->transaction_type == 'qurban_tabungan')
+                                            Tabungan Qurban
+                                        @else
+                                            {{ ucfirst($payment->transaction_type) }}
+                                        @endif
+                                    </span>
+                                    <span class="mx-1">•</span>
+                                    <span>{{ $payment->created_at->format('H:i') }}</span>
+                                </p>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-bold text-gray-900">
+                                    Rp {{ number_format($payment->total, 0, ',', '.') }}
+                                </p>
+                                @php
+                                    $status = $payment->status;
+                                    $badgeClass = match ($status) {
+                                        'paid', 'settled' => 'bg-green-100 text-green-800',
+                                        'pending' => 'bg-yellow-100 text-yellow-800',
+                                        'failed', 'canceled' => 'bg-red-100 text-red-800',
+                                        'expired' => 'bg-gray-100 text-gray-800',
+                                        default => 'bg-gray-100 text-gray-800',
+                                    };
+                                    $label = match ($status) {
+                                        'paid', 'settled' => 'Berhasil',
+                                        'pending' => 'Menunggu',
+                                        'failed' => 'Gagal',
+                                        'canceled' => 'Dibatalkan',
+                                        'expired' => 'Kedaluwarsa',
+                                        default => ucfirst($status),
+                                    };
+                                @endphp
+                                <span
+                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $badgeClass }}">
+                                    {{ $label }}
+                                </span>
                             </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-semibold text-gray-900 truncate">
-                                {{ $payment->customer_name ?? 'Hamba Allah' }}
-                            </p>
-                            <p class="text-xs text-gray-500 truncate flex items-center">
-                                <span class="truncate max-w-[200px]">
-                                    @if($payment->transaction_type == 'program')
-                                        {{ $payment->program->title ?? 'Donasi Program' }}
-                                    @elseif($payment->transaction_type == 'qurban_langsung')
-                                        Qurban: {{ $payment->qurbanOrder->animal->name ?? 'Hewan' }}
-                                    @elseif($payment->transaction_type == 'qurban_tabungan')
-                                        Tabungan Qurban
-                                    @else
-                                        {{ ucfirst($payment->transaction_type) }}
-                                    @endif
-                                </span>
-                                <span class="mx-1">•</span>
-                                <span>{{ $payment->created_at->format('H:i') }}</span>
-                            </p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-bold text-gray-900">
-                                Rp {{ number_format($payment->amount, 0, ',', '.') }}
-                            </p>
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-green-100 text-green-800">
-                                Paid
-                            </span>
-                        </div>
-                    </div>
                     @endforeach
                 </div>
             @else
@@ -183,4 +211,3 @@
         </div>
     </div>
 </div>
-
