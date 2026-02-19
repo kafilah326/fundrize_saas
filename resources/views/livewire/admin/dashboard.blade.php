@@ -5,7 +5,7 @@
     <!-- Welcome Banner -->
     <div
         class="bg-gradient-to-r from-primary to-secondary rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
-        <div class="relative z-10">
+        <div class="relative">
             <h2 class="text-2xl font-bold mb-1">Assalamualaikum, {{ Auth::user()->name }}!</h2>
             <p class="text-white/90">Semoga harimu menyenangkan. Berikut adalah ringkasan aktivitas yayasan hari ini.</p>
             <div class="mt-4 inline-flex items-center bg-white/20 backdrop-blur-sm rounded-lg px-3 py-1 text-sm">

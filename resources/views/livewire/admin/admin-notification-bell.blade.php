@@ -25,7 +25,7 @@
         x-transition:enter-end="transform opacity-100 scale-100 translate-y-0"
         x-transition:leave="transition ease-in duration-150" x-transition:leave-start="transform opacity-100 scale-100"
         x-transition:leave-end="transform opacity-0 scale-95 -translate-y-2"
-        class="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl ring-1 ring-black/5 z-50 overflow-hidden"
+        class="fixed inset-x-4 top-16 mt-2 sm:absolute sm:inset-auto sm:right-0 sm:mt-3 w-auto sm:w-96 bg-white rounded-2xl shadow-2xl ring-1 ring-black/5 z-[9999] overflow-hidden origin-top-right"
         style="display: none;">
 
         {{-- Header --}}

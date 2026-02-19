@@ -404,7 +404,7 @@
         <!-- Main Content -->
         <div class="flex-1 flex flex-col overflow-hidden bg-gray-50">
             <!-- Header -->
-            <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 z-10 sticky top-0">
+            <header class="bg-white/80 backdrop-blur-md border-b border-gray-200 z-[100] sticky top-0">
                 <div class="px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                     <!-- Mobile Menu Button -->
                     <button @click="sidebarOpen = !sidebarOpen"
