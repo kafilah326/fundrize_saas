@@ -1,6 +1,6 @@
 {
-  "version": "1.4.1",
+  "version": "1.4.2",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini bersifat perbaikan (bug fix) pada nama kolom database yang dipanggil ('amount' menjadi 'total') serta peningkatan tampilan UI (badge status) tanpa merubah fungsi dasar atau kompatibilitas API.",
-  "updatedAt": "2026-02-19T00:48:39.657Z"
+  "aiReason": "Perubahan ini memperbaiki cara aplikasi menangani data yang tersimpan sebagai string JSON agar dapat diiterasi dengan aman di dalam view, mencegah potensi error runtime tanpa mengubah struktur API atau menambah fitur baru.",
+  "updatedAt": "2026-02-19T04:51:02.562Z"
 }

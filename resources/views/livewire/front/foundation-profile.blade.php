@@ -57,7 +57,11 @@
                         'Kemanusiaan' => 'fa-hand-holding-heart',
                     ];
                 @endphp
-                @foreach($foundation->focus_areas ?? [] as $area)
+                @php
+                    $focusAreas = is_string($foundation->focus_areas) ? json_decode($foundation->focus_areas, true) : $foundation->focus_areas;
+                    $focusAreas = is_array($focusAreas) ? $focusAreas : [];
+                @endphp
+                @foreach($focusAreas as $area)
                 <div class="p-3 border border-gray-200 rounded-lg text-center">
                     <div class="w-10 h-10 bg-primary/10 rounded-lg mx-auto mb-2 flex items-center justify-center">
                         <i class="fa-solid {{ $icons[$area] ?? 'fa-star' }} text-primary"></i>
@@ -101,27 +105,31 @@
             </div>
         </section>
 
-        @if($foundation->social_media)
+        @php
+            $socialMedia = is_string($foundation->social_media) ? json_decode($foundation->social_media, true) : $foundation->social_media;
+            $socialMedia = is_array($socialMedia) ? $socialMedia : [];
+        @endphp
+        @if($socialMedia)
         <section id="social-media" class="bg-white px-4 py-6 mt-2 mb-4">
             <h3 class="text-sm font-bold text-dark mb-4">Media Sosial</h3>
             <div class="flex gap-3">
-                @if(isset($foundation->social_media['facebook']))
-                <a href="{{ $foundation->social_media['facebook'] }}" class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
+                @if(isset($socialMedia['facebook']))
+                <a href="{{ $socialMedia['facebook'] }}" class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
                     <i class="fa-brands fa-facebook text-white text-lg"></i>
                 </a>
                 @endif
-                @if(isset($foundation->social_media['instagram']))
-                <a href="{{ $foundation->social_media['instagram'] }}" class="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
+                @if(isset($socialMedia['instagram']))
+                <a href="{{ $socialMedia['instagram'] }}" class="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
                     <i class="fa-brands fa-instagram text-white text-lg"></i>
                 </a>
                 @endif
-                @if(isset($foundation->social_media['whatsapp']))
-                <a href="{{ $foundation->social_media['whatsapp'] }}" class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
+                @if(isset($socialMedia['whatsapp']))
+                <a href="{{ $socialMedia['whatsapp'] }}" class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
                     <i class="fa-brands fa-whatsapp text-white text-lg"></i>
                 </a>
                 @endif
-                @if(isset($foundation->social_media['youtube']))
-                <a href="{{ $foundation->social_media['youtube'] }}" class="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
+                @if(isset($socialMedia['youtube']))
+                <a href="{{ $socialMedia['youtube'] }}" class="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
                     <i class="fa-brands fa-youtube text-white text-lg"></i>
                 </a>
                 @endif
