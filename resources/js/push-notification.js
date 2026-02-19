@@ -1,28 +1,30 @@
-// Web Push Notification Helper
-if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
-    console.warn('Push messaging is not supported');
-    return false;
-}
+export async function subscribeUserToPush() {
+    if (!('serviceWorker' in navigator) || !('PushManager' in window)) {
+        console.warn('Push messaging is not supported');
+        return false;
+    }
 
-const registration = await navigator.serviceWorker.ready;
+    const registration = await navigator.serviceWorker.ready;
 
-try {
-    const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(window.vapidPublicKey)
-    });
+    try {
+        const subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(window.vapidPublicKey)
+        });
 
-    await sendSubscriptionToServer(subscription);
-    return true;
-} catch (e) {
-    console.error('Failed to subscribe the user: ', e);
-    return false;
-}
+        await sendSubscriptionToServer(subscription);
+        return true;
+    } catch (e) {
+        console.error('Failed to subscribe the user: ', e);
+        return false;
+    }
 }
 
 async function sendSubscriptionToServer(subscription) {
     const key = subscription.getKey('p256dh');
     const token = subscription.getKey('auth');
+
+    // Default to aesgcm if property not supported
     const contentEncoding = (PushManager.supportedContentEncodings || ['aesgcm'])[0];
 
     return await fetch('/api/push/subscribe', {
@@ -43,6 +45,8 @@ async function sendSubscriptionToServer(subscription) {
 }
 
 function urlBase64ToUint8Array(base64String) {
+    if (!base64String) return null;
+
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
         .replace(/\-/g, '+')
