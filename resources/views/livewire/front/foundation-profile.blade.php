@@ -4,8 +4,8 @@
     <main id="main-content" class="pb-20">
         <section id="foundation-header" class="bg-white px-4 py-6">
             <div class="text-center">
-                <div class="w-16 mx-auto mb-4">
-                    <img src="{{ $foundation->logo }}" alt="Foundation Logo" class="w-full h-auto object-contain">
+                <div class="h-12 mx-auto mb-4">
+                    <img src="{{ $foundation->logo }}" alt="Foundation Logo" class="w-full h-full object-contain">
                 </div>
                 <h2 class="text-xl font-bold text-dark mb-2">{{ $foundation->name }}</h2>
                 <p class="text-sm text-gray-600">{{ $foundation->tagline }}</p>
