@@ -1,6 +1,6 @@
 {
-  "version": "1.7.1",
+  "version": "1.7.2",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini merupakan perbaikan internal pada validasi file, penyesuaian logika penyimpanan database, dan penambahan teks panduan di UI tanpa mengubah fungsionalitas utama atau merusak kompatibilitas API yang ada.",
-  "updatedAt": "2026-02-21T09:25:32.288Z"
+  "aiReason": "Perubahan ini fokus pada perbaikan path pemanggilan aset (bug fix) dan merapikan struktur kode (refactoring) tanpa mengubah fungsionalitas utama atau merusak kompatibilitas.",
+  "updatedAt": "2026-02-21T09:33:54.849Z"
 }
