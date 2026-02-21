@@ -1,6 +1,6 @@
 {
-  "version": "1.7.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur baru berupa kemampuan mengunggah dan menampilkan ikon pada modul rekening bank tanpa merusak fungsi yang sudah ada.",
-  "updatedAt": "2026-02-21T09:16:40.709Z"
+  "version": "1.7.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini merupakan perbaikan internal pada validasi file, penyesuaian logika penyimpanan database, dan penambahan teks panduan di UI tanpa mengubah fungsionalitas utama atau merusak kompatibilitas API yang ada.",
+  "updatedAt": "2026-02-21T09:25:32.288Z"
 }

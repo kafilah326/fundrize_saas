@@ -167,7 +167,7 @@ class Settings extends Component
             'bank_name' => 'required|string',
             'account_number' => 'required|string',
             'account_holder_name' => 'required|string',
-            'bank_icon' => 'nullable|image|max:2048',
+            'bank_icon' => 'nullable|image|mimes:jpg,jpeg,png,webp,svg|max:2048',
         ]);
 
         $data = [
@@ -178,19 +178,14 @@ class Settings extends Component
         ];
 
         if ($this->bank_icon) {
-            $iconName = $this->bank_icon->store('bank-icons', 'public');
-            $data['icon'] = $iconName;
+            $iconPath = $this->bank_icon->store('bank-icons', 'public');
+            $data['icon'] = $iconPath;
         }
 
-        BankAccount::updateOrCreate(
-            ['id' => $this->bankId],
-            $data
-        );
-
-        // Clear local file state
-        if (isset($data['icon'])) {
-            $this->existingBankIcon = $data['icon'];
-            $this->bank_icon = null;
+        if ($this->bankId) {
+            BankAccount::where('id', $this->bankId)->update($data);
+        } else {
+            BankAccount::create($data);
         }
 
         session()->flash('success', 'Rekening bank berhasil disimpan.');

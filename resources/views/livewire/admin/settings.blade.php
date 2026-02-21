@@ -474,8 +474,10 @@
                                         </div>
                                     @endif
                                     <div class="flex-1">
-                                        <input wire:model="bank_icon" type="file"
+                                        <input wire:model="bank_icon" type="file" accept="image/*"
                                             class="block w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors">
+                                        <p class="text-xs text-gray-400 mt-1">Format: JPG, PNG, WebP, SVG. Maks 2MB.
+                                        </p>
                                     </div>
                                 </div>
                                 @error('bank_icon')
