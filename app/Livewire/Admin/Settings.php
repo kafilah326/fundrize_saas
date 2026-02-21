@@ -28,6 +28,8 @@ class Settings extends Component
     // public $bankAccounts; // Removed: Passed directly to view for pagination
     public $bankId;
     public $bank_name, $account_number, $account_holder_name, $is_active = true;
+    public $bank_icon; // temporary file upload
+    public $existingBankIcon; // stored path
     public $isBankModalOpen = false;
 
     // API Fields
@@ -154,6 +156,7 @@ class Settings extends Component
         $this->bank_name = $bank->bank_name;
         $this->account_number = $bank->account_number;
         $this->account_holder_name = $bank->account_holder_name;
+        $this->existingBankIcon = $bank->icon;
         $this->is_active = $bank->is_active;
         $this->isBankModalOpen = true;
     }
@@ -164,17 +167,31 @@ class Settings extends Component
             'bank_name' => 'required|string',
             'account_number' => 'required|string',
             'account_holder_name' => 'required|string',
+            'bank_icon' => 'nullable|image|max:2048',
         ]);
+
+        $data = [
+            'bank_name' => $this->bank_name,
+            'account_number' => $this->account_number,
+            'account_holder_name' => $this->account_holder_name,
+            'is_active' => $this->is_active,
+        ];
+
+        if ($this->bank_icon) {
+            $iconName = $this->bank_icon->store('bank-icons', 'public');
+            $data['icon'] = $iconName;
+        }
 
         BankAccount::updateOrCreate(
             ['id' => $this->bankId],
-            [
-                'bank_name' => $this->bank_name,
-                'account_number' => $this->account_number,
-                'account_holder_name' => $this->account_holder_name,
-                'is_active' => $this->is_active,
-            ]
+            $data
         );
+
+        // Clear local file state
+        if (isset($data['icon'])) {
+            $this->existingBankIcon = $data['icon'];
+            $this->bank_icon = null;
+        }
 
         session()->flash('success', 'Rekening bank berhasil disimpan.');
         $this->isBankModalOpen = false;
@@ -201,6 +218,8 @@ class Settings extends Component
         $this->account_number = '';
         $this->account_holder_name = '';
         $this->is_active = true;
+        $this->bank_icon = null;
+        $this->existingBankIcon = null;
     }
     
     public function closeBankModal()
