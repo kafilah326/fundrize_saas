@@ -88,6 +88,9 @@ Route::middleware('auth')->group(function () {
 
 // Webhook Route
 Route::post('/webhooks/xendit/invoice', [XenditWebhookController::class, 'handleInvoice'])->name('webhooks.xendit.invoice');
+Route::get('/webhooks/xendit/invoice', function () {
+    return response()->json(['message' => 'Xendit Webhook Endpoint Active'], 200);
+});
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {

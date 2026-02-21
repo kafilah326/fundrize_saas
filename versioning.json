@@ -1,6 +1,6 @@
 {
-  "version": "1.5.1",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini merupakan perbaikan internal berupa penghapusan kode redundan dan perapihan struktur tanpa mengubah fungsionalitas fitur utama atau API.",
-  "updatedAt": "2026-02-19T05:51:23.380Z"
+  "version": "1.6.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan rute baru untuk pengecekan status webhook yang bersifat fungsional dan tetap 'backward compatible'.",
+  "updatedAt": "2026-02-21T04:18:43.683Z"
 }
