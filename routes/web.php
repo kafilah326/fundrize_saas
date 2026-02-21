@@ -59,6 +59,7 @@ Route::get('/search', SearchPage::class)->name('search.index');
 Route::get('/program', ProgramIndex::class)->name('program.index');
 Route::get('/program/{slug}', ProgramDetail::class)->name('program.detail');
 Route::get('/program/{slug}/checkout', ProgramCheckout::class)->name('program.checkout');
+Route::get('/foundation/profile', FoundationProfile::class)->name('foundation.profile');
 
 // Qurban Routes
 Route::get('/qurban', QurbanIndex::class)->name('qurban.index');
@@ -81,7 +82,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile', Profile::class)->name('profile.index');
     Route::get('/profile/edit', ProfileEdit::class)->name('profile.edit');
     Route::get('/profile/change-password', ChangePassword::class)->name('profile.change-password');
-    Route::get('/foundation/profile', FoundationProfile::class)->name('foundation.profile');
     Route::get('/foundation/legality', FoundationLegality::class)->name('foundation.legality');
     Route::get('/report', Report::class)->name('report.index');
 });

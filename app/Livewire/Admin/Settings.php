@@ -22,7 +22,8 @@ class Settings extends Component
     public $name, $tagline, $about, $vision, $mission, $address, $phone, $email;
     public $logo, $existingLogo;
     public $favicon, $existingFavicon;
-    // Note: Social Media and Focus Areas handled as simple text/array logic if needed, simplified for now
+    public $social_facebook, $social_instagram, $social_whatsapp, $social_youtube;
+    // Note: Focus Areas handled as simple text/array logic if needed, simplified for now
 
     // Bank Account Fields
     // public $bankAccounts; // Removed: Passed directly to view for pagination
@@ -66,6 +67,14 @@ class Settings extends Component
             $this->email = $foundation->email;
             $this->existingLogo = $foundation->logo;
             $this->existingFavicon = $foundation->favicon;
+
+            $socialMedia = is_string($foundation->social_media) ? json_decode($foundation->social_media, true) : $foundation->social_media;
+            if (is_array($socialMedia)) {
+                $this->social_facebook = $socialMedia['facebook'] ?? '';
+                $this->social_instagram = $socialMedia['instagram'] ?? '';
+                $this->social_whatsapp = $socialMedia['whatsapp'] ?? '';
+                $this->social_youtube = $socialMedia['youtube'] ?? '';
+            }
         }
 
         // Load API Settings
@@ -110,6 +119,12 @@ class Settings extends Component
             'address' => $this->address,
             'phone' => $this->phone,
             'email' => $this->email,
+            'social_media' => [
+                'facebook' => $this->social_facebook,
+                'instagram' => $this->social_instagram,
+                'whatsapp' => $this->social_whatsapp,
+                'youtube' => $this->social_youtube,
+            ],
         ];
 
         if ($this->logo) {

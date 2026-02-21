@@ -1,6 +1,6 @@
 {
-  "version": "1.7.2",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini fokus pada perbaikan path pemanggilan aset (bug fix) dan merapikan struktur kode (refactoring) tanpa mengubah fungsionalitas utama atau merusak kompatibilitas.",
-  "updatedAt": "2026-02-21T09:33:54.849Z"
+  "version": "1.8.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Perubahan mencakup penambahan fitur baru (input media sosial), perubahan aksesibilitas rute menjadi publik, dan modifikasi tampilan yang bersifat backward compatible.",
+  "updatedAt": "2026-02-21T10:29:59.139Z"
 }

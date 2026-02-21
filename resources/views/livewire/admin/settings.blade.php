@@ -172,6 +172,69 @@
                         </div>
                     </div>
 
+                    <!-- Social Media Section underneath -->
+                    <div class="mt-8 space-y-6">
+                        <h3 class="text-lg font-bold text-gray-900 border-b pb-2">Media Sosial (Opsional)</h3>
+                        <p class="text-sm text-gray-500 mb-4">Meninggalkan kolom kosong berarti icon link tidak akan
+                            dimunculkan di halaman depan profil.</p>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Facebook URL</label>
+                                <div class="flex">
+                                    <span
+                                        class="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                        <i class="fa-brands fa-facebook"></i>
+                                    </span>
+                                    <input wire:model="social_facebook" type="url"
+                                        placeholder="https://facebook.com/yayasan"
+                                        class="flex-1 block w-full rounded-r-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-base bg-white transition-colors">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Instagram URL</label>
+                                <div class="flex">
+                                    <span
+                                        class="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                        <i class="fa-brands fa-instagram"></i>
+                                    </span>
+                                    <input wire:model="social_instagram" type="url"
+                                        placeholder="https://instagram.com/yayasan"
+                                        class="flex-1 block w-full rounded-r-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-base bg-white transition-colors">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">WhatsApp URL /
+                                    WA.me</label>
+                                <div class="flex">
+                                    <span
+                                        class="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                        <i class="fa-brands fa-whatsapp"></i>
+                                    </span>
+                                    <input wire:model="social_whatsapp" type="url"
+                                        placeholder="https://wa.me/6281xxxxxx"
+                                        class="flex-1 block w-full rounded-r-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-base bg-white transition-colors">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">YouTube Channel
+                                    URL</label>
+                                <div class="flex">
+                                    <span
+                                        class="inline-flex items-center px-4 rounded-l-xl border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
+                                        <i class="fa-brands fa-youtube"></i>
+                                    </span>
+                                    <input wire:model="social_youtube" type="url"
+                                        placeholder="https://youtube.com/@yayasan"
+                                        class="flex-1 block w-full rounded-r-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-base bg-white transition-colors">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mt-8 flex justify-end">
                         <button type="submit"
                             class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:-translate-y-0.5 inline-flex items-center">
