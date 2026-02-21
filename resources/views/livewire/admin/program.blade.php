@@ -1,7 +1,8 @@
-@section('title', 'Program Donasi')
-@section('header', 'Manajemen Program Donasi')
+<div>
+    @section('title', 'Program Donasi')
+    @section('header', 'Manajemen Program Donasi')
 
-<div class="space-y-6">
+    <div class="space-y-6">
     <div class="bg-white overflow-hidden shadow-soft rounded-2xl border border-gray-100">
         <div class="p-6">
             <!-- Top Controls -->
@@ -420,4 +421,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>

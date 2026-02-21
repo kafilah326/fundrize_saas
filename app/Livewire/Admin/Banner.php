@@ -45,7 +45,7 @@ class Banner extends Component
         'placement' => 'required|in:home,qurban,qurban_tabungan',
     ];
 
-    public function mount()
+    public function updatingSearch()
     {
         $this->resetPage();
     }

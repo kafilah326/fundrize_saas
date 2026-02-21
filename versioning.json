@@ -1,6 +1,6 @@
 {
-  "version": "1.10.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur fungsional baru berupa pencarian (search) dan paginasi yang bersifat backward compatible, serta peningkatan pada sistem penanganan file gambar.",
-  "updatedAt": "2026-02-21T22:44:54.614Z"
+  "version": "1.10.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini merupakan perbaikan bug internal untuk mereset paginasi saat pencarian serta penyesuaian struktur view agar mematuhi aturan root element tunggal pada Livewire, tanpa mengubah fungsionalitas API atau menambah fitur baru.",
+  "updatedAt": "2026-02-21T23:08:37.874Z"
 }

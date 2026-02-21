@@ -1,7 +1,8 @@
-@section('title', 'Banner')
-@section('header', 'Manajemen Banner')
+<div>
+    @section('title', 'Banner')
+    @section('header', 'Manajemen Banner')
 
-<div class="space-y-6">
+    <div class="space-y-6">
     <div class="bg-white overflow-hidden shadow-soft rounded-2xl border border-gray-100">
         <div class="p-6">
             @if (session()->has('success'))
@@ -416,4 +417,5 @@
             </div>
         </div>
     </div>
+</div>
 </div>
