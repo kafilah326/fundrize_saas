@@ -5,7 +5,7 @@
         <!-- Banner Section -->
         <section id="banner-section" class="bg-white">
             <div class="h-[200px] overflow-hidden relative">
-                <img src="{{ $banner && $banner->image ? Storage::url($banner->image) : 'https://storage.googleapis.com/uxpilot-auth.appspot.com/Fi1siCSktTSfwv8Em1pqs4D0Vek2%2Fcff693df-a22b-4f74-b519-bb1fa7cac475.png' }}" alt="{{ $settings->title }}" class="w-full h-full object-cover">
+                <img src="{{ $banner && $banner->image ? $banner->image : 'https://storage.googleapis.com/uxpilot-auth.appspot.com/Fi1siCSktTSfwv8Em1pqs4D0Vek2%2Fcff693df-a22b-4f74-b519-bb1fa7cac475.png' }}" alt="{{ $settings->title }}" class="w-full h-full object-cover">
                 @if($banner && $banner->title)
                 <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex flex-col justify-end p-4">
                     <h3 class="text-white font-bold text-lg mb-1">{{ $banner->title }}</h3>

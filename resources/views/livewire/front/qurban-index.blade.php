@@ -12,7 +12,7 @@
         <!-- Banner Section -->
         <section id="qurban-banner" class="bg-white px-4 py-4">
             <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative aspect-video">
-                <img src="{{ $banner && $banner->image ? Storage::url($banner->image) : 'https://storage.googleapis.com/uxpilot-auth.appspot.com/Fi1siCSktTSfwv8Em1pqs4D0Vek2%2Fcff693df-a22b-4f74-b519-bb1fa7cac475.png' }}" alt="{{ $banner->title ?? 'Tabungan Qurban' }}" class="w-full h-full object-cover">
+                <img src="{{ $banner && $banner->image ? $banner->image : 'https://storage.googleapis.com/uxpilot-auth.appspot.com/Fi1siCSktTSfwv8Em1pqs4D0Vek2%2Fcff693df-a22b-4f74-b519-bb1fa7cac475.png' }}" alt="{{ $banner->title ?? 'Tabungan Qurban' }}" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
                     <h3 class="text-white font-bold text-lg mb-1">{{ $banner->title ?? 'Tabungan Qurban' }}</h3>
                     @if($banner && $banner->description)

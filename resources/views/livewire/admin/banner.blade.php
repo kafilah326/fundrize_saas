@@ -4,6 +4,26 @@
 <div class="space-y-6">
     <div class="bg-white overflow-hidden shadow-soft rounded-2xl border border-gray-100">
         <div class="p-6">
+            @if (session()->has('success'))
+                <div
+                    class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 text-green-700">
+                    <i class="fa-solid fa-circle-check text-xl"></i>
+                    <div>
+                        <h4 class="font-bold text-sm">Berhasil!</h4>
+                        <p class="text-xs">{{ session('success') }}</p>
+                    </div>
+                </div>
+            @endif
+            @if (session()->has('error'))
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
+                    <i class="fa-solid fa-circle-xmark text-xl"></i>
+                    <div>
+                        <h4 class="font-bold text-sm">Gagal!</h4>
+                        <p class="text-xs">{{ session('error') }}</p>
+                    </div>
+                </div>
+            @endif
+
             <!-- Top Controls -->
             <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
                 <div class="relative w-full sm:w-1/3 group">
@@ -67,7 +87,8 @@
                                 <tr class="hover:bg-orange-50/30 transition-colors duration-150 group">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <img class="h-12 w-20 object-cover rounded-lg shadow-sm group-hover:shadow-md transition-shadow border border-gray-100"
-                                            src="{{ $banner->image }}" alt="">
+                                            src="{{ $banner->image }}"
+                                            alt="">
                                     </td>
                                     <td class="px-6 py-4">
                                         <div
@@ -127,7 +148,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-6 py-12 text-center text-gray-500">
+                                    <td colspan="8" class="px-6 py-12 text-center text-gray-500">
                                         <div class="flex flex-col items-center justify-center">
                                             <div
                                                 class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-400 text-2xl">
@@ -145,10 +166,10 @@
                 </div>
             </div>
 
-            <!-- Pagination (Disabled for now) -->
-            {{-- <div class="mt-6">
+            <!-- Pagination -->
+            <div class="mt-6">
                 {{ $banners->links() }}
-            </div> --}}
+            </div>
         </div>
     </div>
 
@@ -219,7 +240,7 @@
                                             <img src="{{ $image->temporaryUrl() }}"
                                                 class="mx-auto h-32 w-auto object-cover rounded-lg shadow-sm mb-3">
                                         @elseif($existingImage)
-                                            <img src="{{ $existingImage }}"
+                                            <img src="{{ Storage::url($existingImage) }}"
                                                 class="mx-auto h-32 w-auto object-cover rounded-lg shadow-sm mb-3">
                                         @else
                                             <div class="mx-auto h-12 w-12 text-gray-400">

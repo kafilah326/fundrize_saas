@@ -52,7 +52,9 @@ class Banner extends Component
 
     public function render()
     {
-        $banners = BannerModel::orderBy('created_at', 'desc')->paginate($this->perPage);
+        $banners = BannerModel::when($this->search, fn($q) => $q->where('title', 'like', '%' . $this->search . '%'))
+            ->orderBy('created_at', 'desc')
+            ->paginate($this->perPage);
 
         return view('livewire.admin.banner', [
             'banners' => $banners
@@ -134,8 +136,13 @@ class Banner extends Component
         }
 
         try {
-            BannerModel::updateOrCreate(['id' => $this->bannerId], $data);
-            session()->flash('success', $this->bannerId ? 'Banner updated successfully.' : 'Banner created successfully.');
+            if ($this->bannerId) {
+                BannerModel::where('id', $this->bannerId)->update($data);
+                session()->flash('success', 'Banner updated successfully.');
+            } else {
+                BannerModel::create($data);
+                session()->flash('success', 'Banner created successfully.');
+            }
             $this->closeModal(); // Close modal only on success
         } catch (\Exception $e) {
             session()->flash('error', 'Error creating banner: ' . $e->getMessage());
@@ -148,7 +155,7 @@ class Banner extends Component
         $banner = BannerModel::findOrFail($id);
         $this->bannerId = $id;
         $this->title = $banner->title;
-        $this->existingImage = $banner->image;
+        $this->existingImage = $banner->getRawOriginal('image');
         $this->link_url = $banner->link_url;
         $this->cta_text = $banner->cta_text;
         $this->start_date = $banner->start_date ? $banner->start_date->format('Y-m-d') : null;
@@ -172,8 +179,9 @@ class Banner extends Component
         if ($this->bannerId) {
             $banner = BannerModel::find($this->bannerId);
             if ($banner) {
-                if ($banner->image) {
-                    Storage::disk('public')->delete($banner->image);
+                $rawImage = $banner->getRawOriginal('image');
+                if ($rawImage) {
+                    Storage::disk('public')->delete($rawImage);
                 }
                 $banner->delete();
                 session()->flash('success', 'Banner deleted successfully.');

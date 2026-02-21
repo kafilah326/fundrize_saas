@@ -1,6 +1,6 @@
 {
-  "version": "1.9.2",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini hanya memperluas metode akses pada route yang sudah ada (backward compatible) tanpa mengubah logika bisnis utama atau struktur arsitektur yang besar.",
-  "updatedAt": "2026-02-21T21:33:40.153Z"
+  "version": "1.10.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan fitur fungsional baru berupa pencarian (search) dan paginasi yang bersifat backward compatible, serta peningkatan pada sistem penanganan file gambar.",
+  "updatedAt": "2026-02-21T22:44:54.614Z"
 }
