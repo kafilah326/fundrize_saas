@@ -1,6 +1,6 @@
 {
-  "version": "1.9.1",
+  "version": "1.9.2",
   "aiDecision": "PATCH",
-  "aiReason": "Default karena error API",
-  "updatedAt": "2026-02-21T10:44:37.179Z"
+  "aiReason": "Perubahan ini hanya memperluas metode akses pada route yang sudah ada (backward compatible) tanpa mengubah logika bisnis utama atau struktur arsitektur yang besar.",
+  "updatedAt": "2026-02-21T21:33:40.153Z"
 }

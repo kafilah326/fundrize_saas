@@ -46,7 +46,7 @@ Route::middleware('guest')->group(function () {
 });
 
 // Logout Route
-Route::post('/logout', function () {
+Route::any('/logout', function () {
     Auth::logout();
     session()->invalidate();
     session()->regenerateToken();
