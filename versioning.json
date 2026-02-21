@@ -1,6 +1,6 @@
 {
-  "version": "1.10.2",
+  "version": "1.10.3",
   "aiDecision": "PATCH",
-  "aiReason": "Default karena error API",
-  "updatedAt": "2026-02-21T23:19:00.486Z"
+  "aiReason": "Perubahan ini bersifat refactoring internal yang fokus pada penamaan method (scope) dan perbaikan format penulisan kode (formatting) tanpa mengubah logika bisnis atau memengaruhi kompatibilitas API.",
+  "updatedAt": "2026-02-21T23:26:38.817Z"
 }

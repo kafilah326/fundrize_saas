@@ -16,7 +16,7 @@ class QurbanTabungan extends Component
     public function mount()
     {
         $this->banner = Banner::activeBanner()
-            ->forPage('qurban_tabungan')
+            ->forPlacement('qurban_tabungan')
             ->orderBy('priority', 'asc')
             ->orderBy('created_at', 'desc')
             ->first();

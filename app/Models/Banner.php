@@ -10,7 +10,7 @@ class Banner extends Model
     use HasFactory;
 
     protected $guarded = []; // Allow all fields to be filled for now
-    
+
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
@@ -18,9 +18,9 @@ class Banner extends Model
         'priority' => 'integer',
     ];
 
-    public function scopeForPage($query, $page)
+    public function scopeForPlacement($query, $placement)
     {
-        return $query->where('placement', $page);
+        return $query->where('placement', $placement);
     }
 
     public function scopeActiveBanner($query)
@@ -28,17 +28,17 @@ class Banner extends Model
         return $query->where('is_active', true)
             ->where(function ($q) {
                 $q->where('start_date', '<=', now())
-                  ->orWhereNull('start_date');
+                    ->orWhereNull('start_date');
             })
             ->where(function ($q) {
                 $q->where('end_date', '>=', now())
-                  ->orWhereNull('end_date');
+                    ->orWhereNull('end_date');
             });
     }
 
     public function getImageAttribute($value)
     {
-        if (!$value) {
+        if (! $value) {
             return 'https://placehold.co/600x400?text=No+Banner';
         }
 

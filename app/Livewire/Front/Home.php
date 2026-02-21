@@ -2,30 +2,35 @@
 
 namespace App\Livewire\Front;
 
+use App\Models\AkadType;
+use App\Models\Banner;
+use App\Models\Category;
+use App\Models\FoundationSetting;
+use App\Models\Program;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use App\Models\Program;
-use App\Models\Banner;
-use App\Models\Category;
-use App\Models\AkadType;
-use App\Models\FoundationSetting;
 
 class Home extends Component
 {
     public $featuredPrograms;
+
     public $otherPrograms;
+
     public $categories;
+
     public $akads;
+
     public $foundation;
+
     public $banners;
 
     public function mount()
     {
         $this->foundation = FoundationSetting::firstOrFail();
-        
+
         $this->banners = Banner::activeBanner()
-            ->forPage('home')
+            ->forPlacement('home')
             ->orderBy('priority', 'asc')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -52,7 +57,7 @@ class Home extends Component
         return view('livewire.front.home')->layout('layouts.front', [
             'title' => $this->foundation->name,
             'metaDescription' => strip_tags($this->foundation->about),
-            'metaKeywords' => 'donasi, yayasan, sedekah, zakat, infaq, qurban, galang dana, crowdfunding, ' . $this->foundation->name,
+            'metaKeywords' => 'donasi, yayasan, sedekah, zakat, infaq, qurban, galang dana, crowdfunding, '.$this->foundation->name,
             'metaImage' => $this->foundation->logo,
         ]);
     }

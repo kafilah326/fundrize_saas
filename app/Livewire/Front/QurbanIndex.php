@@ -2,23 +2,24 @@
 
 namespace App\Livewire\Front;
 
+use App\Models\Banner;
+use App\Models\QurbanAnimal;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use App\Models\QurbanAnimal;
-use App\Models\Banner;
 
 class QurbanIndex extends Component
 {
     public $animals;
+
     public $banner;
 
     public function mount()
     {
         $this->animals = QurbanAnimal::where('is_active', true)->where('type', 'langsung')->get();
-        
+
         $this->banner = Banner::activeBanner()
-            ->forPage('qurban')
+            ->forPlacement('qurban')
             ->orderBy('priority', 'asc')
             ->orderBy('created_at', 'desc')
             ->first();
@@ -30,6 +31,7 @@ class QurbanIndex extends Component
 
         if ($selectedAnimal) {
             session(['selected_animal' => $selectedAnimal]);
+
             return redirect()->route('qurban.checkout');
         }
     }
