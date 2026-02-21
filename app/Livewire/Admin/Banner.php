@@ -2,34 +2,48 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\WithFileUploads;
 use App\Models\Banner as BannerModel;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Banner extends Component
 {
-    use WithPagination;
     use WithFileUploads;
+    use WithPagination;
 
     public $search = '';
+
     public $perPage = 10;
+
     public $isOpen = false;
+
     public $confirmingDeletion = false;
 
     // Form fields
     public $bannerId;
+
     public $title;
+
     public $image;
+
     public $existingImage;
+
     public $link_url;
+
     public $cta_text;
+
     public $start_date;
+
     public $end_date;
+
     public $priority = 0;
+
     public $is_active = true;
+
     public $description;
+
     public $placement = 'home';
 
     protected $rules = [
@@ -52,12 +66,17 @@ class Banner extends Component
 
     public function render()
     {
-        $banners = BannerModel::when($this->search, fn($q) => $q->where('title', 'like', '%' . $this->search . '%'))
-            ->orderBy('created_at', 'desc')
+        $query = BannerModel::query();
+
+        if (! empty($this->search)) {
+            $query->where('title', 'like', '%'.$this->search.'%');
+        }
+
+        $banners = $query->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 
         return view('livewire.admin.banner', [
-            'banners' => $banners
+            'banners' => $banners,
         ])->layout('layouts.admin');
     }
 
@@ -98,9 +117,9 @@ class Banner extends Component
     public function store()
     {
         $rules = $this->rules;
-        
+
         // Image required only on create
-        if (!$this->bannerId) {
+        if (! $this->bannerId) {
             $rules['image'] = 'required|image|max:2048';
         }
 
@@ -122,17 +141,17 @@ class Banner extends Component
             // Delete old image if updating
             if ($this->bannerId && $this->existingImage) {
                 // Check if it's not a URL
-                if (!str_starts_with($this->existingImage, 'http')) {
-                   Storage::disk('public')->delete($this->existingImage);
+                if (! str_starts_with($this->existingImage, 'http')) {
+                    Storage::disk('public')->delete($this->existingImage);
                 }
             }
-            
+
             $imageName = $this->image->store('banners', 'public');
             $data['image'] = $imageName;
-        } elseif (!$this->bannerId) {
+        } elseif (! $this->bannerId) {
             // If creating new and no image (should be caught by validation, but just in case)
             // Use a placeholder or fail gracefully
-             $data['image'] = 'banners/default.jpg'; 
+            $data['image'] = 'banners/default.jpg';
         }
 
         try {
@@ -145,8 +164,8 @@ class Banner extends Component
             }
             $this->closeModal(); // Close modal only on success
         } catch (\Exception $e) {
-            session()->flash('error', 'Error creating banner: ' . $e->getMessage());
-            \Illuminate\Support\Facades\Log::error('Banner create error: ' . $e->getMessage());
+            session()->flash('error', 'Error creating banner: '.$e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Banner create error: '.$e->getMessage());
         }
     }
 
@@ -194,7 +213,7 @@ class Banner extends Component
     public function toggleStatus($id)
     {
         $banner = BannerModel::findOrFail($id);
-        $banner->is_active = !$banner->is_active;
+        $banner->is_active = ! $banner->is_active;
         $banner->save();
         session()->flash('success', 'Banner status updated.');
     }

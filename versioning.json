@@ -1,6 +1,6 @@
 {
-  "version": "1.10.1",
+  "version": "1.10.2",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini merupakan perbaikan bug internal untuk mereset paginasi saat pencarian serta penyesuaian struktur view agar mematuhi aturan root element tunggal pada Livewire, tanpa mengubah fungsionalitas API atau menambah fitur baru.",
-  "updatedAt": "2026-02-21T23:08:37.874Z"
+  "aiReason": "Default karena error API",
+  "updatedAt": "2026-02-21T23:19:00.486Z"
 }
