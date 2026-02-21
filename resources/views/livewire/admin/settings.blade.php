@@ -30,6 +30,16 @@
         </div>
 
         <div class="p-6 md:p-8">
+            @if (session()->has('success'))
+                <div
+                    class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 text-green-700">
+                    <i class="fa-solid fa-circle-check text-xl"></i>
+                    <div>
+                        <h4 class="font-bold text-sm">Berhasil!</h4>
+                        <p class="text-xs">{{ session('success') }}</p>
+                    </div>
+                </div>
+            @endif
 
             <!-- Foundation Tab -->
             @if ($activeTab === 'foundation')

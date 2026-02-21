@@ -4,7 +4,7 @@
     <main id="main-content" class="pb-20">
         <section id="foundation-header" class="bg-white px-4 py-6">
             <div class="text-center">
-                <div class="w-12 mx-auto mb-4">
+                <div class="w-16 mx-auto mb-4">
                     <img src="{{ $foundation->logo }}" alt="Foundation Logo" class="w-full h-auto object-contain">
                 </div>
                 <h2 class="text-xl font-bold text-dark mb-2">{{ $foundation->name }}</h2>
@@ -91,25 +91,25 @@
             <section id="social-media" class="bg-white px-4 py-6 mt-2 mb-4">
                 <h3 class="text-sm font-bold text-dark mb-4">Media Sosial</h3>
                 <div class="flex gap-3">
-                    @if (isset($socialMedia['facebook']))
+                    @if (!empty($socialMedia['facebook']) && $socialMedia['facebook'] !== '#')
                         <a href="{{ $socialMedia['facebook'] }}"
                             class="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
                             <i class="fa-brands fa-facebook text-white text-lg"></i>
                         </a>
                     @endif
-                    @if (isset($socialMedia['instagram']))
+                    @if (!empty($socialMedia['instagram']) && $socialMedia['instagram'] !== '#')
                         <a href="{{ $socialMedia['instagram'] }}"
                             class="w-12 h-12 bg-pink-500 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
                             <i class="fa-brands fa-instagram text-white text-lg"></i>
                         </a>
                     @endif
-                    @if (isset($socialMedia['whatsapp']))
+                    @if (!empty($socialMedia['whatsapp']) && $socialMedia['whatsapp'] !== '#')
                         <a href="{{ $socialMedia['whatsapp'] }}"
                             class="w-12 h-12 bg-green-600 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
                             <i class="fa-brands fa-whatsapp text-white text-lg"></i>
                         </a>
                     @endif
-                    @if (isset($socialMedia['youtube']))
+                    @if (!empty($socialMedia['youtube']) && $socialMedia['youtube'] !== '#')
                         <a href="{{ $socialMedia['youtube'] }}"
                             class="w-12 h-12 bg-red-600 rounded-lg flex items-center justify-center hover:opacity-90 transition-opacity">
                             <i class="fa-brands fa-youtube text-white text-lg"></i>

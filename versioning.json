@@ -1,6 +1,6 @@
 {
-  "version": "1.8.0",
+  "version": "1.9.0",
   "aiDecision": "MINOR",
-  "aiReason": "Perubahan mencakup penambahan fitur baru (input media sosial), perubahan aksesibilitas rute menjadi publik, dan modifikasi tampilan yang bersifat backward compatible.",
-  "updatedAt": "2026-02-21T10:29:59.139Z"
+  "aiReason": "Penambahan elemen antarmuka baru berupa alert sukses (feedback user) dan peningkatan logika fungsional pada tampilan media sosial yang menambah nilai guna tanpa merusak fitur yang sudah ada.",
+  "updatedAt": "2026-02-21T10:41:28.840Z"
 }
