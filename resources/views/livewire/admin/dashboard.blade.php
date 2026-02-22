@@ -1,7 +1,7 @@
 @section('title', 'Dashboard')
 @section('header', 'Dashboard Overview')
 
-<div class="space-y-8">
+<div wire:poll.10s class="space-y-8">
     <!-- Welcome Banner -->
     <div
         class="bg-gradient-to-r from-primary to-secondary rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
