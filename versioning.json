@@ -1,6 +1,6 @@
 {
-  "version": "1.14.1",
+  "version": "1.14.2",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan hanya dilakukan pada file dokumentasi (README.md) untuk memberikan panduan penggunaan yang lebih jelas tanpa mengubah fungsionalitas kode atau API yang sudah ada.",
-  "updatedAt": "2026-02-22T09:29:58.797Z"
+  "aiReason": "Perubahan hanya dilakukan pada file dokumentasi (README.md) untuk menyesuaikan instruksi perintah CLI yang benar, sehingga tidak memengaruhi fungsionalitas inti atau kompatibilitas API.",
+  "updatedAt": "2026-02-22T09:34:19.912Z"
 }

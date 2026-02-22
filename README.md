@@ -100,7 +100,7 @@ Beberapa konfigurasi pengaturan platform disimpan di dalam database (tabel `app_
 **A. Generate VAPID Keys (Web Push Notification)**
 Jalankan perintah khusus buatan sistem ini untuk membuat kunci notifikasi web (VAPID Keys) yang akan otomatis disave ke database setting:
 ```bash
-php artisan vapid:generate
+php artisan webpush:generate-keys
 ```
 
 **B. Pengaturan Xendit & WhatsApp Lainnya**
