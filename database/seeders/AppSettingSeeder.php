@@ -39,6 +39,14 @@ class AppSettingSeeder extends Seeder
                 'description' => 'Enable or disable WhatsApp notifications via StarSender',
             ],
             [
+                'key' => 'xendit_mode',
+                'value' => 'test',
+                'group' => 'xendit',
+                'type' => 'text',
+                'label' => 'Xendit Mode',
+                'description' => 'Mode environment Xendit: test (sandbox) atau live (production)',
+            ],
+            [
                 'key' => 'xendit_secret_key',
                 'value' => Crypt::encryptString(''), // Placeholder
                 'group' => 'xendit',

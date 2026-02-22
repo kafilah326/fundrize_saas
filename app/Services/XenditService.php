@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\AppSetting;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class XenditService
 {
@@ -11,9 +12,28 @@ class XenditService
 
     protected $baseUrl = 'https://api.xendit.co';
 
+    protected $mode;
+
     public function __construct()
     {
         $this->secretKey = AppSetting::get('xendit_secret_key');
+        $this->mode = AppSetting::get('xendit_mode', 'test');
+    }
+
+    /**
+     * Check if Xendit credentials are configured.
+     */
+    public function isConfigured(): bool
+    {
+        return !empty($this->secretKey);
+    }
+
+    /**
+     * Get current Xendit mode (test/live).
+     */
+    public function getMode(): string
+    {
+        return $this->mode;
     }
 
     public function createInvoice($data)
@@ -23,6 +43,8 @@ class XenditService
             'currency' => 'IDR',
             'invoice_duration' => 86400, // 24 hours
         ], $data);
+
+        Log::info("Xendit [{$this->mode}] Creating invoice: {$data['external_id']}");
 
         $response = Http::withBasicAuth($this->secretKey, '')
             ->post("{$this->baseUrl}/v2/invoices", $payload);

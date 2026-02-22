@@ -1,6 +1,6 @@
 {
-  "version": "1.14.2",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan hanya dilakukan pada file dokumentasi (README.md) untuk menyesuaikan instruksi perintah CLI yang benar, sehingga tidak memengaruhi fungsionalitas inti atau kompatibilitas API.",
-  "updatedAt": "2026-02-22T09:34:19.912Z"
+  "version": "1.15.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan fitur baru berupa pengaturan mode environment (test/live) untuk Xendit, pembaruan antarmuka admin, serta logika pengecekan ketersediaan metode pembayaran secara otomatis yang bersifat backward compatible.",
+  "updatedAt": "2026-02-22T22:18:34.030Z"
 }

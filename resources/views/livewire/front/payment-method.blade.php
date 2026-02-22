@@ -59,6 +59,7 @@
                     <h3 class="text-xs font-semibold text-gray-700 mb-2 uppercase tracking-wide">Pembayaran Otomatis
                     </h3>
                     <div class="space-y-2">
+                        @if($xenditAvailable)
                         <label
                             class="flex items-center gap-3 p-3 border-2 rounded-xl cursor-pointer transition-colors
                             {{ $paymentGroup === 'xendit' ? 'border-primary bg-primary/5' : 'border-gray-200 bg-white hover:border-primary/50' }}">
@@ -73,6 +74,17 @@
                             </div>
                             <div class="text-xs text-green-600 font-medium">Gratis</div>
                         </label>
+                        @else
+                        <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl bg-gray-50 opacity-60">
+                            <div class="w-10 h-8 bg-gray-400 rounded flex items-center justify-center">
+                                <i class="fa-solid fa-bolt text-white text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-semibold text-gray-400">Pembayaran Online</div>
+                                <div class="text-xs text-gray-400">Belum dikonfigurasi</div>
+                            </div>
+                        </div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -113,7 +125,7 @@
             </div>
             <div class="h-px bg-gray-200"></div>
             <div class="flex justify-between text-sm">
-                <span class="font-bold text-dark">Total Pembayaran</span>
+                <span class="font-bold text-dark">Total</span>
                 <span class="font-bold text-primary">Rp {{ number_format($total, 0, ',', '.') }}</span>
             </div>
         </div>

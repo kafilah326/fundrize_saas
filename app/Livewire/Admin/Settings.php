@@ -35,6 +35,7 @@ class Settings extends Component
 
     // API Fields
     // StarSender logic moved to separate component
+    public $xendit_mode = 'test';
     public $xendit_secret_key;
     public $xendit_webhook_token;
 
@@ -78,6 +79,7 @@ class Settings extends Component
         }
 
         // Load API Settings
+        $this->xendit_mode = AppSetting::get('xendit_mode', 'test');
         $this->xendit_secret_key = AppSetting::get('xendit_secret_key');
         $this->xendit_webhook_token = AppSetting::get('xendit_webhook_token');
 
@@ -242,9 +244,23 @@ class Settings extends Component
     public function saveApi()
     {
         $this->validate([
+            'xendit_mode' => 'required|in:test,live',
             'xendit_secret_key' => 'required|string',
             'xendit_webhook_token' => 'required|string',
         ]);
+
+        // Simpan mode
+        AppSetting::updateOrCreate(
+            ['key' => 'xendit_mode'],
+            [
+                'value' => $this->xendit_mode,
+                'group' => 'xendit',
+                'type' => 'text',
+                'label' => 'Xendit Mode',
+                'description' => 'Mode environment Xendit: test (sandbox) atau live (production)',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_xendit_mode');
 
         AppSetting::set('xendit_secret_key', $this->xendit_secret_key);
         AppSetting::set('xendit_webhook_token', $this->xendit_webhook_token);

@@ -348,13 +348,56 @@
                 <form wire:submit.prevent="saveApi">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <!-- Xendit Info -->
-                        <div class="bg-blue-50/50 rounded-2xl border border-blue-100 p-6">
-                            <div class="flex items-center mb-6">
-                                <span
-                                    class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
-                                    <i class="fa-solid fa-credit-card text-lg"></i>
+                        <div class="rounded-2xl border p-6 {{ $xendit_mode === 'live' ? 'bg-red-50/50 border-red-200' : 'bg-blue-50/50 border-blue-100' }} transition-colors duration-300">
+                            <div class="flex items-center justify-between mb-6">
+                                <div class="flex items-center">
+                                    <span
+                                        class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 {{ $xendit_mode === 'live' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600' }}">
+                                        <i class="fa-solid fa-credit-card text-lg"></i>
+                                    </span>
+                                    <h3 class="text-lg font-bold {{ $xendit_mode === 'live' ? 'text-red-900' : 'text-blue-900' }}">Xendit Payment</h3>
+                                </div>
+                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold {{ $xendit_mode === 'live' ? 'bg-red-100 text-red-700 border border-red-300' : 'bg-green-100 text-green-700 border border-green-300' }}">
+                                    <span class="w-2 h-2 rounded-full mr-1.5 {{ $xendit_mode === 'live' ? 'bg-red-500 animate-pulse' : 'bg-green-500' }}"></span>
+                                    {{ $xendit_mode === 'live' ? 'LIVE / Production' : 'TEST / Sandbox' }}
                                 </span>
-                                <h3 class="text-lg font-bold text-blue-900">Xendit Payment</h3>
+                            </div>
+
+                            {{-- Mode Toggle --}}
+                            <div class="mb-6">
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Mode Environment</label>
+                                <div class="flex items-center gap-2 p-1 bg-gray-100 rounded-xl w-fit">
+                                    <button type="button" wire:click="$set('xendit_mode', 'test')"
+                                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $xendit_mode === 'test' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                                        <i class="fa-solid fa-flask mr-1"></i> Test
+                                    </button>
+                                    <button type="button" wire:click="$set('xendit_mode', 'live')"
+                                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $xendit_mode === 'live' ? 'bg-white text-red-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                                        <i class="fa-solid fa-globe mr-1"></i> Live
+                                    </button>
+                                </div>
+
+                                @if($xendit_mode === 'live')
+                                    <div class="mt-3 p-3 bg-red-100 border border-red-300 rounded-xl">
+                                        <div class="flex items-start gap-2">
+                                            <i class="fa-solid fa-triangle-exclamation text-red-600 mt-0.5"></i>
+                                            <div>
+                                                <p class="text-xs font-bold text-red-700">Mode Production Aktif</p>
+                                                <p class="text-xs text-red-600 mt-0.5">Semua transaksi akan diproses secara nyata. Pastikan credential yang digunakan adalah credential production dari Dashboard Xendit.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @else
+                                    <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-xl">
+                                        <div class="flex items-start gap-2">
+                                            <i class="fa-solid fa-shield-halved text-green-600 mt-0.5"></i>
+                                            <div>
+                                                <p class="text-xs font-bold text-green-700">Mode Sandbox Aktif</p>
+                                                <p class="text-xs text-green-600 mt-0.5">Transaksi tidak akan diproses secara nyata. Gunakan credential test dari Dashboard Xendit.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="space-y-4">
@@ -362,7 +405,7 @@
                                     <label class="block text-sm font-semibold text-gray-700 mb-1">Secret Key</label>
                                     <input wire:model="xendit_secret_key" type="password"
                                         class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 bg-white focus:bg-white transition-colors"
-                                        placeholder="xnd_development_...">
+                                        placeholder="{{ $xendit_mode === 'live' ? 'xnd_production_...' : 'xnd_development_...' }}">
                                     @error('xendit_secret_key')
                                         <span class="text-xs text-red-500">{{ $message }}</span>
                                     @enderror
@@ -378,12 +421,12 @@
                                     @enderror
                                 </div>
 
-                                <div class="bg-white p-4 rounded-xl border border-blue-200 shadow-sm mt-4">
-                                    <p class="text-xs font-bold text-blue-600 uppercase mb-1">Webhook URL</p>
+                                <div class="bg-white p-4 rounded-xl border {{ $xendit_mode === 'live' ? 'border-red-200' : 'border-blue-200' }} shadow-sm mt-4">
+                                    <p class="text-xs font-bold {{ $xendit_mode === 'live' ? 'text-red-600' : 'text-blue-600' }} uppercase mb-1">Webhook URL</p>
                                     <code
                                         class="font-mono text-gray-700 block break-all text-sm">{{ route('webhooks.xendit.invoice') }}</code>
                                 </div>
-                                <p class="text-xs text-blue-600">
+                                <p class="text-xs {{ $xendit_mode === 'live' ? 'text-red-600' : 'text-blue-600' }}">
                                     <i class="fa-solid fa-info-circle mr-1"></i> Pastikan URL ini didaftarkan di
                                     Dashboard Xendit Anda pada bagian Invoice callback.
                                 </p>
