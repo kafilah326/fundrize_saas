@@ -1,6 +1,6 @@
 {
-  "version": "1.12.1",
+  "version": "1.12.2",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini hanya mencakup refaktorisasi internal, pembersihan kode yang tidak digunakan (unused imports), dan standarisasi gaya penulisan tanpa mengubah fungsionalitas atau menambahkan fitur baru bagi pengguna.",
-  "updatedAt": "2026-02-22T07:25:23.442Z"
+  "aiReason": "Perubahan ini merupakan penyesuaian kecil pada file konfigurasi (maintenance) yang tidak mengubah fungsi utama atau memecah kompatibilitas API yang ada.",
+  "updatedAt": "2026-02-22T07:35:33.450Z"
 }
