@@ -4,11 +4,11 @@ namespace App\Services;
 
 use App\Models\AppSetting;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Str;
 
 class XenditService
 {
     protected $secretKey;
+
     protected $baseUrl = 'https://api.xendit.co';
 
     public function __construct()
@@ -31,7 +31,7 @@ class XenditService
             return $response->json();
         }
 
-        throw new \Exception('Xendit Error: ' . $response->body());
+        throw new \Exception('Xendit Error: '.$response->body());
     }
 
     public function getInvoice($invoiceId)
@@ -43,6 +43,6 @@ class XenditService
             return $response->json();
         }
 
-        throw new \Exception('Xendit Error: ' . $response->body());
+        throw new \Exception('Xendit Error: '.$response->body());
     }
 }
