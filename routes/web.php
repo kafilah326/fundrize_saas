@@ -1,32 +1,31 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\XenditWebhookController;
+use App\Livewire\Auth\ForgotPassword;
+use App\Livewire\Auth\Login;
+use App\Livewire\Auth\Register;
+use App\Livewire\Front\ChangePassword;
+use App\Livewire\Front\FoundationLegality;
+use App\Livewire\Front\FoundationProfile;
 use App\Livewire\Front\Home;
-use App\Livewire\Front\ProgramIndex;
-use App\Livewire\Front\ProgramDetail;
-use App\Livewire\Front\ProgramCheckout;
-use App\Livewire\Front\QurbanIndex;
-use App\Livewire\Front\QurbanCheckout;
-use App\Livewire\Front\QurbanTabungan;
-use App\Livewire\Front\QurbanTabunganCheckout;
-use App\Livewire\Front\QurbanHistory;
-use App\Livewire\Front\QurbanTransactionDetail;
-use App\Livewire\Front\QurbanSavingsDetail;
 use App\Livewire\Front\MyDonation;
 use App\Livewire\Front\PaymentMethod;
 use App\Livewire\Front\Profile;
 use App\Livewire\Front\ProfileEdit;
-use App\Livewire\Front\ChangePassword;
-use App\Livewire\Front\FoundationProfile;
-use App\Livewire\Front\FoundationLegality;
+use App\Livewire\Front\ProgramCheckout;
+use App\Livewire\Front\ProgramDetail;
+use App\Livewire\Front\ProgramIndex;
+use App\Livewire\Front\QurbanCheckout;
+use App\Livewire\Front\QurbanHistory;
+use App\Livewire\Front\QurbanIndex;
+use App\Livewire\Front\QurbanSavingsDetail;
+use App\Livewire\Front\QurbanTabungan;
+use App\Livewire\Front\QurbanTabunganCheckout;
+use App\Livewire\Front\QurbanTransactionDetail;
 use App\Livewire\Front\Report;
 use App\Livewire\Front\SearchPage;
-use App\Http\Controllers\XenditWebhookController;
-
-use App\Livewire\Auth\Login;
-use App\Livewire\Auth\Register;
-use App\Livewire\Auth\ForgotPassword;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,19 +46,20 @@ Route::middleware('guest')->group(function () {
 });
 
 // Logout Route
-Route::post('/logout', function () {
+Route::any('/logout', function () {
     Auth::logout();
     session()->invalidate();
     session()->regenerateToken();
+
     return redirect('/');
 })->name('logout');
-
 
 Route::get('/', Home::class)->name('home');
 Route::get('/search', SearchPage::class)->name('search.index');
 Route::get('/program', ProgramIndex::class)->name('program.index');
 Route::get('/program/{slug}', ProgramDetail::class)->name('program.detail');
 Route::get('/program/{slug}/checkout', ProgramCheckout::class)->name('program.checkout');
+Route::get('/foundation/profile', FoundationProfile::class)->name('foundation.profile');
 
 // Qurban Routes
 Route::get('/qurban', QurbanIndex::class)->name('qurban.index');
@@ -78,17 +78,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/qurban/savings/{id}', QurbanSavingsDetail::class)->name('qurban.savings.detail');
 
     Route::get('/my-donation', MyDonation::class)->name('my-donation.index');
-    
+
     Route::get('/profile', Profile::class)->name('profile.index');
     Route::get('/profile/edit', ProfileEdit::class)->name('profile.edit');
     Route::get('/profile/change-password', ChangePassword::class)->name('profile.change-password');
-    Route::get('/foundation/profile', FoundationProfile::class)->name('foundation.profile');
     Route::get('/foundation/legality', FoundationLegality::class)->name('foundation.legality');
     Route::get('/report', Report::class)->name('report.index');
 });
 
 // Webhook Route
 Route::post('/webhooks/xendit/invoice', [XenditWebhookController::class, 'handleInvoice'])->name('webhooks.xendit.invoice');
+Route::get('/webhooks/xendit/invoice', function () {
+    return response()->json(['message' => 'Xendit Webhook Endpoint Active'], 200);
+});
 
 // Admin Routes
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
@@ -105,9 +107,22 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('settings');
     Route::get('/whatsapp', \App\Livewire\Admin\WhatsappSetting::class)->name('whatsapp');
     Route::get('/meta-setting', \App\Livewire\Admin\MetaSetting::class)->name('meta-setting');
+    Route::get('/maintenance-fee', \App\Livewire\Admin\MaintenanceFee::class)->name('maintenance-fee');
+    Route::get('/bank-followup', \App\Livewire\Admin\BankFollowup::class)->name('bank-followup');
+    Route::get('/whatsapp-template', \App\Livewire\Admin\WhatsappTemplate::class)->name('whatsapp-template');
 
     // Quill Editor Image Upload
     Route::post('/upload-editor-image', [\App\Http\Controllers\EditorImageUploadController::class, 'store'])->name('upload-editor-image');
 });
 
 Route::get('/login-required', \App\Livewire\Front\LoginRequired::class)->name('login.required');
+// Web Push Notification Routes
+use App\Http\Controllers\PushSubscriptionController;
+
+Route::middleware(['auth'])->group(function () {
+    Route::post('/api/push/subscribe', [PushSubscriptionController::class, 'subscribe'])->name('push.subscribe');
+    Route::post('/api/push/unsubscribe', [PushSubscriptionController::class, 'unsubscribe'])->name('push.unsubscribe');
+});
+
+// Dynamic PWA Manifest
+Route::get('/manifest.json', [\App\Http\Controllers\ManifestController::class, 'index']);

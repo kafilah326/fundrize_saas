@@ -8,8 +8,12 @@
     <main id="main-content" class="pb-20">
         <section id="profile-header" class="bg-white px-4 py-6">
             <div class="flex items-center gap-4">
-                <div class="w-16 h-16 rounded-full overflow-hidden bg-gray-200">
-                    <img src="{{ $user->avatar ?? 'https://storage.googleapis.com/uxpilot-auth.appspot.com/avatars/avatar-5.jpg' }}" alt="User Avatar" class="w-full h-full object-cover">
+                <div class="w-16 h-16 rounded-full overflow-hidden bg-primary text-white flex items-center justify-center text-xl font-bold border-2 border-white shadow-lg">
+                    @if($user->avatar)
+                        <img src="{{ Storage::url($user->avatar) }}" alt="{{ $user->initials }}" class="w-full h-full object-cover">
+                    @else
+                        {{ $user->initials }}
+                    @endif
                 </div>
                 <div class="flex-1">
                     <h2 class="text-lg font-bold text-dark">{{ $user->name }}</h2>

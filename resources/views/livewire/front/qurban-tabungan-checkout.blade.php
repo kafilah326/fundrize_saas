@@ -7,12 +7,22 @@
             <h2 class="text-sm font-bold text-dark mb-3">Pilih Target Tabungan</h2>
             <div class="space-y-2">
                 @foreach($targets as $key => $data)
-                <label class="flex items-center gap-3 p-3 border-2 rounded-xl cursor-pointer transition-colors
+                <label class="flex items-start gap-3 p-3 border-2 rounded-xl cursor-pointer transition-colors
                     {{ $target === $key ? 'border-primary bg-primary/5' : 'border-gray-200 bg-white hover:border-primary/50' }}">
-                    <input type="radio" wire:model.live="target" value="{{ $key }}" class="w-4 h-4 text-primary">
+                    <div class="mt-1">
+                        <input type="radio" wire:model.live="target" value="{{ $key }}" class="w-4 h-4 text-primary focus:ring-primary">
+                    </div>
+                    
+                    <div class="w-16 h-16 bg-gray-100 rounded-lg overflow-hidden flex-shrink-0">
+                         <img src="{{ $data['image'] ?? 'https://placehold.co/100x100?text=No+Image' }}" 
+                              alt="{{ $data['name'] }}" 
+                              class="w-full h-full object-cover">
+                    </div>
+                    
                     <div class="flex-1">
-                        <div class="text-sm font-semibold text-dark">{{ $data['name'] }}</div>
-                        <div class="text-xs text-gray-600">{{ $data['desc'] ?? 'Target Rp ' . number_format($data['price'], 0, ',', '.') }}</div>
+                        <div class="text-sm font-bold text-dark">{{ $data['name'] }}</div>
+                        <div class="text-primary font-bold text-sm">Rp {{ number_format($data['price'], 0, ',', '.') }}</div>
+                        <div class="text-xs text-gray-600 mt-0.5 line-clamp-2">{{ $data['desc'] }}</div>
                     </div>
                 </label>
                 @endforeach

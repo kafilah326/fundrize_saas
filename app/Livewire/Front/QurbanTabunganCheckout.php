@@ -2,29 +2,37 @@
 
 namespace App\Livewire\Front;
 
+use App\Models\QurbanAnimal;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
-use App\Models\QurbanAnimal;
 
 class QurbanTabunganCheckout extends Component
 {
     public $target;
+
     public $deposit = 50000;
+
     public $customDeposit;
+
     public $showCustomDeposit = false;
-    
+
     // Muqorib Data
     public $name;
+
     public $whatsapp;
+
     public $qurbanName; // Atas Nama
+
     public $email;
+
     public $isAnonymous = false;
-    
+
     // Reminder
     public $reminder = false;
+
     public $reminderFrequency = 'bulanan';
 
     public $targets = [];
@@ -40,6 +48,7 @@ class QurbanTabunganCheckout extends Component
                 'price' => (float) $animal->price,
                 'desc' => $animal->description,
                 'category' => $animal->category,
+                'image' => $animal->image,
             ];
         }
 
@@ -70,14 +79,14 @@ class QurbanTabunganCheckout extends Component
     {
         $this->deposit = (int) str_replace(['.', ','], '', $this->customDeposit);
     }
-    
+
     public function submit()
     {
         $this->validate([
             'target' => 'required',
             'name' => 'required_if:isAnonymous,false',
             'whatsapp' => 'required',
-            'deposit' => 'numeric|min:0'
+            'deposit' => 'numeric|min:0',
         ]);
 
         $targetData = $this->targets[$this->target];
@@ -89,14 +98,14 @@ class QurbanTabunganCheckout extends Component
                 'target_name' => $targetData['name'],
                 'target_price' => $targetData['price'],
                 'amount' => $this->deposit,
-                'name' => $this->isAnonymous ? 'Hamba Allah' : $this->name,
+                'name' => $this->name,
                 'whatsapp' => $this->whatsapp,
                 'qurban_name' => $this->qurbanName,
                 'email' => $this->email,
                 'is_anonymous' => $this->isAnonymous,
                 'reminder_enabled' => $this->reminder,
                 'reminder_frequency' => $this->reminderFrequency,
-            ]
+            ],
         ]);
 
         return redirect()->route('payment.method');

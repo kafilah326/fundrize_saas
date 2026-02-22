@@ -13,6 +13,7 @@ class ProgramManage extends Component
     use WithPagination;
 
     public $program;
+    public $perPage = 10;
     public $activeTab = 'updates'; // updates, distributions
 
     // Update Form
@@ -41,8 +42,8 @@ class ProgramManage extends Component
     public function render()
     {
         return view('livewire.admin.program-manage', [
-            'updates' => $this->program->updates()->latest('published_at')->paginate(5, ['*'], 'updatesPage'),
-            'distributions' => $this->program->distributions()->latest('documentation_date')->paginate(5, ['*'], 'distributionsPage'),
+            'updates' => $this->program->updates()->latest('published_at')->paginate($this->perPage, ['*'], 'updatesPage'),
+            'distributions' => $this->program->distributions()->latest('documentation_date')->paginate($this->perPage, ['*'], 'distributionsPage'),
         ])->layout('layouts.admin');
     }
 

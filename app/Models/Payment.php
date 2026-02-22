@@ -53,6 +53,11 @@ class Payment extends Model
         return $this->belongsTo(QurbanSaving::class);
     }
 
+    public function whatsappMessageLogs()
+    {
+        return $this->hasMany(WhatsappMessageLog::class);
+    }
+
     protected $casts = [
         'checkout_data' => 'array',
         'paid_at' => 'datetime',

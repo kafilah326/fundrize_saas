@@ -8,9 +8,12 @@ use Livewire\Component;
 use App\Models\Program;
 use App\Models\Category;
 use App\Models\AkadType;
+use Livewire\WithPagination;
 
 class ProgramIndex extends Component
 {
+    use WithPagination;
+
     public $categories;
     public $akads;
     public $selectedAkad = [];
@@ -33,6 +36,43 @@ class ProgramIndex extends Component
     public function loadMore()
     {
         $this->limit += 5;
+    }
+
+    public function toggleAkad($slug)
+    {
+        if ($slug == 'semua') {
+            $this->selectedAkad = [];
+        } else {
+            if (in_array($slug, $this->selectedAkad)) {
+                $this->selectedAkad = array_diff($this->selectedAkad, [$slug]);
+            } else {
+                $this->selectedAkad[] = $slug;
+            }
+        }
+        $this->selectedAkad = array_values($this->selectedAkad);
+        $this->resetPage();
+    }
+
+    public function toggleKategori($slug)
+    {
+        if ($slug == 'semua') {
+            $this->selectedKategori = [];
+        } else {
+            if (in_array($slug, $this->selectedKategori)) {
+                $this->selectedKategori = array_diff($this->selectedKategori, [$slug]);
+            } else {
+                $this->selectedKategori[] = $slug;
+            }
+        }
+        $this->selectedKategori = array_values($this->selectedKategori);
+        $this->resetPage();
+    }
+
+    public function resetFilter()
+    {
+        $this->selectedAkad = [];
+        $this->selectedKategori = [];
+        $this->resetPage();
     }
 
     #[Layout('layouts.front')]
@@ -59,6 +99,10 @@ class ProgramIndex extends Component
         return view('livewire.front.program-index', [
             'programs' => $programs,
             'totalPrograms' => $totalPrograms,
+        ])->layout('layouts.front', [
+            'title' => 'Daftar Program Donasi - Yayasan Peduli',
+            'metaDescription' => 'Temukan berbagai program donasi, sedekah, zakat, dan infaq yang dapat Anda bantu melalui Yayasan Peduli.',
+            'metaKeywords' => 'donasi, sedekah, zakat, infaq, galang dana, yayasan peduli, program sosial',
         ]);
     }
 }

@@ -9,18 +9,7 @@ class Banner extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'title',
-        'image',
-        'placement',
-        'description',
-        'link_url',
-        'cta_text',
-        'start_date',
-        'end_date',
-        'priority',
-        'is_active',
-    ];
+    protected $guarded = []; // Allow all fields to be filled for now
 
     protected $casts = [
         'start_date' => 'date',
@@ -29,21 +18,34 @@ class Banner extends Model
         'priority' => 'integer',
     ];
 
-    public function scopeForPage($query, $page)
+    public function scopeForPlacement($query, $placement)
     {
-        return $query->where('placement', $page);
+        return $query->where('placement', $placement);
     }
 
     public function scopeActiveBanner($query)
     {
         return $query->where('is_active', true)
             ->where(function ($q) {
-                $q->whereNull('start_date')
-                  ->orWhere('start_date', '<=', now());
+                $q->where('start_date', '<=', now())
+                    ->orWhereNull('start_date');
             })
             ->where(function ($q) {
-                $q->whereNull('end_date')
-                  ->orWhere('end_date', '>=', now());
+                $q->where('end_date', '>=', now())
+                    ->orWhereNull('end_date');
             });
+    }
+
+    public function getImageAttribute($value)
+    {
+        if (! $value) {
+            return 'https://placehold.co/600x400?text=No+Banner';
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return $value;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->url($value);
     }
 }

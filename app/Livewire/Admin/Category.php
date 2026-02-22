@@ -12,7 +12,7 @@ class Category extends Component
     use WithPagination;
 
     public $search = '';
-    public $perPage = 5;
+    public $perPage = 10;
     
     // Form properties
     public $categoryId;

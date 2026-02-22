@@ -39,8 +39,16 @@ class QurbanAnimal extends Model
         return $query->where('is_active', true);
     }
 
-    public function orders()
+    public function getImageAttribute($value)
     {
-        return $this->hasMany(QurbanOrder::class);
+        if (!$value) {
+            return 'https://placehold.co/600x400?text=No+Image';
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return $value;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->url($value);
     }
 }

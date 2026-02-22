@@ -287,13 +287,7 @@
       </section>
       <section id="program-menu" class="bg-white px-4 py-5 mt-2">
         <h3 class="text-sm font-bold text-dark mb-4">Menu Program</h3>
-        <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2"><button
-            class="flex flex-col items-center gap-2 min-w-[60px]">
-            <div
-              class="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-              <i class="fa-solid fa-grip text-white text-lg"></i></div><span
-              class="text-xs font-medium text-primary">Semua</span>
-          </button><button
+<div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2"><button
             class="flex flex-col items-center gap-2 min-w-[60px]">
             <div
               class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
@@ -347,109 +341,7 @@
             <span class="text-xs font-medium text-gray-600">Lainnya</span>
           </button></div>
       </section>
-      <section id="other-programs" class="bg-white px-4 py-5 mt-2">
-        <div class="flex items-center justify-between mb-4">
-          <h3 class="text-sm font-bold text-dark">Program Lainnya</h3>
-        </div>
-        <div class="space-y-3">
-          <div
-            class="flex gap-3 bg-white rounded-xl border border-gray-100 p-2">
-            <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg"><img
-                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/3fb05f88d4-f6bca6137ca5cc9f8e9a.png"
-                alt="Food distribution for poor families, ramadan charity, humanitarian aid, 16:9 aspect ratio"
-                class="w-full h-full object-cover"></div>
-            <div class="flex-1 flex flex-col justify-between py-1">
-              <div>
-                <h4 class="font-semibold text-sm text-dark mb-1 line-clamp-2">
-                  Paket Sembako untuk Keluarga Dhuafa</h4>
-                <p class="text-xs font-bold text-dark mb-1">Rp 18.450.000</p>
-              </div>
-              <div>
-                <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                  <div class="bg-primary h-1.5 rounded-full" id="i5v7tq"></div>
-                </div>
-                <div class="flex items-center justify-between"><span
-                    class="text-xs text-gray-500">42% terkumpul</span><button
-                    class="text-gray-400"><i
-                      class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex gap-3 bg-white rounded-xl border border-gray-100 p-2">
-            <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg"><img
-                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/0e95e923ea-234bbfab81354b72c729.png"
-                alt="Disaster relief team helping flood victims, emergency humanitarian response, 16:9 aspect ratio"
-                class="w-full h-full object-cover"></div>
-            <div class="flex-1 flex flex-col justify-between py-1">
-              <div>
-                <h4 class="font-semibold text-sm text-dark mb-1 line-clamp-2">
-                  Bantuan Korban Banjir Bandang</h4>
-                <p class="text-xs font-bold text-dark mb-1">Rp 52.300.000</p>
-              </div>
-              <div>
-                <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                  <div class="bg-primary h-1.5 rounded-full" id="iu5w7o"></div>
-                </div>
-                <div class="flex items-center justify-between"><span
-                    class="text-xs text-gray-500">78% terkumpul</span><button
-                    class="text-gray-400"><i
-                      class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex gap-3 bg-white rounded-xl border border-gray-100 p-2">
-            <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg"><img
-                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/6c651e1e9a-40e37ea89dc9fd6e75c3.png"
-                alt="Islamic boarding school students studying, pesantren education, religious learning, 16:9 aspect ratio"
-                class="w-full h-full object-cover"></div>
-            <div class="flex-1 flex flex-col justify-between py-1">
-              <div>
-                <h4 class="font-semibold text-sm text-dark mb-1 line-clamp-2">
-                  Renovasi Asrama Santri Putri</h4>
-                <p class="text-xs font-bold text-dark mb-1">Rp 38.750.000</p>
-              </div>
-              <div>
-                <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                  <div class="bg-primary h-1.5 rounded-full" id="iz0d2x"></div>
-                </div>
-                <div class="flex items-center justify-between"><span
-                    class="text-xs text-gray-500">58% terkumpul</span><button
-                    class="text-gray-400"><i
-                      class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div
-            class="flex gap-3 bg-white rounded-xl border border-gray-100 p-2">
-            <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded-lg"><img
-                src="https://storage.googleapis.com/uxpilot-auth.appspot.com/96286d6fca-ba5d8a958102d5358efa.png"
-                alt="Elderly care home, senior citizens receiving help, social welfare program, 16:9 aspect ratio"
-                class="w-full h-full object-cover"></div>
-            <div class="flex-1 flex flex-col justify-between py-1">
-              <div>
-                <h4 class="font-semibold text-sm text-dark mb-1 line-clamp-2">
-                  Perawatan Lansia Terlantar</h4>
-                <p class="text-xs font-bold text-dark mb-1">Rp 24.100.000</p>
-              </div>
-              <div>
-                <div class="w-full bg-gray-200 rounded-full h-1.5 mb-1">
-                  <div class="bg-primary h-1.5 rounded-full" id="ipn6if"></div>
-                </div>
-                <div class="flex items-center justify-between"><span
-                    class="text-xs text-gray-500">35% terkumpul</span><button
-                    class="text-gray-400"><i
-                      class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+
       <section id="about-foundation" class="bg-white px-4 py-5 mt-2 mb-20">
         <h3 class="text-sm font-bold text-dark mb-3">Tentang Yayasan</h3>
         <p class="text-xs text-gray-600 leading-relaxed mb-3">Yayasan Peduli

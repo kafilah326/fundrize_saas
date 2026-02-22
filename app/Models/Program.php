@@ -67,4 +67,17 @@ class Program extends Model
         if (!$this->end_date) return null;
         return (int) max(0, now()->diffInDays($this->end_date, false));
     }
+
+    public function getImageAttribute($value)
+    {
+        if (!$value) {
+            return 'https://placehold.co/600x400?text=No+Image';
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return $value;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->url($value);
+    }
 }

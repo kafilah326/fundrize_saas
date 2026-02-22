@@ -3,18 +3,41 @@
 
     <main id="main-content" class="pb-24">
         <section id="transaction-status" class="bg-white px-4 py-4 mb-2">
+            @php
+                $statusColors = [
+                    'pending' => 'bg-yellow-100 text-yellow-800',
+                    'paid' => 'bg-green-100 text-green-800',
+                    'success' => 'bg-green-100 text-green-800',
+                    'settled' => 'bg-green-100 text-green-800',
+                    'failed' => 'bg-red-100 text-red-800',
+                    'cancelled' => 'bg-red-100 text-red-800',
+                    'expired' => 'bg-gray-100 text-gray-800',
+                ];
+                $colorClass = $statusColors[$order->status] ?? 'bg-gray-100 text-gray-800';
+                
+                $statusIcons = [
+                    'pending' => 'fa-clock text-yellow-600',
+                    'paid' => 'fa-check text-green-600',
+                    'success' => 'fa-check text-green-600',
+                    'settled' => 'fa-check text-green-600',
+                    'failed' => 'fa-xmark text-red-600',
+                    'cancelled' => 'fa-xmark text-red-600',
+                    'expired' => 'fa-minus text-gray-600',
+                ];
+                $iconClass = $statusIcons[$order->status] ?? 'fa-info text-gray-600';
+                
+                // Extract bg color for icon container from colorClass (e.g., bg-green-100)
+                $bgClass = explode(' ', $colorClass)[0];
+            @endphp
             <div class="flex items-center gap-3 mb-3">
-                <div class="w-12 h-12 rounded-full flex items-center justify-center 
-                    {{ $order->status === 'success' ? 'bg-green-100' : ($order->status === 'pending' ? 'bg-yellow-100' : 'bg-red-100') }}">
-                    <i class="fa-solid text-lg 
-                       {{ $order->status === 'success' ? 'fa-check text-green-600' : ($order->status === 'pending' ? 'fa-clock text-yellow-600' : 'fa-xmark text-red-600') }}"></i>
+                <div class="w-12 h-12 rounded-full flex items-center justify-center {{ $bgClass }}">
+                    <i class="fa-solid text-lg {{ $iconClass }}"></i>
                 </div>
                 <div class="flex-1">
                     <h2 class="text-sm font-bold text-dark">Transaksi {{ ucfirst($order->status) }}</h2>
                     <p class="text-xs text-gray-600">ID: #{{ $order->transaction_id }}</p>
                 </div>
-                <span class="px-3 py-1 text-xs font-medium rounded-full capitalize
-                    {{ $order->status === 'success' ? 'bg-green-100 text-green-700' : ($order->status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}">
+                <span class="px-3 py-1 text-xs font-medium rounded-full capitalize {{ $colorClass }}">
                     {{ $order->status }}
                 </span>
             </div>
@@ -108,8 +131,7 @@
                 </div>
                 <div class="flex justify-between items-center">
                     <span class="text-xs text-gray-600">Status Pembayaran</span>
-                    <span class="px-2 py-1 text-xs font-medium rounded capitalize 
-                        {{ $order->status === 'success' ? 'bg-green-100 text-green-700' : ($order->status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}">
+                    <span class="px-2 py-1 text-xs font-medium rounded capitalize {{ $colorClass }}">
                         {{ $order->status }}
                     </span>
                 </div>

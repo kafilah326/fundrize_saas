@@ -11,8 +11,8 @@
     <main id="main-content" class="pb-32">
         <!-- Banner Section -->
         <section id="qurban-banner" class="bg-white px-4 py-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative h-[180px]">
-                <img src="{{ $banner && $banner->image ? Storage::url($banner->image) : 'https://storage.googleapis.com/uxpilot-auth.appspot.com/Fi1siCSktTSfwv8Em1pqs4D0Vek2%2Fcff693df-a22b-4f74-b519-bb1fa7cac475.png' }}" alt="{{ $banner->title ?? 'Tabungan Qurban' }}" class="w-full h-full object-cover">
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative aspect-video">
+                <img src="{{ $banner && $banner->image ? $banner->image : 'https://storage.googleapis.com/uxpilot-auth.appspot.com/Fi1siCSktTSfwv8Em1pqs4D0Vek2%2Fcff693df-a22b-4f74-b519-bb1fa7cac475.png' }}" alt="{{ $banner->title ?? 'Tabungan Qurban' }}" class="w-full h-full object-cover">
                 <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex flex-col justify-end p-4">
                     <h3 class="text-white font-bold text-lg mb-1">{{ $banner->title ?? 'Tabungan Qurban' }}</h3>
                     @if($banner && $banner->description)
@@ -48,8 +48,7 @@
                 <div x-show="filter === 'semua' || filter === '{{ $animal->category }}'"
                      @click="selected = {{ $animal->id }}; selectedPrice = {{ $animal->price }}"
                      class="qurban-card bg-white border rounded-xl p-3 flex gap-3 cursor-pointer transition-all hover:shadow-md"
-                     :class="selected === {{ $animal->id }} ? 'border-primary bg-orange-50 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'"
-                     style="display: none;" x-transition>
+                     :class="selected === {{ $animal->id }} ? 'border-primary bg-orange-50 ring-1 ring-primary' : 'border-gray-200 hover:border-primary/50'">
                     
                     <!-- Image -->
                     <div class="w-20 h-20 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">

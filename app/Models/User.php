@@ -73,4 +73,23 @@ class User extends Authenticatable
     {
         return $this->hasMany(QurbanSaving::class);
     }
+
+    public function getInitialsAttribute()
+    {
+        $name = trim($this->name);
+        if (empty($name)) {
+            return '??';
+        }
+
+        // Split by spaces and filter out empty strings (handling multiple spaces)
+        $words = array_values(array_filter(explode(' ', $name)));
+        
+        if (count($words) === 1) {
+            // Jika 1 kata ambil 2 huruf pertama
+            return strtoupper(substr($name, 0, 2));
+        }
+        
+        // Jika 2 kata atau lebih, ambil huruf pertama kata 1 dan kata 2
+        return strtoupper(substr($words[0], 0, 1) . substr($words[1], 0, 1));
+    }
 }
