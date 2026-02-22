@@ -1,6 +1,6 @@
 {
-  "version": "1.16.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fungsionalitas baru berupa polling otomatis (auto-refresh) yang meningkatkan kegunaan dashboard tanpa merusak fitur yang sudah ada.",
-  "updatedAt": "2026-02-22T23:19:28.181Z"
+  "version": "1.16.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini hanya bersifat kosmetik pada bagian antarmuka (UI) dan tidak mengubah fungsionalitas maupun struktur API yang ada.",
+  "updatedAt": "2026-02-22T23:28:29.625Z"
 }
