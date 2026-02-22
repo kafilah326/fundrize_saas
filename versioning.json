@@ -1,6 +1,6 @@
 {
-  "version": "1.12.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Perubahan ini mencakup penambahan fungsionalitas baru yang tetap kompatibel dengan versi sebelumnya, seperti dukungan format gambar AVIF, penambahan meta tags SEO (Open Graph & Twitter), serta peningkatan signifikan pada sistem styling konten.",
-  "updatedAt": "2026-02-22T07:20:54.345Z"
+  "version": "1.12.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini hanya mencakup refaktorisasi internal, pembersihan kode yang tidak digunakan (unused imports), dan standarisasi gaya penulisan tanpa mengubah fungsionalitas atau menambahkan fitur baru bagi pengguna.",
+  "updatedAt": "2026-02-22T07:25:23.442Z"
 }
