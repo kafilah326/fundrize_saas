@@ -3,6 +3,7 @@
 namespace App\Livewire\Front;
 
 use App\Models\AdminNotification;
+use App\Models\AppSetting;
 use App\Models\BankAccount;
 use App\Models\Donation;
 use App\Models\Payment;
@@ -34,6 +35,8 @@ class PaymentMethod extends Component
 
     public $programName = '';
 
+    public $xenditAvailable = false;
+
     public function mount()
     {
         $checkout = session('checkout');
@@ -52,12 +55,16 @@ class PaymentMethod extends Component
         $this->amount = $checkout['amount'];
         $this->programName = $checkout['program_name'] ?? $checkout['target_name'] ?? 'Donasi Program';
 
+        // Check if Xendit credentials are configured
+        $xenditKey = AppSetting::get('xendit_secret_key');
+        $this->xenditAvailable = !empty($xenditKey);
+
         // Set default method
         $firstBank = BankAccount::where('is_active', true)->orderBy('sort_order')->first();
         if ($firstBank) {
             $this->selectedMethod = strtolower($firstBank->bank_name);
             $this->paymentGroup = 'bank_transfer';
-        } else {
+        } elseif ($this->xenditAvailable) {
             $this->selectedMethod = 'xendit';
             $this->paymentGroup = 'xendit';
         }
