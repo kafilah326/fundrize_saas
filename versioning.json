@@ -1,6 +1,6 @@
 {
-  "version": "1.12.2",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini merupakan penyesuaian kecil pada file konfigurasi (maintenance) yang tidak mengubah fungsi utama atau memecah kompatibilitas API yang ada.",
-  "updatedAt": "2026-02-22T07:35:33.450Z"
+  "version": "1.14.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan fitur fungsional baru berupa kartu statistik, filter pencarian berdasarkan status dan tanggal, serta peningkatan UI yang bersifat 'backward compatible'.",
+  "updatedAt": "2026-02-22T09:24:25.637Z"
 }

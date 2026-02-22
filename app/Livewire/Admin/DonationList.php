@@ -32,7 +32,13 @@ class DonationList extends Component
 
     public $statusFilter = '';
 
-    public $typeFilter = 'program'; // Default to program donations
+    public $typeFilter = 'program'; // Always filter to program donations only
+
+    public $programFilter = ''; // Filter by specific program ID
+
+    public $dateFrom;
+
+    public $dateTo;
 
     // Export Modal
     public $isExportModalOpen = false;
@@ -40,6 +46,8 @@ class DonationList extends Component
     public $startDate;
 
     public $endDate;
+
+    public $exportProgramId = ''; // '' = semua program
 
     // Detail Modal
     public $isOpen = false;
@@ -49,8 +57,15 @@ class DonationList extends Component
     protected $queryString = [
         'search' => ['except' => ''],
         'statusFilter' => ['except' => ''],
-        'typeFilter' => ['except' => ''],
+        'programFilter' => ['except' => ''],
+        'dateFrom' => ['except' => ''],
+        'dateTo' => ['except' => ''],
     ];
+
+    public function resetFilters()
+    {
+        $this->reset(['search', 'statusFilter', 'programFilter', 'dateFrom', 'dateTo']);
+    }
 
     public function updatingSearch()
     {
@@ -187,7 +202,21 @@ class DonationList extends Component
 
     public function render()
     {
+        $programs = Program::select('id', 'title')
+            ->where('is_active', true)
+            ->orderBy('title')
+            ->get();
+
+        // Calculate Stats
+        $statQuery = Payment::where('transaction_type', 'program')->where('status', 'paid');
+        
+        $statToday = (clone $statQuery)->whereDate('paid_at', now()->toDateString())->sum('amount');
+        $statYesterday = (clone $statQuery)->whereDate('paid_at', now()->subDay()->toDateString())->sum('amount');
+        $statThisMonth = (clone $statQuery)->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum('amount');
+        $statLastMonth = (clone $statQuery)->whereMonth('paid_at', now()->subMonth()->month)->whereYear('paid_at', now()->subMonth()->year)->sum('amount');
+
         $payments = Payment::with(['user', 'program', 'qurbanOrder', 'qurbanSaving', 'whatsappMessageLogs'])
+            ->where('transaction_type', 'program') // Only show program donations
             ->where(function ($query) {
                 $query->where('customer_name', 'like', '%'.$this->search.'%')
                     ->orWhere('customer_email', 'like', '%'.$this->search.'%')
@@ -196,8 +225,14 @@ class DonationList extends Component
             ->when($this->statusFilter, function ($query) {
                 $query->where('status', $this->statusFilter);
             })
-            ->when($this->typeFilter, function ($query) {
-                $query->where('transaction_type', $this->typeFilter);
+            ->when($this->programFilter, function ($query) {
+                $query->where('program_id', $this->programFilter);
+            })
+            ->when($this->dateFrom, function ($query) {
+                $query->whereDate('created_at', '>=', $this->dateFrom);
+            })
+            ->when($this->dateTo, function ($query) {
+                $query->whereDate('created_at', '<=', $this->dateTo);
             })
             ->latest()
             ->paginate($this->perPage);
@@ -207,6 +242,11 @@ class DonationList extends Component
         return view('livewire.admin.donation-list', [
             'payments' => $payments,
             'followups' => $followups,
+            'programs' => $programs,
+            'statToday' => $statToday,
+            'statYesterday' => $statYesterday,
+            'statThisMonth' => $statThisMonth,
+            'statLastMonth' => $statLastMonth,
         ])->layout('layouts.admin');
     }
 
@@ -310,6 +350,8 @@ class DonationList extends Component
     {
         $this->startDate = now()->startOfMonth()->format('Y-m-d');
         $this->endDate = now()->format('Y-m-d');
+        // Carry over active program filter into export modal
+        $this->exportProgramId = $this->programFilter;
         $this->isExportModalOpen = true;
     }
 
@@ -318,24 +360,35 @@ class DonationList extends Component
         $this->isExportModalOpen = false;
     }
 
-    public function export()
+    public function exportData()
     {
         $this->validate([
             'startDate' => 'required|date',
             'endDate' => 'required|date|after_or_equal:startDate',
         ]);
 
-        $payments = Payment::with(['program'])
+        $query = Payment::with(['program'])
             ->where('status', 'paid')
             ->where('transaction_type', 'program')
             ->whereBetween('paid_at', [
                 $this->startDate.' 00:00:00',
                 $this->endDate.' 23:59:59',
             ])
-            ->latest('paid_at')
-            ->get();
+            ->when($this->exportProgramId, function ($q) {
+                $q->where('program_id', $this->exportProgramId);
+            })
+            ->latest('paid_at');
 
-        $filename = 'Donasi_Program_'.$this->startDate.'_sd_'.$this->endDate.'.csv';
+        $payments = $query->get();
+
+        // Build filename
+        if ($this->exportProgramId) {
+            $program = Program::find($this->exportProgramId);
+            $programLabel = $program ? preg_replace('/[^A-Za-z0-9_\-]/', '_', $program->title) : 'Program';
+        } else {
+            $programLabel = 'Semua_Program';
+        }
+        $filename = 'Donasi_'.$programLabel.'_'.$this->startDate.'_sd_'.$this->endDate.'.csv';
         $feePercentage = env('SYSTEM_FEE_PERCENTAGE', 0); // Default 0 if not set
 
         $headers = [
