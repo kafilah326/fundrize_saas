@@ -1,6 +1,6 @@
 {
-  "version": "1.10.3",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini bersifat refactoring internal yang fokus pada penamaan method (scope) dan perbaikan format penulisan kode (formatting) tanpa mengubah logika bisnis atau memengaruhi kompatibilitas API.",
-  "updatedAt": "2026-02-21T23:26:38.817Z"
+  "version": "1.11.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Perubahan mencakup penambahan file konfigurasi baru untuk Livewire dan perombakan struktur antarmuka (UI) pada halaman detail program yang menambah fungsionalitas tampilan tanpa merusak fitur yang sudah ada.",
+  "updatedAt": "2026-02-22T05:11:07.264Z"
 }
