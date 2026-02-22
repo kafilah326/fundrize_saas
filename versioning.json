@@ -1,6 +1,6 @@
 {
-  "version": "1.14.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur fungsional baru berupa kartu statistik, filter pencarian berdasarkan status dan tanggal, serta peningkatan UI yang bersifat 'backward compatible'.",
-  "updatedAt": "2026-02-22T09:24:25.637Z"
+  "version": "1.14.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan hanya dilakukan pada file dokumentasi (README.md) untuk memberikan panduan penggunaan yang lebih jelas tanpa mengubah fungsionalitas kode atau API yang sudah ada.",
+  "updatedAt": "2026-02-22T09:29:58.797Z"
 }

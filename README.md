@@ -1,59 +1,163 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Fundrising App & Layanan Qurban
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Fundrising App** adalah platform penggalangan dana (donasi reguler) dan layanan pembelian serta tabungan Qurban. Aplikasi ini dibangun dengan teknologi **Laravel 12** dan **Livewire 4**. 
 
-## About Laravel
+Aplikasi ini sudah terintegrasi dengan berbagai layanan pihak ketiga, antara lain:
+- **Xendit**: Untuk *payment gateway* / pembayaran otomatis.
+- **StarSender**: Untuk notifikasi WhatsApp otomatis.
+- **Web Push (VAPID)**: Untuk notifikasi berbasis *push notification* ke peramban (browser).
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Ikuti panduan ini langkah demi langkah agar aplikasi dapat berjalan sempurna di *local development* maupun server produksi Anda.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+---
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 💻 1. Persyaratan Sistem (System Requirements)
 
-## Learning Laravel
+Pastikan lingkungan server/komputer lokal Anda memiliki spesifikasi minimum berikut:
+- **PHP** >= 8.2
+- **Composer** (versi terbaru)
+- **Node.js** & **NPM** (untuk kompilasi *asset* via Vite)
+- **Database**: MySQL, MariaDB, atau PostgreSQL (Disarankan MySQL/MariaDB)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📥 2. Instalasi Proyek (Source Code)
 
-## Laravel Sponsors
+1. Buka terminal (CMD/Powershell/Terminal).
+2. Lakukan *clone repository* Git aplikasi ini:
+   ```bash
+   git clone <url-repository-anda>
+   cd fundrisingApp
+   ```
+*(Catatan: ganti `<url-repository-anda>` dengan tautan repository Github/Gitlab proyek ini).*
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## 📦 3. Instalasi Dependensi PHP
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+Aplikasi ini menggunakan banyak library PHP (termasuk Livewire dan Xendit PHP Client). Unduh semua dependencies dengan perintah:
 
-## Contributing
+```bash
+composer install
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+---
 
-## Code of Conduct
+## ⚙️ 4. Pengaturan Lingkungan (Environment Setup)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1. Salin file *template environment* menjadi `.env`.
+   - Untuk Mac/Linux: `cp .env.example .env`
+   - Untuk Windows: `copy .env.example .env`
 
-## Security Vulnerabilities
+2. Buka file `.env` di teks editor (misal: VS Code) dan sesuaikan konfigurasi berikut:
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+   **A. Konfigurasi Database**
+   Buat database kosong terlebih dahulu di MySQL (misal: `fundrising_db`). Lalu sesuaikan baris ini:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=fundrising_db
+   DB_USERNAME=root
+   DB_PASSWORD=secret_password_anda
+   ```
 
-## License
+   **B. Konfigurasi Notifikasi (Opsional tapi Direkomendasikan)**
+   Aplikasi menggunakan StarSender untuk WhatsApp. Masukkan API Key StarSender Anda, dan atur `SYSTEM_FEE_PERCENTAGE` jika ada potongan sistem:
+   ```env
+   STARSENDER_API_KEY=api_key_starsender_anda_disini
+   SYSTEM_FEE_PERCENTAGE=2 
+   ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+   **C. Konfigurasi Queue (Sangat Penting)**
+   Karena aplikasi ini mengirimkan notifikasi WA dan email (secara otomatis lewat *background job*), pastikan koneksi *queue* diatur ke database:
+   ```env
+   QUEUE_CONNECTION=database
+   ```
+
+3. Generate Laravel Application Key:
+   ```bash
+   php artisan key:generate
+   ```
+
+---
+
+## 🗄️ 5. Migrasi Database dan Data Awal
+
+Jalankan perintah ini untuk membangun seluruh tabel database:
+
+```bash
+php artisan migrate
+```
+*(Catatan: Jika Anda memiliki `DatabaseSeeder` khusus untuk membuat akun admin default atau data kategori awal, jalankan `php artisan migrate --seed`)*.
+
+---
+
+## 🔑 6. Pengaturan Layanan Pihak Ketiga Tambahan
+
+Beberapa konfigurasi pengaturan platform disimpan di dalam database (tabel `app_settings`), bukan di `.env`. 
+
+**A. Generate VAPID Keys (Web Push Notification)**
+Jalankan perintah khusus buatan sistem ini untuk membuat kunci notifikasi web (VAPID Keys) yang akan otomatis disave ke database setting:
+```bash
+php artisan vapid:generate
+```
+
+**B. Pengaturan Xendit & WhatsApp Lainnya**
+Pengaturan *Secret Key* Xendit dan detail StarSender lainnya akan diatur melalui menu **Admin Panel -> Settings** atau **Admin Panel -> Meta Setting** dengan Web GUI sesudah aplikasi dijalankan, karena sistem menyimpanya di `AppSetting` model.
+
+---
+
+## 🎨 7. Instalasi Aset Frontend (NPM & Vite)
+
+Untuk *compile* file CSS dan JS (berbasis Livewire dan Vite):
+
+```bash
+npm install
+npm run build
+```
+*(Jika sedang berfokus pada pengembangan tampilan/Livewire, gunakan `npm run dev` pada terminal baru agar auto-reload berfungsi).*
+
+---
+
+## 📁 8. Publikasi Storage (Storage Link)
+
+Izinkan akses publik untuk direktori unggahan file (foto user, gambar program donasi, bukti tabungan qurban) dengan perintah:
+
+```bash
+php artisan storage:link
+```
+
+---
+
+## 🚀 9. Menjalankan Aplikasi
+
+Aplikasi utama menggunakan setidaknya **dua terminal** (proses) agar bisa berjalan secara optimal di lokal, terutama karena adanya *webhook* dan notifikasi antrian.
+
+**Terminal 1: Menjalankan Server Web Utama**
+```bash
+php artisan serve
+```
+Aplikasi kini dapat diakses melalui browser: **http://127.0.0.1:8000**
+
+**Terminal 2: Menjalankan Queue Worker (Background Jobs / Worker)**
+Untuk memastikan WhatsApp (StarSender), Webhooks Xendit, dan sinkronisasi donasi langsung diproses di belakang layar, biarkan terminal ini tetap berjalan:
+```bash
+php artisan queue:work
+```
+
+---
+
+## 🌐 10. Pengaturan Webhook Xendit Lokal (Opsional untuk Testing Development)
+
+Xendit Payment Gateway membutuhkan rute aplikasi *live* atau *public internet* untuk mengirimkan Webhook ketika ada donasi dibayar. 
+
+Jika berjalan di `localhost`, install [Ngrok](https://ngrok.com/) atau layanan semacamnya:
+1. Jalankan ngrok di terminal baru: `ngrok http 8000`
+2. Copy *Forwarding URL* HTTPS milik Ngrok, masukkan ke Dashboard Xendit Anda beserta *Endpoint*:
+   **`<url-ngrok>/webhooks/xendit/invoice`**
+
+*(Endpoint ini ditangani secara khusus oleh `XenditWebhookController`)*.
+
+---
+**Selesai! Aplikasi Fundrising & Qurban Anda telah berhasil diinstal dan siap digunakan secara penuh.**
