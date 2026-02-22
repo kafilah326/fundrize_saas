@@ -2,25 +2,25 @@
 
 namespace App\Livewire\Admin;
 
-use Livewire\Component;
-use Livewire\WithPagination;
-use Livewire\WithFileUploads;
+use App\Models\BankFollowup;
+use App\Models\Payment;
 use App\Models\QurbanAnimal;
+use App\Models\QurbanDocumentation;
 use App\Models\QurbanOrder;
 use App\Models\QurbanSaving;
 use App\Models\QurbanSavingsDeposit;
-use App\Models\Payment;
-use App\Models\QurbanDocumentation;
 use App\Models\QurbanTabunganSetting;
-use App\Models\BankFollowup;
 use App\Services\MetaConversionService;
 use App\Services\StarSenderService;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class Qurban extends Component
 {
-    use WithPagination;
     use WithFileUploads;
+    use WithPagination;
 
     protected $starSender;
 
@@ -30,41 +30,96 @@ class Qurban extends Component
     }
 
     public $activeTab = 'animals'; // animals, orders, savings, content
+
     public $animalType = 'langsung'; // langsung | tabungan (sub-tab within animals)
+
     public $search = '';
+
     public $perPage = 10;
+
+    public $statusFilter = '';
+
+    public $dateFrom = '';
+
+    public $dateTo = '';
 
     // Export Modal
     public $isExportModalOpen = false;
+
     public $startDate;
+
     public $endDate;
+
+    public $exportAnimalTypeFilter = '';
 
     // Animal Form
     public $animalId;
-    public $type = 'langsung', $name, $category, $weight, $price, $stock, $image, $existingImage, $description, $is_active = true;
+
+    public $type = 'langsung';
+
+    public $name;
+
+    public $category;
+
+    public $weight;
+
+    public $price;
+
+    public $stock;
+
+    public $image;
+
+    public $existingImage;
+
+    public $description;
+
+    public $is_active = true;
+
     public $isAnimalModalOpen = false;
 
     // Detail Modals
     public $selectedOrder = null;
+
     public $isOrderModalOpen = false;
+
     public $selectedSaving = null;
+
     public $isSavingModalOpen = false;
 
     // Documentation
     public $docFiles = [];
+
     public $docCaption = '';
 
     // Content Settings (Tabungan)
-    public $contentTitle, $contentSubtitle, $contentDescription;
+    public $contentTitle;
+
+    public $contentSubtitle;
+
+    public $contentDescription;
+
     public $contentBenefits = [];
-    public $contentAkadTitle, $contentAkadDescription;
+
+    public $contentAkadTitle;
+
+    public $contentAkadDescription;
+
     public $contentTerms = [];
 
     protected $queryString = [
         'activeTab' => ['except' => 'animals'],
         'animalType' => ['except' => 'langsung'],
         'search' => ['except' => ''],
+        'statusFilter' => ['except' => ''],
+        'dateFrom' => ['except' => ''],
+        'dateTo' => ['except' => ''],
     ];
+
+    public function resetFilters()
+    {
+        $this->reset(['search', 'statusFilter', 'dateFrom', 'dateTo']);
+        $this->resetPage();
+    }
 
     protected $rules = [
         'type' => 'required|in:langsung,tabungan',
@@ -99,6 +154,7 @@ class Qurban extends Component
     {
         $this->startDate = now()->startOfMonth()->format('Y-m-d');
         $this->endDate = now()->format('Y-m-d');
+        $this->exportAnimalTypeFilter = '';
         $this->isExportModalOpen = true;
     }
 
@@ -107,7 +163,7 @@ class Qurban extends Component
         $this->isExportModalOpen = false;
     }
 
-    public function export()
+    public function exportData()
     {
         $this->validate([
             'startDate' => 'required|date',
@@ -119,33 +175,40 @@ class Qurban extends Component
         $feePercentage = env('SYSTEM_FEE_PERCENTAGE', 0);
 
         if ($this->activeTab === 'orders') {
-            $orders = QurbanOrder::with(['payment', 'animal', 'user'])
+            $ordersQuery = QurbanOrder::with(['payment', 'animal', 'user'])
                 ->where('status', 'paid')
                 ->whereBetween('created_at', [
-                    $this->startDate . ' 00:00:00', 
-                    $this->endDate . ' 23:59:59'
+                    $this->startDate.' 00:00:00',
+                    $this->endDate.' 23:59:59',
                 ])
-                ->latest()
-                ->get();
+                ->when($this->exportAnimalTypeFilter, function ($q) {
+                    $q->whereHas('animal', fn ($a) => $a->where('type', $this->exportAnimalTypeFilter));
+                })
+                ->latest();
 
-            $filename = 'Qurban_Orders_' . $this->startDate . '_sd_' . $this->endDate . '.csv';
+            $orders = $ordersQuery->get();
 
-            $callback = function() use ($orders, $feePercentage) {
+            $typeLabel = $this->exportAnimalTypeFilter
+                ? ucfirst($this->exportAnimalTypeFilter)
+                : 'Semua';
+            $filename = 'Qurban_Orders_'.$typeLabel.'_'.$this->startDate.'_sd_'.$this->endDate.'.csv';
+
+            $callback = function () use ($orders, $feePercentage) {
                 $file = fopen('php://output', 'w');
-                
+
                 fputcsv($file, [
-                    'ID Transaksi', 'Tanggal', 'Nama Donatur', 'Hewan Qurban', 'Tipe', 'Atas Nama', 
-                    'Harga Hewan', 'Kode Unik', 'Total Bayar', 'SYSTEM_FEE (' . $feePercentage . '%)', 'Status'
+                    'ID Transaksi', 'Tanggal', 'Nama Donatur', 'Hewan Qurban', 'Tipe', 'Atas Nama',
+                    'Harga Hewan', 'Kode Unik', 'Total Bayar', 'SYSTEM_FEE ('.$feePercentage.'%)', 'Status',
                 ], ';');
 
                 foreach ($orders as $order) {
                     $payment = $order->payment;
-                    
+
                     $price = $order->animal_price;
                     $uniqueCode = $payment ? $payment->unique_code : 0;
                     // If payment exists, use its total, otherwise calc from price
                     $total = $payment ? ($payment->amount + $uniqueCode) : $price;
-                    
+
                     $systemFee = $total * ($feePercentage / 100);
 
                     // Formatting
@@ -165,7 +228,7 @@ class Qurban extends Component
                         $uniqueCodeFormatted,
                         $totalFormatted,
                         $systemFeeFormatted,
-                        $order->status
+                        $order->status,
                     ], ';');
                 }
                 fclose($file);
@@ -175,30 +238,36 @@ class Qurban extends Component
             $deposits = QurbanSavingsDeposit::with(['qurbanSaving', 'payment'])
                 ->where('status', 'paid')
                 ->whereBetween('created_at', [
-                    $this->startDate . ' 00:00:00', 
-                    $this->endDate . ' 23:59:59'
+                    $this->startDate.' 00:00:00',
+                    $this->endDate.' 23:59:59',
                 ])
+                ->when($this->exportAnimalTypeFilter, function ($q) {
+                    $q->whereHas('qurbanSaving', fn ($s) => $s->where('target_animal_type', $this->exportAnimalTypeFilter));
+                })
                 ->latest()
                 ->get();
 
-            $filename = 'Qurban_Savings_Deposits_' . $this->startDate . '_sd_' . $this->endDate . '.csv';
+            $typeLabel = $this->exportAnimalTypeFilter
+                ? ucfirst($this->exportAnimalTypeFilter)
+                : 'Semua';
+            $filename = 'Qurban_Tabungan_'.$typeLabel.'_'.$this->startDate.'_sd_'.$this->endDate.'.csv';
             $feePercentage = env('SYSTEM_FEE_PERCENTAGE', 0);
 
-            $callback = function() use ($deposits, $feePercentage) {
+            $callback = function () use ($deposits, $feePercentage) {
                 $file = fopen('php://output', 'w');
-                
+
                 fputcsv($file, [
-                    'ID Transaksi', 'Tanggal', 'ID Tabungan', 'Nama Penabung', 'Target Hewan', 
-                    'Nominal Setoran', 'Kode Unik', 'Total Bayar', 'SYSTEM_FEE (' . $feePercentage . '%)', 'Status'
+                    'ID Transaksi', 'Tanggal', 'ID Tabungan', 'Nama Penabung', 'Target Hewan',
+                    'Nominal Setoran', 'Kode Unik', 'Total Bayar', 'SYSTEM_FEE ('.$feePercentage.'%)', 'Status',
                 ], ';');
 
                 foreach ($deposits as $deposit) {
                     $saving = $deposit->qurbanSaving;
                     $payment = $deposit->payment;
-                    
+
                     $amount = $deposit->amount;
                     $uniqueCode = $payment ? $payment->unique_code : 0;
-                    // Usually payment amount is amount + code. 
+                    // Usually payment amount is amount + code.
                     // But deposit amount is usually just the principal.
                     // Let's assume Total = Amount + Unique Code.
                     $total = $amount + $uniqueCode;
@@ -223,7 +292,7 @@ class Qurban extends Component
                         $uniqueCodeFormatted,
                         $totalFormatted,
                         $systemFeeFormatted,
-                        $deposit->status
+                        $deposit->status,
                     ], ';');
                 }
                 fclose($file);
@@ -232,11 +301,11 @@ class Qurban extends Component
 
         if ($callback) {
             $headers = [
-                "Content-type" => "text/csv",
-                "Content-Disposition" => "attachment; filename=$filename",
-                "Pragma" => "no-cache",
-                "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
-                "Expires" => "0"
+                'Content-type' => 'text/csv',
+                'Content-Disposition' => "attachment; filename=$filename",
+                'Pragma' => 'no-cache',
+                'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+                'Expires' => '0',
             ];
 
             return response()->stream($callback, 200, $headers);
@@ -319,7 +388,7 @@ class Qurban extends Component
         // Mapping types from caller to DB types
         // $type passed from view: 'order' -> 'qurban' in DB
         // 'saving' -> 'tabungan_qurban' in DB
-        
+
         $dbType = ($type === 'order') ? 'qurban' : 'tabungan_qurban';
 
         // Find Template
@@ -327,7 +396,7 @@ class Qurban extends Component
             ->where('followup_sequence', $sequence)
             ->first();
 
-        if (!$template) {
+        if (! $template) {
             return '#';
         }
 
@@ -336,76 +405,79 @@ class Qurban extends Component
         if ($type === 'order') {
             // $model is QurbanOrder
             $order = $model;
-            
+
             // Common Replacements
             $content = str_replace('{{nama}}', $order->donor_name ?? 'Hamba Allah', $content);
             $content = str_replace('{{tanggal}}', $order->created_at->translatedFormat('d F Y'), $content);
-            
+
             // Specific Replacements for Qurban Order
             $content = str_replace('{{jenis_hewan}}', $order->animal->name ?? '-', $content);
             $content = str_replace('{{tipe_qurban}}', $order->animal->type ?? '-', $content);
             $paymentAmount = $order->payment ? $order->payment->amount : 0;
-            $content = str_replace('{{harga}}', 'Rp ' . number_format($paymentAmount, 0, ',', '.'), $content);
-            
+            $content = str_replace('{{harga}}', 'Rp '.number_format($paymentAmount, 0, ',', '.'), $content);
+
             if ($order->payment) {
                 $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $order->payment->external_id]), $content);
             }
 
             // Phone Formatting
-            $phone = $order->payment ? $order->payment->customer_phone : ''; 
-            if (empty($phone)) $phone = $order->whatsapp;
+            $phone = $order->payment ? $order->payment->customer_phone : '';
+            if (empty($phone)) {
+                $phone = $order->whatsapp;
+            }
 
         } elseif ($type === 'saving') {
-             // $model is QurbanSaving
-             $saving = $model;
+            // $model is QurbanSaving
+            $saving = $model;
 
-             // Logic to find latest payment context
-             $latestDeposit = $saving->deposits()->latest()->first();
-             $latestPayment = $latestDeposit ? $latestDeposit->payment : null;
+            // Logic to find latest payment context
+            $latestDeposit = $saving->deposits()->latest()->first();
+            $latestPayment = $latestDeposit ? $latestDeposit->payment : null;
 
-             $content = str_replace('{{nama}}', $saving->donor_name ?? 'Hamba Allah', $content);
-             $content = str_replace('{{tanggal}}', now()->translatedFormat('d F Y'), $content); 
-             if ($latestPayment) {
-                  $content = str_replace('{{tanggal}}', $latestPayment->created_at->translatedFormat('d F Y'), $content);
-             }
+            $content = str_replace('{{nama}}', $saving->donor_name ?? 'Hamba Allah', $content);
+            $content = str_replace('{{tanggal}}', now()->translatedFormat('d F Y'), $content);
+            if ($latestPayment) {
+                $content = str_replace('{{tanggal}}', $latestPayment->created_at->translatedFormat('d F Y'), $content);
+            }
 
-             // Specific Replacements for Qurban Saving
-             $content = str_replace('{{target_tabungan}}', 'Rp ' . number_format($saving->target_amount, 0, ',', '.'), $content);
-             $content = str_replace('{{saldo_saat_ini}}', 'Rp ' . number_format($saving->saved_amount, 0, ',', '.'), $content);
-             $content = str_replace('{{sisa_pembayaran}}', 'Rp ' . number_format($saving->target_amount - $saving->saved_amount, 0, ',', '.'), $content);
-             $content = str_replace('{{link_topup}}', route('qurban.savings.detail', $saving->id), $content);
-             
-             if ($latestPayment) {
-                 $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $latestPayment->external_id]), $content);
-             }
+            // Specific Replacements for Qurban Saving
+            $content = str_replace('{{target_tabungan}}', 'Rp '.number_format($saving->target_amount, 0, ',', '.'), $content);
+            $content = str_replace('{{saldo_saat_ini}}', 'Rp '.number_format($saving->saved_amount, 0, ',', '.'), $content);
+            $content = str_replace('{{sisa_pembayaran}}', 'Rp '.number_format($saving->target_amount - $saving->saved_amount, 0, ',', '.'), $content);
+            $content = str_replace('{{link_topup}}', route('qurban.savings.detail', $saving->id), $content);
 
-             // Phone Formatting
-             $phone = $saving->whatsapp;
-             if ($latestPayment) {
-                 $phone = $latestPayment->customer_phone;
-             } elseif (empty($phone) && $saving->user) {
-                 $phone = $saving->user->whatsapp;
-             }
+            if ($latestPayment) {
+                $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $latestPayment->external_id]), $content);
+            }
+
+            // Phone Formatting
+            $phone = $saving->whatsapp;
+            if ($latestPayment) {
+                $phone = $latestPayment->customer_phone;
+            } elseif (empty($phone) && $saving->user) {
+                $phone = $saving->user->whatsapp;
+            }
         }
 
         if (str_starts_with($phone, '0')) {
-            $phone = '62' . substr($phone, 1);
+            $phone = '62'.substr($phone, 1);
         }
-        
-        return "https://wa.me/{$phone}?text=" . urlencode($content);
+
+        return "https://wa.me/{$phone}?text=".urlencode($content);
     }
 
     public function sendFollowup($paymentId, $sequence)
     {
         $payment = Payment::with(['program', 'qurbanOrder.animal', 'qurbanSaving'])->find($paymentId);
-        
-        if (!$payment) {
+
+        if (! $payment) {
             $this->dispatch('alert', type: 'error', message: 'Data pembayaran tidak ditemukan.');
+
             return;
         }
 
         // Determine Type
-        $type = match($payment->transaction_type) {
+        $type = match ($payment->transaction_type) {
             'program' => 'donasi',
             'qurban_langsung' => 'qurban',
             'qurban_tabungan' => 'tabungan_qurban',
@@ -418,8 +490,9 @@ class Qurban extends Component
             ->where('is_active', true)
             ->first();
 
-        if (!$template) {
+        if (! $template) {
             $this->dispatch('alert', type: 'error', message: 'Template followup tidak ditemukan.');
+
             return;
         }
 
@@ -428,38 +501,38 @@ class Qurban extends Component
         // Common Replacements
         $content = str_replace('{{nama}}', $payment->customer_name ?? 'Hamba Allah', $content);
         $content = str_replace('{{tanggal}}', $payment->created_at->translatedFormat('d F Y'), $content);
-        
+
         // Specific Replacements based on type
         if ($type == 'donasi' && $payment->program) {
             $content = str_replace('{{program}}', $payment->program->title, $content);
-            $content = str_replace('{{nilai_donasi}}', 'Rp ' . number_format($payment->amount, 0, ',', '.'), $content);
+            $content = str_replace('{{nilai_donasi}}', 'Rp '.number_format($payment->amount, 0, ',', '.'), $content);
             $content = str_replace('{{link_donasi}}', route('program.detail', $payment->program->slug), $content);
             $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
         } elseif ($type == 'qurban' && $payment->qurbanOrder) {
             $content = str_replace('{{jenis_hewan}}', $payment->qurbanOrder->animal->name ?? '-', $content);
             $content = str_replace('{{tipe_qurban}}', $payment->qurbanOrder->animal->type ?? '-', $content);
-            $content = str_replace('{{harga}}', 'Rp ' . number_format($payment->amount, 0, ',', '.'), $content);
+            $content = str_replace('{{harga}}', 'Rp '.number_format($payment->amount, 0, ',', '.'), $content);
             $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
         } elseif ($type == 'tabungan_qurban' && $payment->qurbanSaving) {
-             $content = str_replace('{{target_tabungan}}', 'Rp ' . number_format($payment->qurbanSaving->target_amount, 0, ',', '.'), $content);
-             $content = str_replace('{{saldo_saat_ini}}', 'Rp ' . number_format($payment->qurbanSaving->saved_amount, 0, ',', '.'), $content);
-             $content = str_replace('{{sisa_pembayaran}}', 'Rp ' . number_format($payment->qurbanSaving->target_amount - $payment->qurbanSaving->saved_amount, 0, ',', '.'), $content);
-             $content = str_replace('{{link_topup}}', route('qurban.savings.detail', $payment->qurbanSaving->id), $content);
-             $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
+            $content = str_replace('{{target_tabungan}}', 'Rp '.number_format($payment->qurbanSaving->target_amount, 0, ',', '.'), $content);
+            $content = str_replace('{{saldo_saat_ini}}', 'Rp '.number_format($payment->qurbanSaving->saved_amount, 0, ',', '.'), $content);
+            $content = str_replace('{{sisa_pembayaran}}', 'Rp '.number_format($payment->qurbanSaving->target_amount - $payment->qurbanSaving->saved_amount, 0, ',', '.'), $content);
+            $content = str_replace('{{link_topup}}', route('qurban.savings.detail', $payment->qurbanSaving->id), $content);
+            $content = str_replace('{{link_pembayaran}}', route('payment.status', ['id' => $payment->external_id]), $content);
         }
 
         // Send via StarSender Service
         $result = $this->starSender->sendMessage(
-            $payment->customer_phone, 
-            $content, 
-            'followup_' . $sequence, 
+            $payment->customer_phone,
+            $content,
+            'followup_'.$sequence,
             $payment->id
         );
 
         if ($result['status']) {
             $this->dispatch('alert', type: 'success', message: 'Pesan Followup berhasil dikirim.');
         } else {
-            $this->dispatch('alert', type: 'error', message: 'Gagal mengirim pesan: ' . ($result['message'] ?? 'Unknown error'));
+            $this->dispatch('alert', type: 'error', message: 'Gagal mengirim pesan: '.($result['message'] ?? 'Unknown error'));
         }
     }
 
@@ -474,21 +547,38 @@ class Qurban extends Component
     {
         $data = [];
         $followups = BankFollowup::where('is_active', true)->get()->groupBy('type');
+        $statToday = $statYesterday = $statThisMonth = $statLastMonth = 0;
 
         if ($this->activeTab === 'animals') {
             $data = QurbanAnimal::where('type', $this->animalType)
-                ->where('name', 'like', '%' . $this->search . '%')
+                ->where('name', 'like', '%'.$this->search.'%')
                 ->orderBy('created_at', 'desc')
                 ->paginate($this->perPage);
         } elseif ($this->activeTab === 'orders') {
+            // Stats for orders tab
+            $statQ = QurbanOrder::where('status', 'paid');
+            $statToday = (clone $statQ)->whereDate('created_at', now()->toDateString())->sum('amount');
+            $statYesterday = (clone $statQ)->whereDate('created_at', now()->subDay()->toDateString())->sum('amount');
+            $statThisMonth = (clone $statQ)->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->sum('amount');
+            $statLastMonth = (clone $statQ)->whereMonth('created_at', now()->subMonth()->month)->whereYear('created_at', now()->subMonth()->year)->sum('amount');
+
             $data = QurbanOrder::with(['user', 'animal', 'payment.whatsappMessageLogs'])
                 ->where(function ($query) {
-                    $query->where('transaction_id', 'like', '%' . $this->search . '%')
-                        ->orWhere('donor_name', 'like', '%' . $this->search . '%');
+                    $query->where('transaction_id', 'like', '%'.$this->search.'%')
+                        ->orWhere('donor_name', 'like', '%'.$this->search.'%');
                 })
+                ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+                ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
+                ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
                 ->latest()
                 ->paginate($this->perPage);
         } elseif ($this->activeTab === 'savings') {
+            // Stats for savings tab — based on deposits
+            $statQ = QurbanSavingsDeposit::where('status', 'paid');
+            $statToday = (clone $statQ)->whereDate('created_at', now()->toDateString())->sum('amount');
+            $statYesterday = (clone $statQ)->whereDate('created_at', now()->subDay()->toDateString())->sum('amount');
+            $statThisMonth = (clone $statQ)->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->sum('amount');
+            $statLastMonth = (clone $statQ)->whereMonth('created_at', now()->subMonth()->month)->whereYear('created_at', now()->subMonth()->year)->sum('amount');
             // For Savings tab, we display SAVINGS ACCOUNTS, not individual payments directly in the main table usually.
             // But if the user wants FU on savings, maybe they mean FU on the saving account progress?
             // Or FU on specific deposits?
@@ -498,7 +588,7 @@ class Qurban extends Component
             // BUT, if the request is "FU column", maybe it means FU for the Saving Account owner?
             // Let's assume we can send FU to the Saving User.
             // BUT, BankFollowup templates are usually transaction-based placeholders (nilai_donasi, etc).
-            // If we are on 'savings' tab, we list ACCOUNTS. 
+            // If we are on 'savings' tab, we list ACCOUNTS.
             // If we send FU, which transaction/payment do we link it to? The latest deposit? Or just the Account?
             // The `sendFollowup` method expects a `paymentId`.
             // So if we add FU to the Savings list, we might need to change logic to support Sending FU to a Saving Account (not a specific payment).
@@ -519,16 +609,23 @@ class Qurban extends Component
             // So we don't necessarily need a specific Payment for the *content*, but `sendFollowup` expects a Payment to find the user/phone.
             // `QurbanSaving` has `user_id` and `customer_phone` (via user or direct).
             // Let's check `QurbanSaving` model.
-            
-            $data = QurbanSaving::with(['user', 'deposits']) // deposits needed?
-                ->where('donor_name', 'like', '%' . $this->search . '%')
+
+            $data = QurbanSaving::with(['user', 'deposits'])
+                ->where('donor_name', 'like', '%'.$this->search.'%')
+                ->when($this->statusFilter, fn ($q) => $q->where('status', $this->statusFilter))
+                ->when($this->dateFrom, fn ($q) => $q->whereDate('created_at', '>=', $this->dateFrom))
+                ->when($this->dateTo, fn ($q) => $q->whereDate('created_at', '<=', $this->dateTo))
                 ->latest()
                 ->paginate($this->perPage);
         }
 
         return view('livewire.admin.qurban', [
             'data' => $data,
-            'followups' => $followups
+            'followups' => $followups,
+            'statToday' => $statToday,
+            'statYesterday' => $statYesterday,
+            'statThisMonth' => $statThisMonth,
+            'statLastMonth' => $statLastMonth,
         ])->layout('layouts.admin');
     }
 
@@ -594,11 +691,11 @@ class Qurban extends Component
             session()->flash('success', 'Hewan Qurban berhasil dihapus.');
         }
     }
-    
+
     public function toggleAnimalStatus($id)
     {
         $animal = QurbanAnimal::findOrFail($id);
-        $animal->is_active = !$animal->is_active;
+        $animal->is_active = ! $animal->is_active;
         $animal->save();
     }
 
@@ -647,10 +744,12 @@ class Qurban extends Component
             'docCaption' => 'nullable|string|max:255',
         ]);
 
-        if (!$this->selectedOrder) return;
+        if (! $this->selectedOrder) {
+            return;
+        }
 
         foreach ($this->docFiles as $file) {
-            $path = $file->store('qurban-documentation/orders/' . $this->selectedOrder->id, 'public');
+            $path = $file->store('qurban-documentation/orders/'.$this->selectedOrder->id, 'public');
             $type = str_starts_with($file->getMimeType(), 'video') ? 'video' : 'photo';
 
             $this->selectedOrder->documentations()->create([
@@ -673,7 +772,7 @@ class Qurban extends Component
             Storage::disk('public')->delete($doc->file_path);
             $doc->delete();
             session()->flash('success', 'Dokumentasi berhasil dihapus.');
-            
+
             if ($context === 'order' && $this->selectedOrder) {
                 $this->selectedOrder->refresh();
             } elseif ($context === 'saving' && $this->selectedSaving) {
@@ -687,18 +786,21 @@ class Qurban extends Component
         $order = QurbanOrder::with('payment')->findOrFail($orderId);
         $payment = $order->payment;
 
-        if (!$payment) {
+        if (! $payment) {
             session()->flash('error', 'Data pembayaran tidak ditemukan.');
+
             return;
         }
 
         if ($payment->payment_type !== 'bank_transfer') {
             session()->flash('error', 'Hanya pembayaran transfer bank yang dapat dikonfirmasi manual.');
+
             return;
         }
 
         if ($payment->status !== 'pending') {
             session()->flash('error', 'Hanya pembayaran dengan status pending yang dapat dikonfirmasi.');
+
             return;
         }
 
@@ -719,7 +821,7 @@ class Qurban extends Component
             $metaService = app(MetaConversionService::class);
             $metaService->sendPurchase($payment);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Meta CAPI Purchase Error (Qurban Order): ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Meta CAPI Purchase Error (Qurban Order): '.$e->getMessage());
         }
 
         session()->flash('success', 'Pembayaran pesanan berhasil dikonfirmasi.');
@@ -749,10 +851,12 @@ class Qurban extends Component
             'docCaption' => 'nullable|string|max:255',
         ]);
 
-        if (!$this->selectedSaving) return;
+        if (! $this->selectedSaving) {
+            return;
+        }
 
         foreach ($this->docFiles as $file) {
-            $path = $file->store('qurban-documentation/savings/' . $this->selectedSaving->id, 'public');
+            $path = $file->store('qurban-documentation/savings/'.$this->selectedSaving->id, 'public');
             $type = str_starts_with($file->getMimeType(), 'video') ? 'video' : 'photo';
 
             $this->selectedSaving->documentations()->create([
@@ -773,18 +877,21 @@ class Qurban extends Component
         $deposit = QurbanSavingsDeposit::with('payment')->findOrFail($depositId);
         $payment = $deposit->payment;
 
-        if (!$payment) {
+        if (! $payment) {
             session()->flash('error', 'Data pembayaran tidak ditemukan.');
+
             return;
         }
 
         if ($payment->payment_type !== 'bank_transfer') {
             session()->flash('error', 'Hanya pembayaran transfer bank yang dapat dikonfirmasi manual.');
+
             return;
         }
 
         if ($deposit->status !== 'pending') {
             session()->flash('error', 'Hanya setoran dengan status pending yang dapat dikonfirmasi.');
+
             return;
         }
 
@@ -815,7 +922,7 @@ class Qurban extends Component
             $metaService = app(MetaConversionService::class);
             $metaService->sendPurchase($payment);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Meta CAPI Purchase Error (Qurban Deposit): ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Meta CAPI Purchase Error (Qurban Deposit): '.$e->getMessage());
         }
 
         session()->flash('success', 'Pembayaran setoran berhasil dikonfirmasi.');

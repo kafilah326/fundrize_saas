@@ -448,7 +448,7 @@
     </div>
 
     <!-- Export Modal -->
-    <div x-data="{ show: $wire.entangle('isExportModalOpen') }" x-show="show" x-transition:enter="transition ease-out duration-300"
+    <div x-data="{ show: $wire.entangle('isExportModalOpen').live }" x-show="show" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
         x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
@@ -527,7 +527,7 @@
                     </div>
                 </div>
                 <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3 rounded-b-xl border-t border-gray-100">
-                    <button wire:click="export" type="button"
+                    <button wire:click="exportData" type="button"
                         class="inline-flex items-center justify-center rounded-xl border border-transparent shadow-sm px-5 py-2.5 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all">
                         <i class="fa-solid fa-file-excel mr-2"></i> Export Excel
                     </button>

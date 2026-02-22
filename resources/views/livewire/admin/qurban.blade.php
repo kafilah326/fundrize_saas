@@ -46,41 +46,172 @@
                 </div>
             @endif
 
+            {{-- Stat Cards - hanya tampil di tab orders & savings --}}
+            @if ($activeTab === 'orders' || $activeTab === 'savings')
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                    <div
+                        class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Hari Ini
+                                </p>
+                                <h3 class="text-lg font-bold text-gray-900">Rp
+                                    {{ number_format($statToday, 0, ',', '.') }}</h3>
+                            </div>
+                            <div
+                                class="w-10 h-10 rounded-full bg-green-50 text-green-500 flex items-center justify-center">
+                                <i class="fa-solid fa-calendar-day"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Kemarin</p>
+                                <h3 class="text-lg font-bold text-gray-900">Rp
+                                    {{ number_format($statYesterday, 0, ',', '.') }}</h3>
+                            </div>
+                            <div
+                                class="w-10 h-10 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center">
+                                <i class="fa-solid fa-calendar-minus"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Bulan Ini
+                                </p>
+                                <h3 class="text-lg font-bold text-gray-900">Rp
+                                    {{ number_format($statThisMonth, 0, ',', '.') }}</h3>
+                            </div>
+                            <div
+                                class="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                                <i class="fa-solid fa-calendar"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div
+                        class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm hover:shadow-md transition-shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">Bulan Lalu
+                                </p>
+                                <h3 class="text-lg font-bold text-gray-900">Rp
+                                    {{ number_format($statLastMonth, 0, ',', '.') }}</h3>
+                            </div>
+                            <div
+                                class="w-10 h-10 rounded-full bg-purple-50 text-purple-500 flex items-center justify-center">
+                                <i class="fa-solid fa-calendar-xmark"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
             <!-- Controls -->
             @if ($activeTab !== 'content')
-                <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
-                    <div class="relative w-full sm:w-1/3 group">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <i
-                                class="fa-solid fa-search text-gray-400 group-focus-within:text-primary transition-colors"></i>
+                @if ($activeTab === 'orders' || $activeTab === 'savings')
+                    {{-- Filter Bar 2-row untuk orders & savings --}}
+                    <div class="bg-gray-50/50 p-4 rounded-xl border border-gray-100 mb-6 space-y-4">
+                        {{-- Baris 1: Search & Status --}}
+                        <div class="flex flex-col md:flex-row gap-3">
+                            <div class="relative flex-1 group">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i
+                                        class="fa-solid fa-search text-gray-400 group-focus-within:text-primary transition-colors"></i>
+                                </div>
+                                <input wire:model.live.debounce.300ms="search" type="text"
+                                    placeholder="{{ $activeTab === 'orders' ? 'Cari ID transaksi, nama donatur...' : 'Cari nama penabung...' }}"
+                                    class="pl-10 w-full rounded-xl border-gray-200 bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-sm transition-all shadow-sm">
+                            </div>
+                            <div class="flex gap-3">
+                                @if ($activeTab === 'orders')
+                                    <select wire:model.live="statusFilter"
+                                        class="rounded-xl border-gray-200 bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm shadow-sm">
+                                        <option value="">Semua Status</option>
+                                        <option value="paid">Paid</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="expired">Expired</option>
+                                        <option value="failed">Gagal</option>
+                                    </select>
+                                @else
+                                    <select wire:model.live="statusFilter"
+                                        class="rounded-xl border-gray-200 bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm shadow-sm">
+                                        <option value="">Semua Status</option>
+                                        <option value="active">Aktif</option>
+                                        <option value="completed">Selesai</option>
+                                    </select>
+                                @endif
+                            </div>
                         </div>
-                        <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari data..."
-                            class="pl-10 w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 transition-all duration-200 py-2.5 px-4 text-base">
+
+                        {{-- Baris 2: Tanggal & Aksi --}}
+                        <div
+                            class="flex flex-col md:flex-row justify-between items-center gap-3 pt-4 border-t border-gray-200/60">
+                            <div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+                                <span class="text-sm text-gray-500 font-medium hidden sm:block">Rentang:</span>
+                                <div class="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+                                    <input wire:model.live="dateFrom" type="date"
+                                        class="w-full sm:w-auto rounded-xl border-gray-200 bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2 px-3 text-sm shadow-sm">
+                                    <span class="text-gray-400 text-sm hidden sm:block">s/d</span>
+                                    <input wire:model.live="dateTo" type="date"
+                                        class="w-full sm:w-auto rounded-xl border-gray-200 bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2 px-3 text-sm shadow-sm">
+                                </div>
+                                @if ($search || $statusFilter || $dateFrom || $dateTo)
+                                    <button wire:click="resetFilters"
+                                        class="text-xs font-semibold text-gray-500 hover:text-red-500 underline transition-colors">
+                                        Reset Filter
+                                    </button>
+                                @endif
+                            </div>
+                            <div class="flex items-center gap-3 w-full md:w-auto justify-end">
+                                <div class="flex items-center gap-2 text-sm text-gray-500">
+                                    <span>Tampil:</span>
+                                    <select wire:model.live="perPage"
+                                        class="rounded-lg border-gray-200 bg-white focus:border-primary focus:ring py-1.5 px-3 shadow-sm text-sm">
+                                        <option value="10">10</option>
+                                        <option value="20">20</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <button wire:click="openExportModal"
+                                    class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-xl inline-flex items-center transition-all shadow-sm text-sm whitespace-nowrap">
+                                    <i class="fa-solid fa-file-excel mr-2"></i> Export
+                                </button>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                        <select wire:model.live="perPage"
-                            class="rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 cursor-pointer py-2.5 px-4 text-base transition-colors">
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="50">50</option>
-                            <option value="100">100</option>
-                        </select>
-
-                        @if ($activeTab === 'animals')
+                @else
+                    {{-- Controls original untuk tab animals --}}
+                    <div class="flex flex-col sm:flex-row justify-between items-center gap-4 mb-6">
+                        <div class="relative w-full sm:w-1/3 group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i
+                                    class="fa-solid fa-search text-gray-400 group-focus-within:text-primary transition-colors"></i>
+                            </div>
+                            <input wire:model.live.debounce.300ms="search" type="text" placeholder="Cari data..."
+                                class="pl-10 w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 transition-all duration-200 py-2.5 px-4 text-base">
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <select wire:model.live="perPage"
+                                class="rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 cursor-pointer py-2.5 px-4 text-base transition-colors">
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
                             <button wire:click="createAnimal"
                                 class="w-full sm:w-auto bg-primary hover:bg-primary-hover text-white font-semibold py-2.5 px-5 rounded-xl inline-flex items-center justify-center transition-all duration-200 shadow-lg shadow-primary/30 hover:shadow-primary/50 hover:-translate-y-0.5">
                                 <i class="fa-solid fa-plus mr-2"></i> Tambah
                                 {{ $animalType === 'tabungan' ? 'Target Tabungan' : 'Hewan' }}
                             </button>
-                        @elseif($activeTab === 'orders' || $activeTab === 'savings')
-                            <button wire:click="openExportModal"
-                                class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 px-5 rounded-xl inline-flex items-center justify-center transition-all duration-200 shadow-lg shadow-green-600/30 hover:shadow-green-600/50 hover:-translate-y-0.5 whitespace-nowrap">
-                                <i class="fa-solid fa-file-excel mr-2"></i> Export Excel
-                            </button>
-                        @endif
+                        </div>
                     </div>
-                </div>
+                @endif
             @endif
 
             <!-- Content -->
@@ -1208,68 +1339,90 @@ if ($isSent) {
     </div>
 
     <!-- Export Modal -->
-    <div x-data="{ show: $wire.entangle('isExportModalOpen') }" x-show="show" x-transition:enter="transition ease-out duration-300"
+    <div x-data="{ show: $wire.entangle('isExportModalOpen').live }" x-show="show" x-transition:enter="transition ease-out duration-300"
         x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
         x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+        x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto" x-cloak>
 
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="show = false">
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
-
+            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" aria-hidden="true"
+                @click="show = false"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
             <div
-                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                    <div class="sm:flex sm:items-start">
-                        <div
-                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100">
+                <div class="bg-white px-6 pt-6 pb-4">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
                             <i class="fa-solid fa-file-excel text-green-600"></i>
                         </div>
-                        <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                Export Data {{ $activeTab === 'orders' ? 'Pesanan' : 'Tabungan' }} Qurban
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900">
+                                Export {{ $activeTab === 'orders' ? 'Pesanan' : 'Tabungan' }} Qurban
                             </h3>
-                            <div class="mt-2">
-                                <p class="text-sm text-gray-500 mb-4">
-                                    Pilih rentang tanggal untuk export data
-                                    {{ $activeTab === 'orders' ? 'pesanan' : 'tabungan' }}.
-                                </p>
+                            <p class="text-sm text-gray-500 mt-1 mb-5">
+                                Pilih filter dan rentang tanggal untuk export data.
+                            </p>
 
-                                <div class="space-y-4">
-                                    <div>
-                                        <label for="startDate" class="block text-sm font-medium text-gray-700">Tanggal
-                                            Mulai</label>
-                                        <input wire:model="startDate" type="date" id="startDate"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500/20 sm:text-sm">
-                                        @error('startDate')
-                                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                        @enderror
-                                    </div>
+                            <div class="space-y-4">
+                                {{-- Filter Jenis Hewan (Orders) / Target Hewan (Savings) --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        {{ $activeTab === 'orders' ? 'Jenis Hewan' : 'Target Hewan' }}
+                                    </label>
+                                    <select wire:model="exportAnimalTypeFilter"
+                                        class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-green-500 focus:ring focus:ring-green-500/20 py-2.5 px-3 text-sm">
+                                        <option value="">— Semua Jenis —</option>
+                                        @if ($activeTab === 'orders')
+                                            <option value="langsung">Qurban Langsung</option>
+                                            <option value="tabungan">Qurban Tabungan</option>
+                                        @else
+                                            <option value="kambing">Kambing</option>
+                                            <option value="domba">Domba</option>
+                                            <option value="sapi">Sapi</option>
+                                            <option value="kerbau">Kerbau</option>
+                                        @endif
+                                    </select>
+                                    <p
+                                        class="text-xs mt-1 {{ $exportAnimalTypeFilter ? 'text-green-600' : 'text-gray-400' }} flex items-center gap-1">
+                                        <i
+                                            class="fa-solid {{ $exportAnimalTypeFilter ? 'fa-circle-check' : 'fa-circle-info' }}"></i>
+                                        {{ $exportAnimalTypeFilter ? 'Hanya jenis yang dipilih yang akan diexport' : 'Semua jenis akan diexport' }}
+                                    </p>
+                                </div>
 
-                                    <div>
-                                        <label for="endDate" class="block text-sm font-medium text-gray-700">Tanggal
-                                            Selesai</label>
-                                        <input wire:model="endDate" type="date" id="endDate"
-                                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring focus:ring-green-500/20 sm:text-sm">
-                                        @error('endDate')
-                                            <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
-                                        @enderror
-                                    </div>
+                                {{-- Tanggal Mulai --}}
+                                <div>
+                                    <label for="startDate"
+                                        class="block text-sm font-medium text-gray-700 mb-1">Tanggal Mulai</label>
+                                    <input wire:model="startDate" type="date" id="startDate"
+                                        class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-green-500 focus:ring focus:ring-green-500/20 py-2.5 px-3 text-sm">
+                                    @error('startDate')
+                                        <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                {{-- Tanggal Selesai --}}
+                                <div>
+                                    <label for="endDate" class="block text-sm font-medium text-gray-700 mb-1">Tanggal
+                                        Selesai</label>
+                                    <input wire:model="endDate" type="date" id="endDate"
+                                        class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-green-500 focus:ring focus:ring-green-500/20 py-2.5 px-3 text-sm">
+                                    @error('endDate')
+                                        <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                    @enderror
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                    <button wire:click="export" type="button"
-                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-green-600 text-base font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 sm:ml-3 sm:w-auto sm:text-sm">
-                        Export Excel
+                <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3 rounded-b-xl border-t border-gray-100">
+                    <button wire:click="exportData" type="button"
+                        class="inline-flex items-center justify-center rounded-xl border border-transparent shadow-sm px-5 py-2.5 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none transition-all">
+                        <i class="fa-solid fa-file-excel mr-2"></i> Export Excel
                     </button>
                     <button wire:click="closeExportModal" type="button"
-                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                        class="inline-flex items-center justify-center rounded-xl border border-gray-300 shadow-sm px-5 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none transition-all">
                         Batal
                     </button>
                 </div>

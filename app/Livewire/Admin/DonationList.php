@@ -360,7 +360,7 @@ class DonationList extends Component
         $this->isExportModalOpen = false;
     }
 
-    public function export()
+    public function exportData()
     {
         $this->validate([
             'startDate' => 'required|date',
