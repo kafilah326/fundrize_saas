@@ -281,7 +281,11 @@
                                                                     ]),
                                                                     $rawContent,
                                                                 );
-                                                                $waLink = $this->getFollowupUrl($order, $seqKey, 'order');
+                                                                $waLink = $this->getFollowupUrl(
+                                                                    $order,
+                                                                    $seqKey,
+                                                                    'order',
+                                                                );
                                                             @endphp
 
                                                             <a href="{{ $waLink }}" target="_blank"
@@ -448,7 +452,11 @@ if ($isSent) {
 
                                                         @if ($hasTemplate)
                                                             @php
-                                                                $waLink = $this->getFollowupUrl($saving, $seqKey, 'saving');
+                                                                $waLink = $this->getFollowupUrl(
+                                                                    $saving,
+                                                                    $seqKey,
+                                                                    'saving',
+                                                                );
                                                             @endphp
 
                                                             <a href="{{ $waLink }}" target="_blank"
@@ -745,7 +753,7 @@ if ($isSent) {
                                         <img src="{{ $existingImage }}"
                                             class="h-16 w-16 object-cover rounded-lg shadow-sm">
                                     @endif
-                                    <input wire:model="image" type="file"
+                                    <input wire:model="image" type="file" accept="image/*"
                                         class="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
                                 </div>
                                 @error('image')
@@ -950,6 +958,7 @@ if ($isSent) {
                                             <label class="block text-xs font-semibold text-gray-700 mb-1">Upload
                                                 Foto/Video</label>
                                             <input wire:model="docFiles" type="file" multiple
+                                                accept="image/*,video/*"
                                                 class="block w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20">
                                             @error('docFiles.*')
                                                 <span class="text-red-500 text-xs block mt-1">{{ $message }}</span>

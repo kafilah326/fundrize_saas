@@ -29,10 +29,13 @@ class ProgramDetail extends Component
     public function render()
     {
         return view('livewire.front.program-detail')->layout('layouts.front', [
-            'title' => $this->program->title . ' - Yayasan Peduli',
+            'title'           => $this->program->title . ' - Yayasan Peduli',
             'metaDescription' => \Illuminate\Support\Str::limit(strip_tags($this->program->description), 160),
-            'metaImage' => $this->program->image,
-            'metaKeywords' => 'donasi, ' . implode(', ', $this->program->categories->pluck('name')->toArray()) . ', ' . $this->program->title,
+            'metaImage'       => str_starts_with($this->program->image, 'http')
+                                    ? $this->program->image
+                                    : url($this->program->image),
+            'metaKeywords'    => 'donasi, ' . implode(', ', $this->program->categories->pluck('name')->toArray()) . ', ' . $this->program->title,
         ]);
+
     }
 }

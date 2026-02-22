@@ -105,6 +105,30 @@
             line-height: 1.6;
         }
 
+        .rich-text-content h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-top: 0.9em;
+            margin-bottom: 0.5em;
+            line-height: 1.5;
+        }
+
+        .rich-text-content h5 {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 0.8em;
+            margin-bottom: 0.4em;
+            line-height: 1.5;
+        }
+
+        .rich-text-content h6 {
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-top: 0.8em;
+            margin-bottom: 0.4em;
+            line-height: 1.5;
+        }
+
         .rich-text-content p {
             margin-bottom: 1em;
             line-height: 1.75;
@@ -128,6 +152,22 @@
             margin-top: 0.5em;
             margin-bottom: 0.5em;
             padding-left: 0.375em;
+            display: list-item;
+        }
+
+        .rich-text-content ul ul,
+        .rich-text-content ol ul {
+            list-style-type: circle;
+            padding-left: 1.625em;
+        }
+
+        .rich-text-content ul ul ul {
+            list-style-type: square;
+        }
+
+        .rich-text-content ol ol {
+            list-style-type: lower-latin;
+            padding-left: 1.625em;
         }
 
         .rich-text-content blockquote {
@@ -170,6 +210,36 @@
             text-decoration: line-through;
         }
 
+        .rich-text-content sub {
+            vertical-align: sub;
+            font-size: 0.75em;
+        }
+
+        .rich-text-content sup {
+            vertical-align: super;
+            font-size: 0.75em;
+        }
+
+        .rich-text-content pre {
+            background-color: #f3f4f6;
+            padding: 1em;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.875em;
+            margin: 1em 0;
+            white-space: pre-wrap;
+        }
+
+        .rich-text-content code {
+            background-color: #f3f4f6;
+            padding: 0.2em 0.4em;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.875em;
+            color: #ef4444;
+        }
+
         /* Quill Alignment Classes */
         .rich-text-content .ql-align-center {
             text-align: center;
@@ -183,6 +253,7 @@
             text-align: justify;
         }
 
+        /* Quill Indent Classes */
         .rich-text-content .ql-indent-1 {
             padding-left: 3em;
         }
@@ -194,6 +265,54 @@
         .rich-text-content .ql-indent-3 {
             padding-left: 9em;
         }
+
+        .rich-text-content .ql-indent-4 {
+            padding-left: 12em;
+        }
+
+        .rich-text-content .ql-indent-5 {
+            padding-left: 15em;
+        }
+
+        .rich-text-content .ql-indent-6 {
+            padding-left: 18em;
+        }
+
+        /* Quill Font Size Classes */
+        .rich-text-content .ql-size-small {
+            font-size: 0.75em;
+        }
+
+        .rich-text-content .ql-size-large {
+            font-size: 1.5em;
+        }
+
+        .rich-text-content .ql-size-huge {
+            font-size: 2.5em;
+        }
+
+        /* Quill Code Block */
+        .rich-text-content .ql-syntax {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 1em;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            font-family: monospace;
+            font-size: 0.875em;
+            margin: 1em 0;
+            white-space: pre-wrap;
+            display: block;
+        }
+
+        /* Quill Video */
+        .rich-text-content .ql-video {
+            width: 100%;
+            aspect-ratio: 16/9;
+            border-radius: 0.5rem;
+            margin: 1em 0;
+        }
+
 
         /* Quill Editor Customization */
         .ql-toolbar.ql-snow {

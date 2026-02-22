@@ -81,7 +81,7 @@
                                         </div>
                                     @endif
                                     <div class="flex-1">
-                                        <input wire:model="logo" type="file"
+                                        <input wire:model="logo" type="file" accept="image/*"
                                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors">
                                         <p class="text-xs text-gray-500 mt-2">Format: PNG, JPG. Max: 2MB.</p>
                                     </div>
@@ -108,7 +108,7 @@
                                         </div>
                                     @endif
                                     <div class="flex-1">
-                                        <input wire:model="favicon" type="file"
+                                        <input wire:model="favicon" type="file" accept="image/*"
                                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors">
                                         <p class="text-xs text-gray-500 mt-2">Format: PNG, ICO. Max: 1MB.</p>
                                     </div>

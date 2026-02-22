@@ -1,6 +1,6 @@
 {
-  "version": "1.11.0",
+  "version": "1.12.0",
   "aiDecision": "MINOR",
-  "aiReason": "Perubahan mencakup penambahan file konfigurasi baru untuk Livewire dan perombakan struktur antarmuka (UI) pada halaman detail program yang menambah fungsionalitas tampilan tanpa merusak fitur yang sudah ada.",
-  "updatedAt": "2026-02-22T05:11:07.264Z"
+  "aiReason": "Perubahan ini mencakup penambahan fungsionalitas baru yang tetap kompatibel dengan versi sebelumnya, seperti dukungan format gambar AVIF, penambahan meta tags SEO (Open Graph & Twitter), serta peningkatan signifikan pada sistem styling konten.",
+  "updatedAt": "2026-02-22T07:20:54.345Z"
 }
