@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MaintenanceFee;
 use App\Models\Donation;
+use App\Models\MaintenanceFee;
 use App\Models\QurbanOrder;
 use App\Models\QurbanSavingsDeposit;
 use Illuminate\Http\Request;
@@ -42,8 +42,10 @@ class ApiController extends Controller
                 ->sum('amount');
 
             $totalCollected = $totalDonations + $totalQurban + $totalSavings;
-            
-            if ($totalCollected == 0) continue;
+
+            if ($totalCollected == 0) {
+                continue;
+            }
 
             $feeMaintenance = ($totalCollected * $feePercentage) / 100;
 
@@ -73,7 +75,7 @@ class ApiController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $fees
+            'data' => $fees,
         ]);
     }
 
@@ -83,22 +85,22 @@ class ApiController extends Controller
     public function updateMaintenanceFeeStatus(Request $request, $id)
     {
         $fee = MaintenanceFee::find($id);
-        
-        if (!$fee) {
+
+        if (! $fee) {
             return response()->json([
                 'success' => false,
-                'message' => 'Maintenance Fee not found'
+                'message' => 'Maintenance Fee not found',
             ], 404);
         }
 
         $request->validate([
-            'status' => 'required|in:pending,unverified,paid'
+            'status' => 'required|in:pending,unverified,paid',
         ]);
 
         $fee->status = $request->status;
-        
+
         // Auto set paid_at if status changed to paid
-        if ($request->status === 'paid' && !$fee->paid_at) {
+        if ($request->status === 'paid' && ! $fee->paid_at) {
             $fee->paid_at = now();
         }
 
@@ -107,7 +109,7 @@ class ApiController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Status updated successfully',
-            'data' => $fee
+            'data' => $fee,
         ]);
     }
 
@@ -118,23 +120,25 @@ class ApiController extends Controller
     {
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
-        
+        $feePercentage = (float) env('SYSTEM_FEE_PERCENTAGE', 2);
+
         // Define limits to prevent memory exhaustion
         $limit = $request->query('limit', 500);
 
         // Fetch Donations
         $donationQuery = Donation::with('program')->latest();
         if ($startDate && $endDate) {
-            $donationQuery->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+            $donationQuery->whereBetween('created_at', [$startDate.' 00:00:00', $endDate.' 23:59:59']);
         } else {
             $donationQuery->take($limit);
         }
-        $donations = $donationQuery->get()->map(function($d) {
+        $donations = $donationQuery->get()->map(function ($d) use ($feePercentage) {
             return [
                 'transaction_id' => $d->transaction_id,
                 'type' => 'Donasi',
-                'title' => 'Donasi: ' . ($d->program->title ?? 'Program'),
+                'title' => 'Donasi: '.($d->program->title ?? 'Program'),
                 'amount' => $d->total,
+                'fee_maintenance' => ($d->total * $feePercentage) / 100,
                 'status' => $d->status,
                 'customer_name' => $d->donor_name,
                 'created_at' => $d->created_at,
@@ -144,16 +148,17 @@ class ApiController extends Controller
         // Fetch Qurban Orders
         $qurbanQuery = QurbanOrder::with('animal')->latest();
         if ($startDate && $endDate) {
-            $qurbanQuery->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+            $qurbanQuery->whereBetween('created_at', [$startDate.' 00:00:00', $endDate.' 23:59:59']);
         } else {
             $qurbanQuery->take($limit);
         }
-        $qurbans = $qurbanQuery->get()->map(function($q) {
+        $qurbans = $qurbanQuery->get()->map(function ($q) use ($feePercentage) {
             return [
                 'transaction_id' => $q->transaction_id,
                 'type' => 'Qurban',
-                'title' => 'Qurban: ' . ($q->animal->name ?? 'Hewan'),
+                'title' => 'Qurban: '.($q->animal->name ?? 'Hewan'),
                 'amount' => $q->amount,
+                'fee_maintenance' => ($q->amount * $feePercentage) / 100,
                 'status' => $q->status,
                 'customer_name' => $q->donor_name,
                 'created_at' => $q->created_at,
@@ -163,16 +168,17 @@ class ApiController extends Controller
         // Fetch Qurban Savings Deposits
         $savingsQuery = QurbanSavingsDeposit::with('qurbanSaving')->latest();
         if ($startDate && $endDate) {
-            $savingsQuery->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+            $savingsQuery->whereBetween('created_at', [$startDate.' 00:00:00', $endDate.' 23:59:59']);
         } else {
             $savingsQuery->take($limit);
         }
-        $savings = $savingsQuery->get()->map(function($s) {
+        $savings = $savingsQuery->get()->map(function ($s) use ($feePercentage) {
             return [
                 'transaction_id' => $s->transaction_id,
                 'type' => 'Tabungan Qurban',
-                'title' => 'Tabungan Qurban: ' . ($s->qurbanSaving->donor_name ?? 'Donatur'),
+                'title' => 'Tabungan Qurban: '.($s->qurbanSaving->donor_name ?? 'Donatur'),
                 'amount' => $s->amount,
+                'fee_maintenance' => ($s->amount * $feePercentage) / 100,
                 'status' => $s->status,
                 'customer_name' => $s->qurbanSaving->donor_name ?? 'Hamba Allah',
                 'created_at' => $s->created_at,
@@ -181,15 +187,15 @@ class ApiController extends Controller
 
         // Combine all and sort by created_at descending
         $all = collect()
-                ->merge($donations)
-                ->merge($qurbans)
-                ->merge($savings)
-                ->sortByDesc('created_at')
-                ->values();
+            ->merge($donations)
+            ->merge($qurbans)
+            ->merge($savings)
+            ->sortByDesc('created_at')
+            ->values();
 
         return response()->json([
             'success' => true,
-            'data' => $all
+            'data' => $all,
         ]);
     }
 }
