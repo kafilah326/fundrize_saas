@@ -55,6 +55,10 @@
                                     {{ $monthData['record']->paid_at->format('d/m/Y') }}
                                 </div>
                                 @endif
+                            @elseif($monthData['status'] == 'unverified')
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
+                                    Menunggu Konfirmasi
+                                </span>
                             @else
                                 <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
                                     Pending
@@ -67,13 +71,13 @@
                                     Detail
                                 </button>
                                 
-                                @if($monthData['status'] != 'paid' && $monthData['fee_maintenance'] > 0 && !$monthData['is_current_month'])
+                                @if(!in_array($monthData['status'], ['paid', 'unverified']) && $monthData['fee_maintenance'] > 0 && !$monthData['is_current_month'])
                                 <button wire:click="showPayment({{ $monthData['month_num'] }})" class="text-white bg-primary hover:bg-primary-hover px-3 py-1 rounded-lg text-xs transition-colors shadow-sm">
                                     Bayar
                                 </button>
                                 @endif
                                 
-                                @if($monthData['status'] == 'paid' && optional($monthData['record'])->proof_of_payment)
+                                @if(in_array($monthData['status'], ['paid', 'unverified']) && optional($monthData['record'])->proof_of_payment)
                                 <a href="{{ Storage::url($monthData['record']->proof_of_payment) }}" target="_blank" class="text-blue-500 hover:text-blue-700 text-xs flex items-center">
                                     <i class="fa-solid fa-receipt mr-1"></i> Bukti
                                 </a>

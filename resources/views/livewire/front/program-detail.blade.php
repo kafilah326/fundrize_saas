@@ -1,6 +1,7 @@
 <div x-data="{
     showUpdateModal: false,
     showDonorModal: false,
+    showDoaModal: false,
     share() {
         if (navigator.share) {
             navigator.share({
@@ -216,6 +217,40 @@
 
         <!-- Donor List Section -->
         @if ($donations->isNotEmpty())
+            <!-- Doa Section -->
+            @php
+                $doaDonations = $donations->filter(function($d) { return !empty($d->doa); });
+            @endphp
+            @if ($doaDonations->isNotEmpty())
+            <section id="doa-section" class="bg-white px-4 py-4 mt-2">
+                <h3 class="text-base font-bold text-dark mb-3">Doa Orang Baik</h3>
+                <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+                    @foreach ($doaDonations->take(10) as $donation)
+                        <div class="flex-shrink-0 w-64 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                                    <i class="fa-solid fa-user text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-dark line-clamp-1">
+                                        {{ $donation->is_anonymous ? 'Hamba Allah' : $donation->donor_name }}
+                                    </p>
+                                    <p class="text-[10px] text-gray-500">{{ $donation->created_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-700 italic line-clamp-3">"{{ $donation->doa }}"</p>
+                        </div>
+                    @endforeach
+                </div>
+                @if ($doaDonations->count() > 10)
+                    <button @click="showDoaModal = true"
+                        class="text-primary font-semibold text-sm w-full py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors mt-2">
+                        Lihat Semua Doa
+                    </button>
+                @endif
+            </section>
+            @endif
+
             <section id="donor-section" class="bg-white px-4 py-4 mt-2">
                 <h3 class="text-base font-bold text-dark mb-3">List Donatur ({{ $donations->count() }})</h3>
 
@@ -380,13 +415,48 @@
                                     Rp
                                     {{ number_format($donation->amount + ($donation->payment?->unique_code ?? 0), 0, ',', '.') }}
                                 </p>
-                                @if ($donation->payment?->unique_code)
-                                    <span class="text-[10px] text-gray-400 block">+kode unik
-                                        {{ $donation->payment->unique_code }}</span>
-                                @endif
                             </div>
                         </div>
                     @endforeach
+                </div>
+            </div>
+        </div>
+    <!-- Doa Modal -->
+    <div x-show="showDoaModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+        x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200"
+        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
+
+        <div class="bg-white w-full max-w-[460px] max-h-[85vh] rounded-2xl overflow-hidden flex flex-col shadow-xl"
+            @click.away="showDoaModal = false">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center sticky top-0 bg-white z-10">
+                <h3 class="font-bold text-dark text-lg">Semua Doa Orang Baik</h3>
+                <button @click="showDoaModal = false"
+                    class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-gray-200">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-4 overflow-y-auto">
+                <div class="space-y-4">
+                    @if (isset($doaDonations))
+                        @foreach ($doaDonations as $donation)
+                            <div class="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                                        <i class="fa-solid fa-user text-xs"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs font-bold text-dark">
+                                            {{ $donation->is_anonymous ? 'Hamba Allah' : $donation->donor_name }}
+                                        </p>
+                                        <p class="text-[10px] text-gray-500">{{ $donation->created_at->diffForHumans() }}</p>
+                                    </div>
+                                </div>
+                                <p class="text-sm text-gray-700 italic">"{{ $donation->doa }}"</p>
+                            </div>
+                        @endforeach
+                    @endif
                 </div>
             </div>
         </div>

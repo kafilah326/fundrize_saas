@@ -70,9 +70,8 @@ class MaintenanceFee extends Component
             [
                 'total_amount' => $totalCollected,
                 'fee_amount' => $feeAmount,
-                'status' => 'paid',
+                'status' => 'unverified',
                 'proof_of_payment' => $path,
-                'paid_at' => Carbon::now(),
             ]
         );
 
