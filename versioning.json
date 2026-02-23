@@ -1,6 +1,6 @@
 {
-  "version": "1.16.1",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini hanya bersifat kosmetik pada bagian antarmuka (UI) dan tidak mengubah fungsionalitas maupun struktur API yang ada.",
-  "updatedAt": "2026-02-22T23:28:29.625Z"
+  "version": "1.17.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan fitur validasi aspek rasio (1:1), dukungan format file baru (webp), serta perbaikan pada logika pemanggilan path gambar favicon.",
+  "updatedAt": "2026-02-22T23:43:27.964Z"
 }

@@ -108,8 +108,10 @@ class Settings extends Component
         $this->validate([
             'name' => 'required|string',
             'email' => 'required|email',
-            'logo' => 'nullable|image|max:2048',
-            'favicon' => 'nullable|image|max:1024',
+            'logo' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:2048',
+            'favicon' => 'nullable|image|mimes:png,ico,webp|dimensions:ratio=1/1|max:1024',
+        ], [
+            'favicon.dimensions' => 'Favicon harus berbentuk persegi (1:1). Rekomendasi: 512x512 px.'
         ]);
 
         $data = [

@@ -70,10 +70,10 @@
                                     class="flex items-center space-x-6 p-4 border border-gray-200 rounded-xl bg-gray-50">
                                     @if ($logo)
                                         <img src="{{ $logo->temporaryUrl() }}"
-                                            class="h-24 w-24 object-cover rounded-xl shadow-sm border border-white">
+                                            class="h-24 w-24 object-contain rounded-xl shadow-sm border border-white bg-white">
                                     @elseif($existingLogo)
                                         <img src="{{ $existingLogo }}"
-                                            class="h-24 w-24 object-cover rounded-xl shadow-sm border border-white">
+                                            class="h-24 w-24 object-contain rounded-xl shadow-sm border border-white bg-white">
                                     @else
                                         <div
                                             class="h-24 w-24 rounded-xl bg-gray-200 flex items-center justify-center text-gray-400">
@@ -83,7 +83,7 @@
                                     <div class="flex-1">
                                         <input wire:model="logo" type="file" accept="image/*"
                                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors">
-                                        <p class="text-xs text-gray-500 mt-2">Format: PNG, JPG. Max: 2MB.</p>
+                                        <p class="text-xs text-gray-500 mt-2">Format: PNG transparan. Rekomendasi ukuran: 512x128 px (Landscape). Max: 2MB.</p>
                                     </div>
                                 </div>
                                 @error('logo')
@@ -97,10 +97,10 @@
                                     class="flex items-center space-x-6 p-4 border border-gray-200 rounded-xl bg-gray-50">
                                     @if ($favicon)
                                         <img src="{{ $favicon->temporaryUrl() }}"
-                                            class="h-12 w-12 object-cover rounded-xl shadow-sm border border-white">
+                                            class="h-12 w-12 object-contain rounded-xl shadow-sm border border-white bg-white">
                                     @elseif($existingFavicon)
-                                        <img src="{{ Storage::url($existingFavicon) }}"
-                                            class="h-12 w-12 object-cover rounded-xl shadow-sm border border-white">
+                                        <img src="{{ $existingFavicon }}"
+                                            class="h-12 w-12 object-contain rounded-xl shadow-sm border border-white bg-white">
                                     @else
                                         <div
                                             class="h-12 w-12 rounded-xl bg-gray-200 flex items-center justify-center text-gray-400">
@@ -110,7 +110,7 @@
                                     <div class="flex-1">
                                         <input wire:model="favicon" type="file" accept="image/*"
                                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors">
-                                        <p class="text-xs text-gray-500 mt-2">Format: PNG, ICO. Max: 1MB.</p>
+                                        <p class="text-xs text-gray-500 mt-2">Format: PNG. Rekomendasi ukuran: 512x512 px (Square). Max: 1MB.</p>
                                     </div>
                                 </div>
                                 @error('favicon')
