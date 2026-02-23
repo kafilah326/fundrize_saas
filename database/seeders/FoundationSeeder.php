@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\FoundationSetting;
 use App\Models\LegalDocument;
+use Illuminate\Database\Seeder;
 
 class FoundationSeeder extends Seeder
 {
@@ -19,17 +19,17 @@ class FoundationSeeder extends Seeder
             'mission' => json_encode([
                 'Menyelenggarakan program pendidikan untuk anak kurang mampu',
                 'Memberikan bantuan kesehatan dan kemanusiaan',
-                'Memberdayakan ekonomi masyarakat dhuafa'
+                'Memberdayakan ekonomi masyarakat dhuafa',
             ]),
             'focus_areas' => json_encode(['Pendidikan', 'Kesehatan', 'Dakwah', 'Kemanusiaan']),
             'address' => 'Jl. Kebaikan No. 123, Jakarta Selatan 12560',
             'phone' => '+62 21 1234 5678',
             'email' => 'info@berbagiberkah.org',
             'social_media' => json_encode([
-                'facebook' => '#',
-                'instagram' => '#',
-                'whatsapp' => '#',
-                'youtube' => '#'
+                'facebook' => '',
+                'instagram' => '',
+                'whatsapp' => '',
+                'youtube' => '',
             ]),
         ]);
 
@@ -38,31 +38,31 @@ class FoundationSeeder extends Seeder
                 'title' => 'Akta Pendirian',
                 'document_number' => 'AHU-0012345.AH.01.04.Tahun 2020',
                 'status' => 'Terverifikasi',
-                'sort_order' => 1
+                'sort_order' => 1,
             ],
             [
                 'title' => 'SK Kemenkumham',
                 'document_number' => 'AHU-0067890.AH.01.04.Tahun 2020',
                 'status' => 'Terverifikasi',
-                'sort_order' => 2
+                'sort_order' => 2,
             ],
             [
                 'title' => 'NPWP Yayasan',
                 'document_number' => '12.345.678.9-012.000',
                 'status' => 'Terverifikasi',
-                'sort_order' => 3
+                'sort_order' => 3,
             ],
             [
                 'title' => 'Izin Pengumpulan Uang',
                 'document_number' => 'No. 456/IPU/2023 - Kemensos RI',
                 'status' => 'Aktif s.d 2025',
-                'sort_order' => 4
+                'sort_order' => 4,
             ],
             [
                 'title' => 'Rekomendasi BAZNAS',
                 'document_number' => 'No. B-789/BAZNAS/XII/2023',
                 'status' => 'Terverifikasi',
-                'sort_order' => 5
+                'sort_order' => 5,
             ],
         ];
 
