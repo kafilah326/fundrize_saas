@@ -415,10 +415,6 @@
                                     Rp
                                     {{ number_format($donation->amount + ($donation->payment?->unique_code ?? 0), 0, ',', '.') }}
                                 </p>
-                                @if ($donation->payment?->unique_code)
-                                    <span class="text-[10px] text-gray-400 block">+kode unik
-                                        {{ $donation->payment->unique_code }}</span>
-                                @endif
                             </div>
                         </div>
                     @endforeach
