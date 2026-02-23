@@ -13,9 +13,64 @@ class ApiController extends Controller
     /**
      * Get all maintenance fees
      */
-    public function getMaintenanceFees()
+    public function getMaintenanceFees(Request $request)
     {
-        $fees = MaintenanceFee::orderBy('year', 'desc')->orderBy('month', 'desc')->get();
+        $yearParam = $request->query('year', \Carbon\Carbon::now()->year);
+        $feePercentage = (float) env('SYSTEM_FEE_PERCENTAGE', 0);
+        $currentMonth = \Carbon\Carbon::now()->month;
+        $currentYear = \Carbon\Carbon::now()->year;
+
+        $limitMonth = ($yearParam == $currentYear) ? $currentMonth : 12;
+        $fees = [];
+
+        for ($m = 1; $m <= $limitMonth; $m++) {
+            $monthName = \Carbon\Carbon::createFromDate($yearParam, $m, 1)->translatedFormat('F');
+
+            $totalDonations = Donation::whereYear('created_at', $yearParam)
+                ->whereMonth('created_at', $m)
+                ->where('status', 'success')
+                ->sum('total');
+
+            $totalQurban = QurbanOrder::whereYear('created_at', $yearParam)
+                ->whereMonth('created_at', $m)
+                ->where('status', 'paid')
+                ->sum('amount');
+
+            $totalSavings = QurbanSavingsDeposit::whereYear('created_at', $yearParam)
+                ->whereMonth('created_at', $m)
+                ->where('status', 'paid')
+                ->sum('amount');
+
+            $totalCollected = $totalDonations + $totalQurban + $totalSavings;
+            
+            if ($totalCollected == 0) continue;
+
+            $feeMaintenance = ($totalCollected * $feePercentage) / 100;
+
+            $record = MaintenanceFee::where('year', $yearParam)
+                ->where('month', $m)
+                ->first();
+
+            $status = $record ? $record->status : 'not_yet';
+
+            $fees[] = [
+                'id' => $record ? $record->id : null,
+                'year' => (int) $yearParam,
+                'month' => $m,
+                'month_name' => $monthName,
+                'total_amount' => $totalCollected,
+                'fee_amount' => $feeMaintenance,
+                'status' => $status,
+                'proof_of_payment' => $record ? $record->proof_of_payment : null,
+                'paid_at' => $record ? $record->paid_at : null,
+                'created_at' => $record ? $record->created_at : null,
+                'updated_at' => $record ? $record->updated_at : null,
+            ];
+        }
+
+        // Sort descending
+        $fees = collect($fees)->sortByDesc('month')->values()->all();
+
         return response()->json([
             'success' => true,
             'data' => $fees
@@ -61,11 +116,20 @@ class ApiController extends Controller
      */
     public function getTransactions(Request $request)
     {
+        $startDate = $request->query('start_date');
+        $endDate = $request->query('end_date');
+        
         // Define limits to prevent memory exhaustion
         $limit = $request->query('limit', 500);
 
         // Fetch Donations
-        $donations = Donation::with('program')->latest()->take($limit)->get()->map(function($d) {
+        $donationQuery = Donation::with('program')->latest();
+        if ($startDate && $endDate) {
+            $donationQuery->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+        } else {
+            $donationQuery->take($limit);
+        }
+        $donations = $donationQuery->get()->map(function($d) {
             return [
                 'transaction_id' => $d->transaction_id,
                 'type' => 'Donasi',
@@ -78,11 +142,17 @@ class ApiController extends Controller
         });
 
         // Fetch Qurban Orders
-        $qurbans = QurbanOrder::with('qurbanAnimal')->latest()->take($limit)->get()->map(function($q) {
+        $qurbanQuery = QurbanOrder::with('animal')->latest();
+        if ($startDate && $endDate) {
+            $qurbanQuery->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+        } else {
+            $qurbanQuery->take($limit);
+        }
+        $qurbans = $qurbanQuery->get()->map(function($q) {
             return [
                 'transaction_id' => $q->transaction_id,
                 'type' => 'Qurban',
-                'title' => 'Qurban: ' . ($q->qurbanAnimal->name ?? 'Hewan'),
+                'title' => 'Qurban: ' . ($q->animal->name ?? 'Hewan'),
                 'amount' => $q->amount,
                 'status' => $q->status,
                 'customer_name' => $q->donor_name,
@@ -91,7 +161,13 @@ class ApiController extends Controller
         });
 
         // Fetch Qurban Savings Deposits
-        $savings = QurbanSavingsDeposit::with('qurbanSaving')->latest()->take($limit)->get()->map(function($s) {
+        $savingsQuery = QurbanSavingsDeposit::with('qurbanSaving')->latest();
+        if ($startDate && $endDate) {
+            $savingsQuery->whereBetween('created_at', [$startDate . ' 00:00:00', $endDate . ' 23:59:59']);
+        } else {
+            $savingsQuery->take($limit);
+        }
+        $savings = $savingsQuery->get()->map(function($s) {
             return [
                 'transaction_id' => $s->transaction_id,
                 'type' => 'Tabungan Qurban',
@@ -111,21 +187,9 @@ class ApiController extends Controller
                 ->sortByDesc('created_at')
                 ->values();
 
-        // Simple manual pagination
-        $page = (int) $request->query('page', 1);
-        $perPage = (int) $request->query('per_page', 50);
-        $total = $all->count();
-        $paginated = $all->slice(($page - 1) * $perPage, $perPage)->values();
-
         return response()->json([
             'success' => true,
-            'data' => $paginated,
-            'meta' => [
-                'total' => $total,
-                'page' => $page,
-                'per_page' => $perPage,
-                'last_page' => ceil($total / $perPage)
-            ]
+            'data' => $all
         ]);
     }
 }
