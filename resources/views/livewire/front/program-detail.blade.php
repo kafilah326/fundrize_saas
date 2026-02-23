@@ -216,6 +216,34 @@
 
         <!-- Donor List Section -->
         @if ($donations->isNotEmpty())
+            <!-- Doa Section -->
+            @php
+                $doaDonations = $donations->filter(function($d) { return !empty($d->doa); });
+            @endphp
+            @if ($doaDonations->isNotEmpty())
+            <section id="doa-section" class="bg-white px-4 py-4 mt-2">
+                <h3 class="text-base font-bold text-dark mb-3">Doa Orang Baik</h3>
+                <div class="flex gap-3 overflow-x-auto hide-scrollbar pb-2">
+                    @foreach ($doaDonations->take(10) as $donation)
+                        <div class="flex-shrink-0 w-64 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                            <div class="flex items-center gap-2 mb-2">
+                                <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-500">
+                                    <i class="fa-solid fa-user text-xs"></i>
+                                </div>
+                                <div>
+                                    <p class="text-xs font-bold text-dark line-clamp-1">
+                                        {{ $donation->is_anonymous ? 'Hamba Allah' : $donation->donor_name }}
+                                    </p>
+                                    <p class="text-[10px] text-gray-500">{{ $donation->created_at->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                            <p class="text-sm text-gray-700 italic line-clamp-3">"{{ $donation->doa }}"</p>
+                        </div>
+                    @endforeach
+                </div>
+            </section>
+            @endif
+
             <section id="donor-section" class="bg-white px-4 py-4 mt-2">
                 <h3 class="text-base font-bold text-dark mb-3">List Donatur ({{ $donations->count() }})</h3>
 

@@ -75,6 +75,13 @@
                         placeholder="email@example.com" />
                 </div>
 
+                <div>
+                    <label class="block text-sm font-semibold text-dark mb-2">Doa (Opsional)</label>
+                    <textarea wire:model="doa" rows="3"
+                        class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary resize-none"
+                        placeholder="Tuliskan doa atau harapan Anda..."></textarea>
+                </div>
+
                 <div class="flex items-center gap-3">
                     <input type="checkbox" id="anonymous" wire:model.live="isAnonymous"
                         class="w-4 h-4 text-primary border-gray-300 rounded focus:ring-primary" />

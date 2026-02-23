@@ -17,6 +17,7 @@ class ProgramCheckout extends Component
     public $name;
     public $phone;
     public $email;
+    public $doa;
     public $isAnonymous = false;
     public $showCustomAmount = false;
 
@@ -67,6 +68,7 @@ class ProgramCheckout extends Component
                 'name' => $this->name,
                 'phone' => $this->phone,
                 'email' => $this->email,
+                'doa' => $this->doa,
                 'is_anonymous' => $this->isAnonymous,
             ]
         ]);

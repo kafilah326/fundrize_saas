@@ -19,6 +19,7 @@ class Donation extends Model
         'donor_phone',
         'donor_email',
         'is_anonymous',
+        'doa',
         'payment_method',
         'status',
         'payment_expiry',

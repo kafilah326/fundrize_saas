@@ -169,6 +169,7 @@ class PaymentMethod extends Component
                 'donor_phone' => $checkout['phone'],
                 'donor_email' => $checkout['email'],
                 'is_anonymous' => $checkout['is_anonymous'] ?? false,
+                'doa' => $checkout['doa'] ?? null,
                 'payment_method' => $this->selectedMethod,
                 'status' => 'pending',
                 'payment_expiry' => $payment->expired_at,
