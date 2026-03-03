@@ -27,14 +27,15 @@ class ProgramDetail extends Component
 
     public function render()
     {
+        $foundationName = \App\Models\FoundationSetting::value('name') ?? 'Yayasan Peduli';
+
         return view('livewire.front.program-detail')->layout('layouts.front', [
-            'title' => $this->program->title.' - Yayasan Peduli',
+            'title' => $this->program->title.' - ' . $foundationName,
             'metaDescription' => \Illuminate\Support\Str::limit(strip_tags($this->program->description), 160),
             'metaImage' => str_starts_with($this->program->image, 'http')
                                     ? $this->program->image
                                     : url($this->program->image),
             'metaKeywords' => 'donasi, '.implode(', ', $this->program->categories->pluck('name')->toArray()).', '.$this->program->title,
         ]);
-
     }
 }

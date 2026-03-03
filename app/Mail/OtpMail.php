@@ -28,8 +28,10 @@ class OtpMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $foundationName = \App\Models\FoundationSetting::value('name') ?? 'Yayasan Peduli';
+
         return new Envelope(
-            subject: 'Kode OTP Reset Password - Yayasan Peduli',
+            subject: 'Kode OTP Reset Password - ' . $foundationName,
         );
     }
 

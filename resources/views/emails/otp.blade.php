@@ -6,7 +6,7 @@
 <body style="font-family: Arial, sans-serif; background-color: #f8f9fa; padding: 20px;">
     <div style="max-width: 500px; margin: 0 auto; background-color: #ffffff; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
         <div style="text-align: center; margin-bottom: 20px;">
-            <h2 style="color: #FF6B35; margin: 0;">Yayasan Peduli</h2>
+            <h2 style="color: #FF6B35; margin: 0;">{{ \App\Models\FoundationSetting::value('name') ?? 'Yayasan Peduli' }}</h2>
         </div>
         
         <p style="color: #333; font-size: 16px; line-height: 1.5;">Halo,</p>
@@ -22,7 +22,7 @@
         <p style="color: #666; font-size: 14px; line-height: 1.5;">Jika Anda tidak merasa melakukan permintaan ini, abaikan email ini.</p>
         
         <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 20px; text-align: center;">
-            <p style="color: #999; font-size: 12px; margin: 0;">&copy; {{ date('Y') }} Yayasan Peduli. All rights reserved.</p>
+            <p style="color: #999; font-size: 12px; margin: 0;">&copy; {{ date('Y') }} {{ \App\Models\FoundationSetting::value('name') ?? 'Yayasan Peduli' }}. All rights reserved.</p>
         </div>
     </div>
 </body>

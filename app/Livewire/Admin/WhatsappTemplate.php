@@ -204,12 +204,14 @@ class WhatsappTemplate extends Component
 
     private function getSampleData(string $type, string $event): array
     {
+        $foundationName = \App\Models\FoundationSetting::value('name') ?? 'Yayasan Peduli';
+
         $common = [
             'nama' => 'Ahmad Fauzi',
             'no_transaksi' => 'TRX-20260219120000-1234',
             'jumlah' => 'Rp 500.000',
             'total' => 'Rp 500.500',
-            'yayasan' => 'Yayasan Peduli',
+            'yayasan' => $foundationName,
             'link_pembayaran' => 'https://domain.com/payment/status?id=TRX-20260219120000-1234',
         ];
 
@@ -218,7 +220,7 @@ class WhatsappTemplate extends Component
             $eventData = [
                 'batas_waktu' => '20 Feb 2026 23:59',
                 'metode_bayar' => 'Bank Transfer (BSI)',
-                'info_bank' => "Bank: BSI\nNo. Rek: 1234567890\nA.N: Yayasan Peduli",
+                'info_bank' => "Bank: BSI\nNo. Rek: 1234567890\nA.N: " . $foundationName,
                 'kode_unik' => '500',
             ];
         }
