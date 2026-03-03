@@ -35,9 +35,15 @@ class Settings extends Component
 
     // API Fields
     // StarSender logic moved to separate component
+    public $payment_gateway = 'xendit';
+    
     public $xendit_mode = 'test';
     public $xendit_secret_key;
     public $xendit_webhook_token;
+    
+    public $pakasir_mode = 'sandbox';
+    public $pakasir_slug;
+    public $pakasir_api_key;
 
     // Appearance Fields
     public $theme_color;
@@ -79,9 +85,15 @@ class Settings extends Component
         }
 
         // Load API Settings
+        $this->payment_gateway = AppSetting::get('payment_gateway', 'xendit');
+        
         $this->xendit_mode = AppSetting::get('xendit_mode', 'test');
         $this->xendit_secret_key = AppSetting::get('xendit_secret_key');
         $this->xendit_webhook_token = AppSetting::get('xendit_webhook_token');
+        
+        $this->pakasir_mode = AppSetting::get('pakasir_mode', 'sandbox');
+        $this->pakasir_slug = AppSetting::get('pakasir_slug');
+        $this->pakasir_api_key = AppSetting::get('pakasir_api_key');
 
         // Load Appearance Settings
         $this->theme_color = AppSetting::get('theme_color', $this->default_theme_color);
@@ -246,12 +258,29 @@ class Settings extends Component
     public function saveApi()
     {
         $this->validate([
-            'xendit_mode' => 'required|in:test,live',
-            'xendit_secret_key' => 'required|string',
-            'xendit_webhook_token' => 'required|string',
+            'payment_gateway' => 'required|in:xendit,pakasir',
+            'xendit_mode' => 'nullable|in:test,live',
+            'xendit_secret_key' => 'nullable|string',
+            'xendit_webhook_token' => 'nullable|string',
+            'pakasir_mode' => 'nullable|in:sandbox,live',
+            'pakasir_slug' => 'nullable|string',
+            'pakasir_api_key' => 'nullable|string',
         ]);
 
-        // Simpan mode
+        // Simpan Payment Gateway
+        AppSetting::updateOrCreate(
+            ['key' => 'payment_gateway'],
+            [
+                'value' => $this->payment_gateway,
+                'group' => 'general',
+                'type' => 'text',
+                'label' => 'Payment Gateway',
+                'description' => 'Gateway pembayaran yang aktif (xendit atau pakasir)',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_payment_gateway');
+
+        // Simpan mode Xendit
         AppSetting::updateOrCreate(
             ['key' => 'xendit_mode'],
             [
@@ -264,8 +293,66 @@ class Settings extends Component
         );
         \Illuminate\Support\Facades\Cache::forget('app_setting_xendit_mode');
 
-        AppSetting::set('xendit_secret_key', $this->xendit_secret_key);
-        AppSetting::set('xendit_webhook_token', $this->xendit_webhook_token);
+        AppSetting::updateOrCreate(
+            ['key' => 'xendit_secret_key'],
+            [
+                'value' => $this->xendit_secret_key,
+                'group' => 'xendit',
+                'type' => 'text',
+                'label' => 'Xendit Secret Key',
+                'description' => 'API Key dari dashboard Xendit',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_xendit_secret_key');
+
+        AppSetting::updateOrCreate(
+            ['key' => 'xendit_webhook_token'],
+            [
+                'value' => $this->xendit_webhook_token,
+                'group' => 'xendit',
+                'type' => 'text',
+                'label' => 'Xendit Webhook Token',
+                'description' => 'Webhook token dari dashboard Xendit',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_xendit_webhook_token');
+
+        // Simpan mode Pakasir
+        AppSetting::updateOrCreate(
+            ['key' => 'pakasir_mode'],
+            [
+                'value' => $this->pakasir_mode,
+                'group' => 'pakasir',
+                'type' => 'text',
+                'label' => 'Pakasir Mode',
+                'description' => 'Mode environment Pakasir: sandbox atau live',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_pakasir_mode');
+
+        AppSetting::updateOrCreate(
+            ['key' => 'pakasir_slug'],
+            [
+                'value' => $this->pakasir_slug,
+                'group' => 'pakasir',
+                'type' => 'text',
+                'label' => 'Pakasir Slug',
+                'description' => 'Slug project di Pakasir',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_pakasir_slug');
+
+        AppSetting::updateOrCreate(
+            ['key' => 'pakasir_api_key'],
+            [
+                'value' => $this->pakasir_api_key,
+                'group' => 'pakasir',
+                'type' => 'text',
+                'label' => 'Pakasir API Key',
+                'description' => 'API Key dari dashboard Pakasir',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_pakasir_api_key');
 
         session()->flash('success', 'Pengaturan API berhasil diperbarui.');
     }

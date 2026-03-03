@@ -13,6 +13,7 @@ use App\Models\QurbanSavingsDeposit;
 use App\Services\MetaConversionService;
 use App\Services\WhatsAppNotificationService;
 use App\Services\XenditService;
+use App\Services\PakasirService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Livewire\Attributes\Layout;
@@ -27,7 +28,7 @@ class PaymentMethod extends Component
 
     public $selectedMethod;
 
-    public $paymentGroup = 'bank_transfer'; // 'bank_transfer' or 'xendit'
+    public $paymentGroup = 'bank_transfer'; // 'bank_transfer', 'xendit', or 'pakasir'
 
     public $adminFee = 0;
 
@@ -35,7 +36,11 @@ class PaymentMethod extends Component
 
     public $programName = '';
 
+    public $activeGateway = null;
+
     public $xenditAvailable = false;
+
+    public $pakasirAvailable = false;
 
     public function mount()
     {
@@ -55,18 +60,37 @@ class PaymentMethod extends Component
         $this->amount = $checkout['amount'];
         $this->programName = $checkout['program_name'] ?? $checkout['target_name'] ?? 'Donasi Program';
 
-        // Check if Xendit credentials are configured
+        // Check active payment gateway
+        $paymentGateway = AppSetting::get('payment_gateway', 'xendit');
+        
+        // Check Xendit availability
         $xenditKey = AppSetting::get('xendit_secret_key');
-        $this->xenditAvailable = !empty($xenditKey);
+        if ($paymentGateway === 'xendit' && !empty($xenditKey)) {
+            $this->xenditAvailable = true;
+        }
+
+        // Check Pakasir availability
+        $pakasirSlug = AppSetting::get('pakasir_slug');
+        $pakasirApiKey = AppSetting::get('pakasir_api_key');
+        if ($paymentGateway === 'pakasir' && !empty($pakasirSlug) && !empty($pakasirApiKey)) {
+            $this->pakasirAvailable = true;
+        }
+
+        // Set active gateway based on config
+        if ($paymentGateway === 'xendit' && $this->xenditAvailable) {
+            $this->activeGateway = 'xendit';
+        } elseif ($paymentGateway === 'pakasir' && $this->pakasirAvailable) {
+            $this->activeGateway = 'pakasir';
+        }
 
         // Set default method
         $firstBank = BankAccount::where('is_active', true)->orderBy('sort_order')->first();
         if ($firstBank) {
             $this->selectedMethod = strtolower($firstBank->bank_name);
             $this->paymentGroup = 'bank_transfer';
-        } elseif ($this->xenditAvailable) {
-            $this->selectedMethod = 'xendit';
-            $this->paymentGroup = 'xendit';
+        } elseif ($this->activeGateway) {
+            $this->selectedMethod = $this->activeGateway;
+            $this->paymentGroup = $this->activeGateway;
         }
 
         $this->calculateTotal();
@@ -84,6 +108,14 @@ class PaymentMethod extends Component
     {
         $this->paymentGroup = 'xendit';
         $this->selectedMethod = 'xendit';
+        $this->adminFee = 0; // Sesuai tampilan view "Gratis"
+        $this->calculateTotal();
+    }
+
+    public function selectPakasir()
+    {
+        $this->paymentGroup = 'pakasir';
+        $this->selectedMethod = 'pakasir';
         $this->adminFee = 0; // Sesuai tampilan view "Gratis"
         $this->calculateTotal();
     }
@@ -271,6 +303,25 @@ class PaymentMethod extends Component
                 // Log error
                 Log::error('Xendit Error: '.$e->getMessage());
                 session()->flash('error', 'Gagal membuat pembayaran otomatis. Silakan coba lagi atau gunakan transfer bank.');
+
+                return;
+            }
+        } elseif ($this->paymentGroup === 'pakasir') {
+            try {
+                $pakasirService = app(PakasirService::class);
+                $redirectUrl = route('payment.status', ['id' => $trxId]);
+                $paymentUrl = $pakasirService->getPaymentUrl($finalTotal, $trxId, $redirectUrl);
+
+                // Store Pakasir URL in checkout_data for status page
+                $checkoutData = $payment->checkout_data ?? [];
+                $checkoutData['pakasir_payment_url'] = $paymentUrl;
+                $payment->update(['checkout_data' => $checkoutData]);
+
+                return redirect()->away($paymentUrl);
+
+            } catch (\Exception $e) {
+                Log::error('Pakasir Error: '.$e->getMessage());
+                session()->flash('error', 'Gagal membuat pembayaran. Silakan coba lagi atau gunakan transfer bank.');
 
                 return;
             }

@@ -74,7 +74,26 @@
                             </div>
                             <div class="text-xs text-green-600 font-medium">Gratis</div>
                         </label>
-                        @else
+                        @endif
+
+                        @if($pakasirAvailable)
+                        <label
+                            class="flex items-center gap-3 p-3 border-2 rounded-xl cursor-pointer transition-colors
+                            {{ $paymentGroup === 'pakasir' ? 'border-primary bg-primary/5' : 'border-gray-200 bg-white hover:border-primary/50' }}">
+                            <input type="radio" wire:click="selectPakasir" name="payment" value="pakasir"
+                                class="w-4 h-4 text-primary" {{ $paymentGroup === 'pakasir' ? 'checked' : '' }}>
+                            <div class="w-10 h-8 bg-green-600 rounded flex items-center justify-center">
+                                <i class="fa-solid fa-qrcode text-white text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <div class="text-sm font-semibold text-dark">Pembayaran Online</div>
+                                <div class="text-xs text-gray-600">QRIS, Virtual Account, PayPal (Otomatis)</div>
+                            </div>
+                            <div class="text-xs text-gray-500 font-medium">Sesuai metode</div>
+                        </label>
+                        @endif
+
+                        @if(!$xenditAvailable && !$pakasirAvailable)
                         <div class="flex items-center gap-3 p-3 border-2 border-gray-100 rounded-xl bg-gray-50 opacity-60">
                             <div class="w-10 h-8 bg-gray-400 rounded flex items-center justify-center">
                                 <i class="fa-solid fa-bolt text-white text-sm"></i>
@@ -102,9 +121,13 @@
                     </p>
                     <p
                         class="text-xs {{ $paymentGroup === 'bank_transfer' ? 'text-orange-700' : 'text-blue-700' }} mt-1">
-                        {{ $paymentGroup === 'bank_transfer'
-                            ? 'Sistem akan menambahkan 3 digit kode unik pada total transfer untuk memudahkan verifikasi otomatis.'
-                            : 'Pembayaran online akan diverifikasi secara otomatis oleh sistem setelah Anda menyelesaikan pembayaran.' }}
+                        @if($paymentGroup === 'bank_transfer')
+                            Sistem akan menambahkan 3 digit kode unik pada total transfer untuk memudahkan verifikasi otomatis.
+                        @elseif($paymentGroup === 'pakasir')
+                            Anda akan diarahkan ke halaman pembayaran untuk menyelesaikan transaksi via QRIS, Virtual Account, atau PayPal. Biaya layanan dikenakan sesuai metode pembayaran yang dipilih.
+                        @else
+                            Pembayaran online akan diverifikasi secara otomatis oleh sistem setelah Anda menyelesaikan pembayaran.
+                        @endif
                     </p>
                 </div>
             </div>
@@ -121,7 +144,13 @@
             <div class="flex justify-between text-xs">
                 <span class="text-gray-600">Biaya admin</span>
                 <span
-                    class="font-semibold text-dark">{{ $adminFee === 0 ? 'Gratis' : 'Rp ' . number_format($adminFee, 0, ',', '.') }}</span>
+                    class="font-semibold text-dark">
+                    @if($paymentGroup === 'pakasir')
+                        Sesuai metode pembayaran
+                    @else
+                        {{ $adminFee === 0 ? 'Gratis' : 'Rp ' . number_format($adminFee, 0, ',', '.') }}
+                    @endif
+                </span>
             </div>
             <div class="h-px bg-gray-200"></div>
             <div class="flex justify-between text-sm">
