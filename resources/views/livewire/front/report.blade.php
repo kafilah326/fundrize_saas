@@ -24,21 +24,21 @@
             <div class="grid grid-cols-2 gap-3 mb-4">
                 <div class="bg-gradient-to-br from-green-500 to-green-600 rounded-xl p-4 text-white shadow-lg shadow-green-200">
                     <p class="text-xs opacity-90 mb-1">Dana Masuk</p>
-                    <p class="text-lg font-bold">Rp {{ number_format($financials['dana_masuk'] / 1000000, 1) }}M</p>
+                    <p class="text-lg font-bold">{{ $this->formatRupiah($financials['dana_masuk']) }}</p>
                 </div>
                 <div class="bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl p-4 text-white shadow-lg shadow-blue-200">
                     <p class="text-xs opacity-90 mb-1">Tersalurkan</p>
-                    <p class="text-lg font-bold">Rp {{ number_format($financials['tersalurkan'] / 1000000, 1) }}M</p>
+                    <p class="text-lg font-bold">{{ $this->formatRupiah($financials['tersalurkan']) }}</p>
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-3">
                 <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
                     <p class="text-xs text-gray-600 mb-1">Sisa Dana</p>
-                    <p class="text-lg font-bold text-primary">Rp {{ number_format($financials['sisa_dana'] / 1000000, 1) }}M</p>
+                    <p class="text-lg font-bold text-primary">{{ $this->formatRupiah($financials['sisa_dana']) }}</p>
                 </div>
                 <div class="bg-white rounded-xl p-4 border border-gray-100 shadow-sm">
                     <p class="text-xs text-gray-600 mb-1">Biaya Operasional</p>
-                    <p class="text-lg font-bold text-gray-700">Rp {{ number_format($financials['biaya_operasional'] / 1000000, 1) }}M</p>
+                    <p class="text-lg font-bold text-gray-700">{{ $this->formatRupiah($financials['biaya_operasional']) }}</p>
                 </div>
             </div>
         </section>
@@ -85,7 +85,7 @@
                     <div class="space-y-2">
                         <div class="flex justify-between text-xs">
                             <span class="text-gray-600">Dana Terkumpul</span>
-                            <span class="font-semibold">Rp {{ number_format($program->collected_amount / 1000000, 1) }}M</span>
+                            <span class="font-semibold">{{ $this->formatRupiah($program->collected_amount) }}</span>
                         </div>
                         @php
                             $programDistributed = $program->distributions->sum('amount_distributed');
@@ -93,7 +93,7 @@
                         @endphp
                         <div class="flex justify-between text-xs">
                             <span class="text-gray-600">Dana Tersalurkan</span>
-                            <span class="font-semibold text-green-600">Rp {{ number_format($programDistributed / 1000000, 1) }}M</span>
+                            <span class="font-semibold text-green-600">{{ $this->formatRupiah($programDistributed) }}</span>
                         </div>
                         <div class="w-full bg-gray-200 rounded-full h-2">
                             <div class="bg-green-500 h-2 rounded-full" style="width: {{ min(100, $distributedPercent) }}%"></div>
@@ -106,8 +106,10 @@
                     <div class="px-4 pb-4">
                         @foreach($program->distributions as $dist)
                         <div class="border-t border-gray-100 pt-4 mt-2">
-                            <h5 class="text-xs font-semibold text-dark mb-2">Penyaluran {{ $dist->documentation_date->format('d M Y') }}</h5>
-                            <!-- Placeholder for images since we don't have distribution_images table yet, assuming generic placeholders or description -->
+                            <div class="flex items-center justify-between mb-2">
+                                <h5 class="text-xs font-semibold text-dark">Penyaluran {{ $dist->documentation_date->format('d M Y') }}</h5>
+                                <span class="text-xs font-semibold text-green-600">{{ $this->formatRupiah($dist->amount_distributed) }}</span>
+                            </div>
                             <div class="text-xs text-gray-600 mb-3 rich-text-content">{!! $dist->description !!}</div>
                         </div>
                         @endforeach
@@ -121,7 +123,7 @@
             @endforelse
         </section>
 
-        <section id="download-section" class="px-4 py-4">
+        {{-- <section id="download-section" class="px-4 py-4">
             <div class="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
                 <h3 class="text-sm font-bold text-dark mb-3">Unduh Laporan</h3>
                 <p class="text-xs text-gray-600 mb-4">Laporan lengkap periode {{ $period }} dengan tanda tangan resmi pengurus yayasan.</p>
@@ -136,7 +138,7 @@
                     </button>
                 </div>
             </div>
-        </section>
+        </section> --}}
     </main>
 
     <x-bottom-nav active="report" />
