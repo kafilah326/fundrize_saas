@@ -79,6 +79,9 @@ class ProgramIndex extends Component
     #[Title('Program')]
     public function render()
     {
+        $foundation = \App\Models\FoundationSetting::first();
+        $foundationName = $foundation->name ?? 'Yayasan Peduli';
+
         $query = Program::where('is_active', true);
 
         if (!empty($this->selectedAkad) && !in_array('semua', $this->selectedAkad)) {
@@ -100,9 +103,9 @@ class ProgramIndex extends Component
             'programs' => $programs,
             'totalPrograms' => $totalPrograms,
         ])->layout('layouts.front', [
-            'title' => 'Daftar Program Donasi - Yayasan Peduli',
-            'metaDescription' => 'Temukan berbagai program donasi, sedekah, zakat, dan infaq yang dapat Anda bantu melalui Yayasan Peduli.',
-            'metaKeywords' => 'donasi, sedekah, zakat, infaq, galang dana, yayasan peduli, program sosial',
+            'title' => 'Daftar Program Donasi - ' . $foundationName,
+            'metaDescription' => 'Temukan berbagai program donasi, sedekah, zakat, dan infaq yang dapat Anda bantu melalui ' . $foundationName . '.',
+            'metaKeywords' => 'donasi, sedekah, zakat, infaq, galang dana, ' . strtolower($foundationName) . ', program sosial',
         ]);
     }
 }

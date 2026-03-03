@@ -86,7 +86,7 @@
                     <input type="radio" wire:model.live="slaughterMethod" value="wakalah" class="mt-0.5 w-4 h-4 text-primary border-gray-300 focus:ring-primary">
                     <div>
                         <div class="text-sm font-semibold text-dark">Wakalah (Diwakilkan)</div>
-                        <div class="text-xs text-gray-500 mt-0.5">Disembelih oleh panitia qurban Yayasan Peduli</div>
+                        <div class="text-xs text-gray-500 mt-0.5">Disembelih oleh panitia qurban {{ \App\Models\FoundationSetting::value('name') ?? 'Yayasan Peduli' }}</div>
                     </div>
                 </label>
                 

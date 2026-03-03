@@ -1,3 +1,9 @@
+@php
+    $foundation = \App\Models\FoundationSetting::first();
+    $foundationName = $foundation->name ?? 'Yayasan Peduli';
+    $foundationAbout = strip_tags($foundation->about ?? '');
+    $defaultDescription = $foundationAbout ?: 'Platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.';
+@endphp
 <!DOCTYPE html>
 <html lang="id">
 
@@ -7,39 +13,38 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- SEO Meta Tags -->
-    <title>{{ $title ?? ($foundation->name ?? 'Yayasan Peduli') }}</title>
+    <title>{{ $title ?? $foundationName }}</title>
     <meta name="description"
-        content="{{ $metaDescription ?? (strip_tags($foundation->about ?? '') ?? 'Yayasan Peduli adalah platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.') }}">
+        content="{{ $metaDescription ?? $defaultDescription }}">
     <meta name="keywords"
         content="{{ $metaKeywords ?? 'donasi, yayasan, sedekah, zakat, infaq, qurban, galang dana, crowdfunding' }}">
-    <meta name="author" content="{{ $metaAuthor ?? ($foundation->name ?? 'Yayasan Peduli') }}">
+    <meta name="author" content="{{ $metaAuthor ?? $foundationName }}">
     <link rel="canonical" href="{{ url()->current() }}">
 
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $title ?? 'Yayasan Peduli - Berbagi Kebaikan' }}">
+    <meta property="og:title" content="{{ $title ?? ($foundationName . ' - Berbagi Kebaikan') }}">
     <meta property="og:description"
-        content="{{ $metaDescription ?? 'Yayasan Peduli adalah platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.' }}">
+        content="{{ $metaDescription ?? $defaultDescription }}">
     <meta property="og:image" content="{{ $metaImage ?? asset('images/default-og.jpg') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="{{ $title ?? 'Yayasan Peduli' }}">
-    <meta property="og:site_name" content="{{ $foundation->name ?? 'Yayasan Peduli' }}">
+    <meta property="og:image:alt" content="{{ $title ?? $foundationName }}">
+    <meta property="og:site_name" content="{{ $foundationName }}">
     <meta property="og:locale" content="id_ID">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="{{ $title ?? 'Yayasan Peduli - Berbagi Kebaikan' }}">
+    <meta property="twitter:title" content="{{ $title ?? ($foundationName . ' - Berbagi Kebaikan') }}">
     <meta property="twitter:description"
-        content="{{ $metaDescription ?? 'Yayasan Peduli adalah platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.' }}">
+        content="{{ $metaDescription ?? $defaultDescription }}">
     <meta property="twitter:image" content="{{ $metaImage ?? asset('images/default-og.jpg') }}">
-    <meta property="twitter:image:alt" content="{{ $title ?? 'Yayasan Peduli' }}">
+    <meta property="twitter:image:alt" content="{{ $title ?? $foundationName }}">
 
 
     @php
-        $foundation = \App\Models\FoundationSetting::first();
         $primaryColor = \App\Models\AppSetting::get('theme_color', '#FF6B35');
         // Calculate a lighter shade for backgrounds (similar to orange-50/100)
         // If secondary_color is set, use it. Otherwise, calculate a tint.

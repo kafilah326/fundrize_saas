@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\XenditWebhookController;
+use App\Http\Controllers\PakasirWebhookController;
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\Register;
@@ -65,6 +66,8 @@ Route::get('/foundation/profile', FoundationProfile::class)->name('foundation.pr
 Route::get('/qurban', QurbanIndex::class)->name('qurban.index');
 Route::get('/qurban/tabungan', QurbanTabungan::class)->name('qurban.tabungan');
 
+Route::get('/report', Report::class)->name('report.index');
+
 Route::get('/payment', PaymentMethod::class)->name('payment.method');
 Route::get('/payment/status', \App\Livewire\Front\PaymentStatus::class)->name('payment.status');
 Route::get('/transaction/{id}/status', \App\Livewire\Front\TransactionStatus::class)->name('transaction.status');
@@ -83,13 +86,17 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', ProfileEdit::class)->name('profile.edit');
     Route::get('/profile/change-password', ChangePassword::class)->name('profile.change-password');
     Route::get('/foundation/legality', FoundationLegality::class)->name('foundation.legality');
-    Route::get('/report', Report::class)->name('report.index');
 });
 
 // Webhook Route
 Route::post('/webhooks/xendit/invoice', [XenditWebhookController::class, 'handleInvoice'])->name('webhooks.xendit.invoice');
 Route::get('/webhooks/xendit/invoice', function () {
     return response()->json(['message' => 'Xendit Webhook Endpoint Active'], 200);
+});
+
+Route::post('/webhooks/pakasir/invoice', [PakasirWebhookController::class, 'handleWebhook'])->name('webhooks.pakasir.invoice');
+Route::get('/webhooks/pakasir/invoice', function () {
+    return response()->json(['message' => 'Pakasir Webhook Endpoint Active'], 200);
 });
 
 // Admin Routes
@@ -100,6 +107,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/categories', \App\Livewire\Admin\Category::class)->name('categories');
     Route::get('/akad-types', \App\Livewire\Admin\AkadType::class)->name('akad-types');
     Route::get('/banners', \App\Livewire\Admin\Banner::class)->name('banners');
+    Route::get('/legal-documents', \App\Livewire\Admin\LegalDocument::class)->name('legal-documents');
     Route::get('/donations', \App\Livewire\Admin\DonationList::class)->name('donations');
     Route::get('/qurban', \App\Livewire\Admin\Qurban::class)->name('qurban');
     Route::get('/users', \App\Livewire\Admin\UserList::class)->name('users');

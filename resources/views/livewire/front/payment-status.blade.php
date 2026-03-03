@@ -98,6 +98,23 @@
                             class="inline-block px-6 py-2 bg-primary text-white rounded-lg text-sm font-semibold">Lanjut
                             ke Pembayaran</a>
                     </div>
+                @elseif($paymentGroup === 'pakasir')
+                    <!-- Pembayaran Online Pending -->
+                    <div class="bg-gray-50 rounded-xl p-4 border border-gray-200 text-center">
+                        <div class="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                            <i class="fa-solid fa-qrcode text-green-600 text-xl"></i>
+                        </div>
+                        <p class="text-sm text-dark mb-3">Silakan selesaikan pembayaran melalui halaman pembayaran online.</p>
+                        <p class="text-xs text-gray-500 mb-3">Anda dapat membayar via QRIS, Virtual Account, atau PayPal.</p>
+                        @if(isset($checkout['pakasir_payment_url']))
+                            <a href="{{ $checkout['pakasir_payment_url'] }}"
+                                class="inline-block px-6 py-2 bg-green-600 text-white rounded-lg text-sm font-semibold hover:bg-green-700">
+                                <i class="fa-solid fa-arrow-up-right-from-square mr-1"></i> Lanjut ke Pembayaran
+                            </a>
+                        @else
+                            <p class="text-xs text-red-500">Link pembayaran tidak tersedia.</p>
+                        @endif
+                    </div>
                 @endif
 
                 <div class="mt-4">

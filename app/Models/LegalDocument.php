@@ -19,4 +19,17 @@ class LegalDocument extends Model
     protected $casts = [
         'expiry_date' => 'date',
     ];
+
+    public function getFileUrlAttribute($value)
+    {
+        if (!$value) {
+            return null;
+        }
+
+        if (str_starts_with($value, 'http')) {
+            return $value;
+        }
+
+        return \Illuminate\Support\Facades\Storage::disk('public')->url($value);
+    }
 }

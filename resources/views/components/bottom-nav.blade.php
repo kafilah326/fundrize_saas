@@ -29,7 +29,7 @@
             <i class="fa-solid fa-hand-holding-heart {{ $active === 'donation' ? 'text-primary' : 'text-gray-400' }} text-lg"></i>
             <span class="text-xs font-medium {{ $active === 'donation' ? 'text-primary' : 'text-gray-400' }}">Donasi Saya</span>
         </a>
-        <a href="{{ route('login.required', ['tab' => 'report']) }}" wire:navigate class="flex flex-col items-center gap-1 min-w-[60px]">
+        <a href="{{ route('report.index') }}" wire:navigate class="flex flex-col items-center gap-1 min-w-[60px]">
             <i class="fa-solid fa-chart-line {{ $active === 'report' ? 'text-primary' : 'text-gray-400' }} text-lg"></i>
             <span class="text-xs font-medium {{ $active === 'report' ? 'text-primary' : 'text-gray-400' }}">Laporan</span>
         </a>

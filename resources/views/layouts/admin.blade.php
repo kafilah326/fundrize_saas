@@ -6,11 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'Admin Panel') - Yayasan Peduli</title>
-
     @php
         $foundation = \App\Models\FoundationSetting::first();
+        $foundationName = $foundation->name ?? 'Yayasan Peduli';
     @endphp
+    <title>@yield('title', 'Admin Panel') - {{ $foundationName }}</title>
+
     @if ($foundation && $foundation->favicon)
         <link rel="icon" type="image/png" href="{{ $foundation->favicon }}">
     @endif
@@ -415,6 +416,14 @@
                     <i
                         class="fa-solid fa-images w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.banners*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
                     Banner
+                </a>
+
+                <a href="{{ route('admin.legal-documents') }}"
+                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
+                   @if (request()->routeIs('admin.legal-documents*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    <i
+                        class="fa-solid fa-file-lines w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.legal-documents*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
+                    Legalitas
                 </a>
 
                 <div class="pt-6 pb-2">

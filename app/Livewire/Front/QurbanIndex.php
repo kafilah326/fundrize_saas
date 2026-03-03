@@ -40,10 +40,12 @@ class QurbanIndex extends Component
     #[Title('Qurban')]
     public function render()
     {
+        $foundationName = \App\Models\FoundationSetting::value('name') ?? 'Yayasan Peduli';
+
         return view('livewire.front.qurban-index')->layout('layouts.front', [
-            'title' => 'Qurban Online Terpercaya - Yayasan Peduli',
+            'title' => 'Qurban Online Terpercaya - ' . $foundationName,
             'metaDescription' => 'Layanan Qurban Online mudah dan terpercaya. Tersedia berbagai pilihan hewan qurban (Sapi, Kambing, Domba) dengan harga terjangkau.',
-            'metaKeywords' => 'qurban, qurban online, jual hewan qurban, sapi qurban, kambing qurban, domba qurban, yayasan peduli',
+            'metaKeywords' => 'qurban, qurban online, jual hewan qurban, sapi qurban, kambing qurban, domba qurban, ' . strtolower($foundationName),
         ]);
     }
 }
