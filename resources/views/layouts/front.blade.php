@@ -129,6 +129,25 @@
         }
 
         /* Rich Text Content Styling (Quill Restore) */
+        .rich-text-content {
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: break-word;
+            max-width: 100%;
+            overflow: hidden;
+        }
+
+        .rich-text-content table {
+            display: block;
+            max-width: 100%;
+            overflow-x: auto;
+            border-collapse: collapse;
+        }
+
+        .rich-text-content iframe {
+            max-width: 100%;
+        }
+
         .rich-text-content h1 {
             font-size: 1.875rem;
             font-weight: 700;
