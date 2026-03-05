@@ -1,6 +1,6 @@
 {
-  "version": "1.20.2",
+  "version": "1.20.3",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini memperbaiki logika fallback gambar yang sebelumnya tidak akurat dan menyempurnakan tag meta untuk SEO tanpa mengubah struktur API atau fungsi inti.",
-  "updatedAt": "2026-03-05T04:34:52.105Z"
+  "aiReason": "Perubahan ini bersifat refaktorisasi untuk menyederhanakan logika internal dan membersihkan kode yang redundan tanpa menambah fitur baru atau merusak kompatibilitas yang ada.",
+  "updatedAt": "2026-03-05T04:44:00.564Z"
 }
