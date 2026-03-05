@@ -1,6 +1,6 @@
 {
-  "version": "1.18.0",
+  "version": "1.19.0",
   "aiDecision": "MINOR",
-  "aiReason": "Perubahan ini mencakup penambahan fitur baru yang 'backward compatible' yaitu section 'Pejuang Kebaikan' (daftar fundraiser) di halaman detail program, serta banyak perbaikan logika (bug fixes) terkait perhitungan total donasi yang kini menyertakan kode unik di berbagai modul.",
-  "updatedAt": "2026-03-05T01:02:55.531Z"
+  "aiReason": "Perubahan ini memperkenalkan fitur baru berupa pengaturan komisi (ujroh) secara global dan melakukan refactor besar dengan menghapus properti komisi pada level individual model (Program dan Qurban) untuk standarisasi sistem.",
+  "updatedAt": "2026-03-05T04:09:51.699Z"
 }

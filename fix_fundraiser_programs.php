@@ -1,28 +1,24 @@
 <?php
+$file = 'app/Livewire/Front/FundraiserPrograms.php';
+$content = file_get_contents($file);
 
-namespace App\Livewire\Front;
-
-use App\Models\Program;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
-use Livewire\Component;
-use Illuminate\Support\Facades\Auth;
-
-class FundraiserPrograms extends Component
-{
-    public $user;
-    public $fundraiser;
-
-    public function mount()
+$searchRender = <<<'EOL'
+    #[Layout('layouts.front')]
+    #[Title('Program Ber-Ujroh')]
+    public function render()
     {
-        $this->user = Auth::user()->load('fundraiser');
-        $this->fundraiser = $this->user->fundraiser;
+        $programs = Program::where('is_active', true)
+            ->where('commission_type', '!=', 'none')
+            ->latest()
+            ->get();
 
-        if (!$this->fundraiser || $this->fundraiser->status !== 'approved') {
-            return redirect()->route('profile.index');
-        }
+        return view('livewire.front.fundraiser-programs', [
+            'programs' => $programs
+        ]);
     }
+EOL;
 
+$replaceRender = <<<'EOL'
     #[Layout('layouts.front')]
     #[Title('Program Ber-Ujroh')]
     public function render()
@@ -44,4 +40,8 @@ class FundraiserPrograms extends Component
             'commAmount' => $commAmount,
         ]);
     }
-}
+EOL;
+
+$content = str_replace($searchRender, $replaceRender, $content);
+file_put_contents($file, $content);
+echo "Fixed FundraiserPrograms.php\n";
