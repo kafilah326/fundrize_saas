@@ -1,6 +1,6 @@
 {
-  "version": "1.20.4",
+  "version": "1.20.5",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini merupakan perbaikan internal pada logika penanganan metadata dan pembersihan data (trimming) untuk memperbaiki tampilan preview di media sosial tanpa mengubah fungsi utama aplikasi.",
-  "updatedAt": "2026-03-05T04:49:53.063Z"
+  "aiReason": "Perbaikan bug pada logika resolusi URL gambar untuk meta tags serta peningkatan minor pada struktur SEO tanpa mengubah fungsi utama aplikasi.",
+  "updatedAt": "2026-03-05T04:54:32.648Z"
 }

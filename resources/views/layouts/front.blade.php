@@ -5,35 +5,42 @@
     $defaultDescription = $foundationAbout ?: 'Platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.';
 @endphp
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" prefix="og: http://ogp.me/ns#">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <!-- SEO Meta Tags -->
+    <!-- SEO & Social Media Meta Tags -->
     <title>{{ $title ?? $foundationName }}</title>
     <meta name="description" content="{{ $metaDescription ?? $defaultDescription }}">
     <link rel="canonical" href="{{ url()->current() }}">
+
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ $title ?? $foundationName }}">
     <meta property="og:description" content="{{ $metaDescription ?? $defaultDescription }}">
+    @if(isset($metaImage) && $metaImage)
     <meta property="og:image" content="{{ $metaImage }}">
-    <meta property="og:image:secure_url" content="{{ $metaImage }}">
-    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:secure_url" content="{{ str_replace('http://', 'https://', $metaImage) }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="{{ $title ?? $foundationName }}">
-    <meta property="twitter:description" content="{{ $metaDescription ?? $defaultDescription }}">
-    <meta property="twitter:image" content="{{ $metaImage }}">
+    @endif
+    <meta property="og:site_name" content="{{ $foundationName }}">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $title ?? $foundationName }}">
+    <meta name="twitter:description" content="{{ $metaDescription ?? $defaultDescription }}">
+    @if(isset($metaImage) && $metaImage)
+    <meta name="twitter:image" content="{{ $metaImage }}">
+    @endif
+
+    @if(isset($metaImage) && $metaImage)
     <meta itemprop="image" content="{{ $metaImage }}">
     <link rel="image_src" href="{{ $metaImage }}">
+    @endif
     @stack('meta')
-
 
     @php
         $primaryColor = \App\Models\AppSetting::get('theme_color', '#FF6B35');

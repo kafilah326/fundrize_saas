@@ -37,28 +37,34 @@ class ProgramDetail extends Component
             ->get();
     }
 
-            public function render()
+                public function render()
     {
         $foundation = \App\Models\FoundationSetting::first();
         
-        // Get image from model (which already uses Storage url helper)
-        $image = trim($this->program->image);
-        
-        // Fallback to foundation logo if image is empty or placeholder
-        if (!$image || str_contains($image, "placehold.co")) {
-            $image = $foundation ? trim($foundation->logo) : "";
+        // Get the raw image value from database to avoid accessor interference if any
+        $imagePath = $this->program->getRawOriginal("image");
+        $finalImage = "";
+
+        if ($imagePath && !str_contains($imagePath, "placehold.co")) {
+            $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($imagePath);
+        } else {
+            // Fallback to foundation logo
+            $logoPath = $foundation ? $foundation->getRawOriginal("logo") : null;
+            if ($logoPath) {
+                $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($logoPath);
+            }
         }
-        
-        // Final sanity check: ensure it starts with http
-        if ($image && !str_starts_with($image, "http")) {
-            $image = url($image);
+
+        // Ensure absolute URL
+        if ($finalImage && !str_starts_with($finalImage, "http")) {
+            $finalImage = url($finalImage);
         }
 
         return view("livewire.front.program-detail")
             ->layout("layouts.front", [
                 "title" => trim($this->program->title),
                 "metaDescription" => trim(\Illuminate\Support\Str::limit(strip_tags($this->program->description), 160)),
-                "metaImage" => $image,
+                "metaImage" => $finalImage,
             ]);
     }
 }
