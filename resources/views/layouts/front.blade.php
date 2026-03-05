@@ -21,18 +21,31 @@
     <meta name="author" content="{{ $metaAuthor ?? $foundationName }}">
     <link rel="canonical" href="{{ url()->current() }}">
 
+    @php
+        $finalMetaImage = $metaImage ?? ($foundation->logo ?? '');
+        $imageType = 'image/jpeg';
+        if (Str::endsWith($finalMetaImage, '.png')) {
+            $imageType = 'image/png';
+        } elseif (Str::endsWith($finalMetaImage, '.webp')) {
+            $imageType = 'image/webp';
+        } elseif (Str::endsWith($finalMetaImage, '.gif')) {
+            $imageType = 'image/gif';
+        }
+    @endphp
+
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $title ?? ($foundationName) }}">
-    <meta property="og:description"
-        content="{{ $metaDescription ?? $defaultDescription }}">
-    <meta property="og:image" content="{{ $metaImage ?? ($foundation->logo ?? '') }}">
-    <meta property="og:image:secure_url" content="{{ $metaImage ?? ($foundation->logo ?? '') }}">
+    <meta property="og:title" content="{{ $title ?? $foundationName }}">
+    <meta property="og:description" content="{{ $metaDescription ?? $defaultDescription }}">
+    @if($finalMetaImage)
+    <meta property="og:image" content="{{ $finalMetaImage }}">
+    <meta property="og:image:secure_url" content="{{ $finalMetaImage }}">
+    <meta property="og:image:type" content="{{ $imageType }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:alt" content="{{ $title ?? $foundationName }}">
+    @endif
     <meta property="og:site_name" content="{{ $foundationName }}">
     <meta property="og:locale" content="id_ID">
 
@@ -40,14 +53,17 @@
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="{{ $title ?? ($foundationName . ' - Berbagi Kebaikan') }}">
-    <meta property="twitter:description"
-        content="{{ $metaDescription ?? $defaultDescription }}">
-    <meta property="twitter:image" content="{{ $metaImage ?? ($foundation->logo ?? '') }}">
+    <meta property="twitter:description" content="{{ $metaDescription ?? $defaultDescription }}">
+    @if($finalMetaImage)
+    <meta property="twitter:image" content="{{ $finalMetaImage }}">
     <meta property="twitter:image:alt" content="{{ $title ?? $foundationName }}">
+    @endif
 
     <!-- Additional Meta for Sharing -->
-    <link rel="image_src" href="{{ $metaImage ?? ($foundation->logo ?? '') }}">
-    <meta itemprop="image" content="{{ $metaImage ?? ($foundation->logo ?? '') }}">
+    @if($finalMetaImage)
+    <link rel="image_src" href="{{ $finalMetaImage }}">
+    <meta itemprop="image" content="{{ $finalMetaImage }}">
+    @endif
     
     @stack('meta')
 
