@@ -11,6 +11,7 @@ class Donation extends Model
     protected $fillable = [
         'transaction_id',
         'user_id',
+        'fundraiser_id',
         'program_id',
         'amount',
         'admin_fee',
@@ -47,5 +48,10 @@ class Donation extends Model
     public function payment(): HasOne
     {
         return $this->hasOne(Payment::class, 'external_id', 'transaction_id');
+    }
+
+    public function fundraiserCommission()
+    {
+        return $this->morphOne(FundraiserCommission::class, 'commissionable');
     }
 }

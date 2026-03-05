@@ -1,5 +1,34 @@
-<div x-data="{ showModal: false, agreed: false }">
-    <x-page-header title="Tabungan Qurban" :showBack="true" />
+<div x-data="{ 
+    showModal: false, 
+    agreed: false,
+    share() {
+        if (navigator.share) {
+            let url = window.location.href;
+            @auth
+                @if(auth()->user()->fundraiser && auth()->user()->fundraiser->status === 'approved')
+                    if (!url.includes('ref=')) {
+                        url += (url.includes('?') ? '&' : '?') + 'ref={{ auth()->user()->fundraiser->referral_code }}';
+                    }
+                @endif
+            @endauth
+
+            navigator.share({
+                title: '{{ $settings->title }}',
+                text: 'Mari menabung Qurban bersama kami',
+                url: url
+            });
+        } else {
+            alert('Fitur share tidak didukung di browser ini');
+        }
+    }
+}">
+    <x-page-header title="Tabungan Qurban" :showBack="true">
+        <x-slot:actions>
+            <button @click="share()" class="w-9 h-9 flex items-center justify-center">
+                <i class="fa-solid fa-share-nodes text-dark text-lg"></i>
+            </button>
+        </x-slot:actions>
+    </x-page-header>
 
     <main id="main-content" class="pb-24">
         <!-- Banner Section -->

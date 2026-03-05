@@ -52,6 +52,8 @@
                     date: '{{ $donation->created_at->format('d F Y, H:i') }}',
                     status: '{{ $donation->status }}',
                     amount: 'Rp {{ number_format($donation->amount, 0, ',', '.') }}',
+                    uniqueCode: {{ $donation->payment?->unique_code ?? 0 }},
+                    total: 'Rp {{ number_format($donation->amount + ($donation->payment?->unique_code ?? 0), 0, ',', '.') }}',
                     trx: '{{ $donation->transaction_id }}',
                     method: '{{ $donation->payment_method }}'
                  })"
@@ -80,7 +82,7 @@
                     </span>
                 </div>
                 <div class="flex items-center justify-between">
-                    <p class="text-base font-bold text-dark">Rp {{ number_format($donation->amount, 0, ',', '.') }}</p>
+                    <p class="text-base font-bold text-dark">Rp {{ number_format($donation->amount + ($donation->payment?->unique_code ?? 0), 0, ',', '.') }}</p>
                     <button class="text-primary text-sm font-medium flex items-center gap-1">
                         Lihat Detail <i class="fa-solid fa-chevron-right text-xs"></i>
                     </button>
@@ -136,7 +138,19 @@
 
                     <div>
                         <p class="text-xs text-gray-500 mb-1">Nominal Donasi</p>
-                        <p class="text-xl font-bold text-primary" x-text="selectedDonation.amount"></p>
+                        <p class="text-sm font-semibold text-dark" x-text="selectedDonation.amount"></p>
+                    </div>
+
+                    <template x-if="selectedDonation && selectedDonation.uniqueCode > 0">
+                        <div>
+                            <p class="text-xs text-gray-500 mb-1">Kode Unik</p>
+                            <p class="text-sm font-semibold text-dark" x-text="'Rp ' + new Intl.NumberFormat('id-ID').format(selectedDonation.uniqueCode)"></p>
+                        </div>
+                    </template>
+
+                    <div class="border-t border-gray-100 pt-3">
+                        <p class="text-xs text-gray-500 mb-1">Total</p>
+                        <p class="text-xl font-bold text-primary" x-text="selectedDonation.total"></p>
                     </div>
 
                     <div>

@@ -14,7 +14,7 @@ class Dashboard extends Component
     public function render()
     {
         // Stats
-        $totalDonations = Payment::where('status', 'paid')->sum('amount');
+        $totalDonations = Payment::where('status', 'paid')->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
         $activePrograms = Program::where('is_active', true)->count();
         $totalDonors = User::where('role', 'user')->count();
 
@@ -28,7 +28,7 @@ class Dashboard extends Component
 
         $dailyTransactions = Payment::select(
             DB::raw('DATE(created_at) as date'),
-            DB::raw('SUM(total) as total')
+            DB::raw('SUM(amount + COALESCE(unique_code, 0)) as total')
         )
             ->where('status', 'paid')
             ->whereBetween('created_at', [$startOfMonth, $endOfToday])

@@ -16,6 +16,8 @@ class QurbanAnimal extends Model
         'image',
         'description',
         'is_active',
+        'commission_type',
+        'commission_amount',
     ];
 
     protected $casts = [

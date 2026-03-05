@@ -188,11 +188,14 @@ class PaymentMethod extends Component
             ['payment_id' => $payment->id, 'amount' => $finalTotal, 'transaction_id' => $trxId]
         );
 
+        $fundraiserId = session('referral_fundraiser_id');
+
         // 3. Create Specific Transaction Record
         if ($this->type === 'program') {
-            Donation::create([
+            $donation = Donation::create([
                 'transaction_id' => $trxId,
                 'user_id' => Auth::id(),
+                'fundraiser_id' => $fundraiserId,
                 'program_id' => $checkout['program_id'],
                 'amount' => $this->amount,
                 'admin_fee' => $this->adminFee,
@@ -206,10 +209,34 @@ class PaymentMethod extends Component
                 'status' => 'pending',
                 'payment_expiry' => $payment->expired_at,
             ]);
+
+            // Calculate Commission
+            if ($fundraiserId) {
+                $program = \App\Models\Program::find($checkout['program_id']);
+                if ($program && $program->commission_type !== 'none') {
+                    $commissionAmount = 0;
+                    if ($program->commission_type === 'fixed') {
+                        $commissionAmount = $program->commission_amount;
+                    } elseif ($program->commission_type === 'percentage') {
+                        $commissionAmount = ($this->amount * $program->commission_amount) / 100;
+                    }
+
+                    if ($commissionAmount > 0) {
+                        \App\Models\FundraiserCommission::create([
+                            'fundraiser_id' => $fundraiserId,
+                            'commissionable_type' => \App\Models\Donation::class,
+                            'commissionable_id' => $donation->id,
+                            'amount' => $commissionAmount,
+                            'status' => 'pending',
+                        ]);
+                    }
+                }
+            }
         } elseif ($this->type === 'qurban_langsung') {
             $order = QurbanOrder::create([
                 'transaction_id' => $trxId,
                 'user_id' => Auth::id(),
+                'fundraiser_id' => $fundraiserId,
                 'qurban_animal_id' => $checkout['animal_data']['id'], // Assuming animal_data has id
                 'hijri_year' => '1446', // Should be dynamic or config
                 'donor_name' => $checkout['name'],
@@ -228,6 +255,29 @@ class PaymentMethod extends Component
 
             // Link payment to order
             $payment->update(['qurban_order_id' => $order->id]);
+
+            // Calculate Commission
+            if ($fundraiserId) {
+                $animal = \App\Models\QurbanAnimal::find($checkout['animal_data']['id']);
+                if ($animal && $animal->commission_type !== 'none') {
+                    $commissionAmount = 0;
+                    if ($animal->commission_type === 'fixed') {
+                        $commissionAmount = $animal->commission_amount;
+                    } elseif ($animal->commission_type === 'percentage') {
+                        $commissionAmount = ($this->amount * $animal->commission_amount) / 100;
+                    }
+
+                    if ($commissionAmount > 0) {
+                        \App\Models\FundraiserCommission::create([
+                            'fundraiser_id' => $fundraiserId,
+                            'commissionable_type' => \App\Models\QurbanOrder::class,
+                            'commissionable_id' => $order->id,
+                            'amount' => $commissionAmount,
+                            'status' => 'pending',
+                        ]);
+                    }
+                }
+            }
         } elseif ($this->type === 'qurban_tabungan') {
             $saving = null;
 
@@ -244,6 +294,7 @@ class PaymentMethod extends Component
                         'status' => 'active',
                     ],
                     [
+                        'fundraiser_id' => $fundraiserId,
                         'target_amount' => $checkout['target_price'],
                         'saved_amount' => 0,
                         'target_hijri_year' => '1447',
@@ -267,6 +318,29 @@ class PaymentMethod extends Component
 
             // Link payment to saving
             $payment->update(['qurban_saving_id' => $saving->id]);
+
+            // Calculate Commission
+            if ($fundraiserId && isset($checkout['animal_id'])) {
+                $animal = \App\Models\QurbanAnimal::find($checkout['animal_id']);
+                if ($animal && $animal->commission_type !== 'none') {
+                    $commissionAmount = 0;
+                    if ($animal->commission_type === 'fixed') {
+                        $commissionAmount = $animal->commission_amount;
+                    } elseif ($animal->commission_type === 'percentage') {
+                        $commissionAmount = ($this->amount * $animal->commission_amount) / 100;
+                    }
+
+                    if ($commissionAmount > 0) {
+                        \App\Models\FundraiserCommission::create([
+                            'fundraiser_id' => $fundraiserId,
+                            'commissionable_type' => \App\Models\QurbanSavingsDeposit::class,
+                            'commissionable_id' => $deposit->id,
+                            'amount' => $commissionAmount,
+                            'status' => 'pending',
+                        ]);
+                    }
+                }
+            }
         }
 
         // 4. Send Notification (Async if queue is setup, but synchronous for now)

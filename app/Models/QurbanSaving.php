@@ -10,6 +10,7 @@ class QurbanSaving extends Model
 {
     protected $fillable = [
         'user_id',
+        'fundraiser_id',
         'target_animal_type',
         'target_amount',
         'saved_amount',
@@ -48,5 +49,10 @@ class QurbanSaving extends Model
     public function documentations()
     {
         return $this->morphMany(QurbanDocumentation::class, 'documentable');
+    }
+
+    public function fundraiserCommission()
+    {
+        return $this->morphOne(FundraiserCommission::class, 'commissionable');
     }
 }

@@ -105,6 +105,10 @@ class PakasirWebhookController extends Controller
             $donation = Donation::where('transaction_id', $payment->external_id)->first();
             if ($donation) {
                 $donation->update(['status' => 'success']);
+                
+                if ($donation->fundraiserCommission) {
+                    $donation->fundraiserCommission->update(['status' => 'success']);
+                }
 
                 // Update Program Stats
                 $program = Program::find($donation->program_id);
@@ -115,13 +119,22 @@ class PakasirWebhookController extends Controller
                 }
             }
         } elseif ($payment->transaction_type === 'qurban_langsung') {
-            QurbanOrder::where('transaction_id', $payment->external_id)
-                ->update(['status' => 'paid']);
+            $order = QurbanOrder::where('transaction_id', $payment->external_id)->first();
+            if ($order) {
+                $order->update(['status' => 'paid']);
+                if ($order->fundraiserCommission) {
+                    $order->fundraiserCommission->update(['status' => 'success']);
+                }
+            }
 
         } elseif ($payment->transaction_type === 'qurban_tabungan') {
             $deposit = QurbanSavingsDeposit::where('transaction_id', $payment->external_id)->first();
             if ($deposit) {
                 $deposit->update(['status' => 'paid']);
+                
+                if ($deposit->fundraiserCommission) {
+                    $deposit->fundraiserCommission->update(['status' => 'success']);
+                }
 
                 $saving = QurbanSaving::find($deposit->qurban_saving_id);
                 if ($saving) {

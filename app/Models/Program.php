@@ -20,6 +20,8 @@ class Program extends Model
         'is_active',
         'is_featured',
         'is_urgent',
+        'commission_type',
+        'commission_amount',
     ];
 
     protected $casts = [

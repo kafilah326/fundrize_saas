@@ -94,6 +94,10 @@ class XenditWebhookController extends Controller
             $donation = Donation::where('transaction_id', $payment->external_id)->first();
             if ($donation) {
                 $donation->update(['status' => 'success']);
+                
+                if ($donation->fundraiserCommission) {
+                    $donation->fundraiserCommission->update(['status' => 'success']);
+                }
 
                 // Update Program Stats
                 $program = Program::find($donation->program_id);
@@ -104,13 +108,21 @@ class XenditWebhookController extends Controller
                 }
             }
         } elseif ($payment->transaction_type === 'qurban_langsung') {
-            QurbanOrder::where('transaction_id', $payment->external_id)
-                ->update(['status' => 'paid']);
+            $order = QurbanOrder::where('transaction_id', $payment->external_id)->first();
+            if ($order) {
+                $order->update(['status' => 'paid']);
+                if ($order->fundraiserCommission) {
+                    $order->fundraiserCommission->update(['status' => 'success']);
+                }
+            }
 
         } elseif ($payment->transaction_type === 'qurban_tabungan') {
             $deposit = QurbanSavingsDeposit::where('transaction_id', $payment->external_id)->first();
             if ($deposit) {
                 $deposit->update(['status' => 'paid']);
+                if ($deposit->fundraiserCommission) {
+                    $deposit->fundraiserCommission->update(['status' => 'success']);
+                }
 
                 $saving = QurbanSaving::find($deposit->qurban_saving_id);
                 if ($saving) {
@@ -141,11 +153,29 @@ class XenditWebhookController extends Controller
         ]);
 
         if ($payment->transaction_type === 'program') {
-            Donation::where('transaction_id', $payment->external_id)->update(['status' => 'failed']);
+            $donation = Donation::where('transaction_id', $payment->external_id)->first();
+            if ($donation) {
+                $donation->update(['status' => 'failed']);
+                if ($donation->fundraiserCommission) {
+                    $donation->fundraiserCommission->update(['status' => 'cancelled']);
+                }
+            }
         } elseif ($payment->transaction_type === 'qurban_langsung') {
-            QurbanOrder::where('transaction_id', $payment->external_id)->update(['status' => 'expired']);
+            $order = QurbanOrder::where('transaction_id', $payment->external_id)->first();
+            if ($order) {
+                $order->update(['status' => 'expired']);
+                if ($order->fundraiserCommission) {
+                    $order->fundraiserCommission->update(['status' => 'cancelled']);
+                }
+            }
         } elseif ($payment->transaction_type === 'qurban_tabungan') {
-            QurbanSavingsDeposit::where('transaction_id', $payment->external_id)->update(['status' => 'failed']);
+            $deposit = QurbanSavingsDeposit::where('transaction_id', $payment->external_id)->first();
+            if ($deposit) {
+                $deposit->update(['status' => 'failed']);
+                if ($deposit->fundraiserCommission) {
+                    $deposit->fundraiserCommission->update(['status' => 'cancelled']);
+                }
+            }
         }
 
         $this->waService->notifyPaymentExpired($payment);

@@ -29,4 +29,9 @@ class QurbanSavingsDeposit extends Model
     {
         return $this->hasOne(Payment::class, 'external_id', 'transaction_id');
     }
+
+    public function fundraiserCommission()
+    {
+        return $this->morphOne(FundraiserCommission::class, 'commissionable');
+    }
 }

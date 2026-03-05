@@ -10,6 +10,7 @@ class QurbanOrder extends Model
     protected $fillable = [
         'transaction_id',
         'user_id',
+        'fundraiser_id',
         'qurban_animal_id',
         'hijri_year',
         'donor_name',
@@ -49,5 +50,10 @@ class QurbanOrder extends Model
     public function documentations()
     {
         return $this->morphMany(QurbanDocumentation::class, 'documentable');
+    }
+
+    public function fundraiserCommission()
+    {
+        return $this->morphOne(FundraiserCommission::class, 'commissionable');
     }
 }

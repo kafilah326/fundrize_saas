@@ -333,7 +333,7 @@
                                                 <td class="px-4 py-2 text-xs text-gray-500 capitalize">
                                                     {{ str_replace('_', ' ', $payment->transaction_type) }}</td>
                                                 <td class="px-4 py-2 text-xs font-medium text-gray-900">Rp
-                                                    {{ number_format($payment->amount, 0, ',', '.') }}</td>
+                                                    {{ number_format($payment->amount + $payment->unique_code, 0, ',', '.') }}</td>
                                                 <td class="px-4 py-2 text-xs">
                                                     <span
                                                         class="px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase {{ $payment->status == 'paid' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600' }}">{{ $payment->status }}</span>
