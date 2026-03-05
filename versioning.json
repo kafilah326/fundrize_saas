@@ -1,6 +1,6 @@
 {
-  "version": "1.20.3",
+  "version": "1.20.4",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini bersifat refaktorisasi untuk menyederhanakan logika internal dan membersihkan kode yang redundan tanpa menambah fitur baru atau merusak kompatibilitas yang ada.",
-  "updatedAt": "2026-03-05T04:44:00.564Z"
+  "aiReason": "Perubahan ini merupakan perbaikan internal pada logika penanganan metadata dan pembersihan data (trimming) untuk memperbaiki tampilan preview di media sosial tanpa mengubah fungsi utama aplikasi.",
+  "updatedAt": "2026-03-05T04:49:53.063Z"
 }

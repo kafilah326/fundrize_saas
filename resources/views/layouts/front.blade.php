@@ -16,26 +16,22 @@
     <title>{{ $title ?? $foundationName }}</title>
     <meta name="description" content="{{ $metaDescription ?? $defaultDescription }}">
     <link rel="canonical" href="{{ url()->current() }}">
-
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ $title ?? $foundationName }}">
     <meta property="og:description" content="{{ $metaDescription ?? $defaultDescription }}">
-    <meta property="og:image" content="{{ $metaImage ?? ($foundation->logo ?? "") }}">
+    <meta property="og:image" content="{{ $metaImage }}">
+    <meta property="og:image:secure_url" content="{{ $metaImage }}">
+    <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-
-    <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="{{ $title ?? $foundationName }}">
     <meta property="twitter:description" content="{{ $metaDescription ?? $defaultDescription }}">
-    <meta property="twitter:image" content="{{ $metaImage ?? ($foundation->logo ?? "") }}">
-
-    <!-- WhatsApp/Telegram -->
-    <meta itemprop="image" content="{{ $metaImage ?? ($foundation->logo ?? "") }}">
-    <link rel="image_src" href="{{ $metaImage ?? ($foundation->logo ?? "") }}">
+    <meta property="twitter:image" content="{{ $metaImage }}">
+    <meta itemprop="image" content="{{ $metaImage }}">
+    <link rel="image_src" href="{{ $metaImage }}">
     @stack('meta')
 
 

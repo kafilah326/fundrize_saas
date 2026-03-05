@@ -37,25 +37,27 @@ class ProgramDetail extends Component
             ->get();
     }
 
-        public function render()
+            public function render()
     {
         $foundation = \App\Models\FoundationSetting::first();
         
-        // Simple Absolute Image URL
-        $image = $this->program->image;
+        // Get image from model (which already uses Storage url helper)
+        $image = trim($this->program->image);
+        
+        // Fallback to foundation logo if image is empty or placeholder
         if (!$image || str_contains($image, "placehold.co")) {
-            $image = $foundation->logo ?? "";
+            $image = $foundation ? trim($foundation->logo) : "";
         }
         
-        // Force URL helper to ensure absolute path if not already http
+        // Final sanity check: ensure it starts with http
         if ($image && !str_starts_with($image, "http")) {
             $image = url($image);
         }
 
         return view("livewire.front.program-detail")
             ->layout("layouts.front", [
-                "title" => $this->program->title,
-                "metaDescription" => \Illuminate\Support\Str::limit(strip_tags($this->program->description), 160),
+                "title" => trim($this->program->title),
+                "metaDescription" => trim(\Illuminate\Support\Str::limit(strip_tags($this->program->description), 160)),
                 "metaImage" => $image,
             ]);
     }
