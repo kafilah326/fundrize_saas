@@ -49,12 +49,17 @@ class ProgramDetail extends Component
         
         // Ensure absolute URL for image
         $image = $this->program->image;
-        if (!$image || $image === 'https://placehold.co/600x400?text=No+Image') {
-            $image = $foundation->logo ?? asset('images/default-og.jpg');
+        if (!$image || str_contains($image, 'placehold.co')) {
+            $image = $foundation->logo ?? '';
         }
         
-        if (!str_starts_with($image, 'http')) {
+        if ($image && !str_starts_with($image, 'http')) {
             $image = url($image);
+        }
+
+        // Final fallback if still empty
+        if (!$image) {
+            $image = asset('images/default-og.jpg');
         }
 
         // Keywords from categories
