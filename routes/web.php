@@ -86,6 +86,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/profile/edit', ProfileEdit::class)->name('profile.edit');
     Route::get('/profile/change-password', ChangePassword::class)->name('profile.change-password');
     Route::get('/foundation/legality', FoundationLegality::class)->name('foundation.legality');
+    
+    // Fundraiser Routes
+    Route::get('/fundraiser/register', \App\Livewire\Front\FundraiserRegister::class)->name('fundraiser.register');
+    Route::get('/fundraiser/dashboard', \App\Livewire\Front\FundraiserDashboard::class)->name('fundraiser.dashboard');
+    Route::get('/fundraiser/history', \App\Livewire\Front\FundraiserHistory::class)->name('fundraiser.history');
+    Route::get('/fundraiser/withdrawal', \App\Livewire\Front\FundraiserWithdrawal::class)->name('fundraiser.withdrawal');
+    Route::get('/fundraiser/banks', \App\Livewire\Front\FundraiserBankManage::class)->name('fundraiser.banks');
+    Route::get('/fundraiser/programs', \App\Livewire\Front\FundraiserPrograms::class)->name('fundraiser.programs');
 });
 
 // Webhook Route
@@ -111,6 +119,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/donations', \App\Livewire\Admin\DonationList::class)->name('donations');
     Route::get('/qurban', \App\Livewire\Admin\Qurban::class)->name('qurban');
     Route::get('/users', \App\Livewire\Admin\UserList::class)->name('users');
+    Route::get('/fundraisers', \App\Livewire\Admin\FundraiserList::class)->name('fundraisers');
     Route::get('/profile', \App\Livewire\Admin\Profile::class)->name('profile');
     Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('settings');
     Route::get('/whatsapp', \App\Livewire\Admin\WhatsappSetting::class)->name('whatsapp');

@@ -1,4 +1,25 @@
-<div>
+<div x-data="{
+    share() {
+        if (navigator.share) {
+            let url = window.location.href;
+            @auth
+                @if(auth()->user()->fundraiser && auth()->user()->fundraiser->status === 'approved')
+                    if (!url.includes('ref=')) {
+                        url += (url.includes('?') ? '&' : '?') + 'ref={{ auth()->user()->fundraiser->referral_code }}';
+                    }
+                @endif
+            @endauth
+
+            navigator.share({
+                title: 'Tabungan Qurban {{ str_replace('-', ' ', $saving->target_animal_type) }}',
+                text: 'Mari ikut menabung qurban',
+                url: url
+            });
+        } else {
+            alert('Fitur share tidak didukung di browser ini');
+        }
+    }
+}">
     <x-page-header title="Detail Tabungan Qurban" :showBack="true" backUrl="{{ route('qurban.history') }}" />
 
     <main id="main-content" class="pb-20">
@@ -25,7 +46,7 @@
                 <button wire:click="openDepositModal({{ $saving->id }})" class="flex-1 bg-primary hover:bg-orange-600 text-white font-semibold py-3 rounded-lg text-sm text-center flex items-center justify-center gap-1">
                     <i class="fa-solid fa-plus mr-1"></i> Setor Lagi
                 </button>
-                <button class="bg-white border border-primary text-primary font-semibold py-3 px-4 rounded-lg text-sm hover:bg-orange-50 transition-colors">
+                <button @click="share()" class="bg-white border border-primary text-primary font-semibold py-3 px-4 rounded-lg text-sm hover:bg-orange-50 transition-colors">
                     <i class="fa-solid fa-share-alt"></i>
                 </button>
             </div>

@@ -192,7 +192,12 @@
                                         </div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-800">
-                                        Rp {{ number_format($payment->amount, 0, ',', '.') }}
+                                        Rp {{ number_format($payment->amount + $payment->unique_code, 0, ',', '.') }}
+                                        @if($payment->unique_code > 0)
+                                            <div class="text-[10px] font-normal text-gray-500 mt-1" title="Terdapat kode unik: Rp {{ number_format($payment->unique_code, 0, ',', '.') }}">
+                                                Inc. Kode Unik
+                                            </div>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if ($payment->status == 'paid')

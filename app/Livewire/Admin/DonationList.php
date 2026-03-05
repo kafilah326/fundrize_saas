@@ -12,6 +12,7 @@ use App\Models\QurbanSaving;
 use App\Models\QurbanSavingsDeposit;
 use App\Services\MetaConversionService;
 use App\Services\StarSenderService;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -200,6 +201,7 @@ class DonationList extends Component
         }
     }
 
+    #[Layout('layouts.admin')]
     public function render()
     {
         $programs = Program::select('id', 'title')
@@ -210,10 +212,10 @@ class DonationList extends Component
         // Calculate Stats
         $statQuery = Payment::where('transaction_type', 'program')->where('status', 'paid');
         
-        $statToday = (clone $statQuery)->whereDate('paid_at', now()->toDateString())->sum('amount');
-        $statYesterday = (clone $statQuery)->whereDate('paid_at', now()->subDay()->toDateString())->sum('amount');
-        $statThisMonth = (clone $statQuery)->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum('amount');
-        $statLastMonth = (clone $statQuery)->whereMonth('paid_at', now()->subMonth()->month)->whereYear('paid_at', now()->subMonth()->year)->sum('amount');
+        $statToday = (clone $statQuery)->whereDate('paid_at', now()->toDateString())->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
+        $statYesterday = (clone $statQuery)->whereDate('paid_at', now()->subDay()->toDateString())->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
+        $statThisMonth = (clone $statQuery)->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
+        $statLastMonth = (clone $statQuery)->whereMonth('paid_at', now()->subMonth()->month)->whereYear('paid_at', now()->subMonth()->year)->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
 
         $payments = Payment::with(['user', 'program', 'qurbanOrder', 'qurbanSaving', 'whatsappMessageLogs'])
             ->where('transaction_type', 'program') // Only show program donations
@@ -247,7 +249,7 @@ class DonationList extends Component
             'statYesterday' => $statYesterday,
             'statThisMonth' => $statThisMonth,
             'statLastMonth' => $statLastMonth,
-        ])->layout('layouts.admin');
+        ]);
     }
 
     public function showDetail($id)
@@ -296,6 +298,9 @@ class DonationList extends Component
             $donation = Donation::where('transaction_id', $payment->external_id)->first();
             if ($donation) {
                 $donation->update(['status' => 'success']);
+                if ($donation->fundraiserCommission) {
+                    $donation->fundraiserCommission->update(['status' => 'success']);
+                }
 
                 // Update Program Stats
                 $program = Program::find($donation->program_id);
@@ -306,13 +311,20 @@ class DonationList extends Component
                 }
             }
         } elseif ($payment->transaction_type == 'qurban_langsung') {
-            QurbanOrder::where('transaction_id', $payment->external_id)
-                ->update(['status' => 'paid']);
-
+            $order = QurbanOrder::where('transaction_id', $payment->external_id)->first();
+            if ($order) {
+                $order->update(['status' => 'paid']);
+                if ($order->fundraiserCommission) {
+                    $order->fundraiserCommission->update(['status' => 'success']);
+                }
+            }
         } elseif ($payment->transaction_type == 'qurban_tabungan') {
             $deposit = QurbanSavingsDeposit::where('transaction_id', $payment->external_id)->first();
             if ($deposit) {
                 $deposit->update(['status' => 'paid']);
+                if ($deposit->fundraiserCommission) {
+                    $deposit->fundraiserCommission->update(['status' => 'success']);
+                }
 
                 $saving = QurbanSaving::find($deposit->qurban_saving_id);
                 if ($saving) {

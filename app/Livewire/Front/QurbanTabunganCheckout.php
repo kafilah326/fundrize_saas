@@ -95,6 +95,7 @@ class QurbanTabunganCheckout extends Component
             'checkout' => [
                 'type' => 'qurban_tabungan',
                 'target' => Str::slug($targetData['name']), // slug name for target_animal_type
+                'animal_id' => $this->target,
                 'target_name' => $targetData['name'],
                 'target_price' => $targetData['price'],
                 'amount' => $this->deposit,

@@ -38,6 +38,31 @@
         <section id="account-menu" class="bg-white px-4 py-4 mt-2">
             <h3 class="text-sm font-bold text-dark mb-3">Akun</h3>
             <div class="space-y-1">
+                @if(!$user->fundraiser || $user->fundraiser->status === 'rejected')
+                <a href="{{ route('fundraiser.register') }}" wire:navigate class="w-full flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-hand-holding-heart text-gray-600"></i>
+                    </div>
+                    <span class="flex-1 text-left text-sm font-medium text-dark">Jadi Fundriser</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
+                </a>
+                @elseif($user->fundraiser->status === 'pending')
+                <div class="w-full flex items-center gap-4 p-3 rounded-lg opacity-60 cursor-not-allowed bg-gray-50">
+                    <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-hourglass-half text-gray-600"></i>
+                    </div>
+                    <span class="flex-1 text-left text-sm font-medium text-dark">Menunggu Konfirmasi Fundriser</span>
+                    <i class="fa-solid fa-lock text-gray-400 text-sm"></i>
+                </div>
+                @elseif($user->fundraiser->status === 'approved')
+                <a href="{{ route('fundraiser.dashboard') }}" wire:navigate class="w-full flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                    <div class="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+                        <i class="fa-solid fa-chart-line text-primary"></i>
+                    </div>
+                    <span class="flex-1 text-left text-sm font-medium text-dark">Dashboard Fundriser</span>
+                    <i class="fa-solid fa-chevron-right text-gray-400 text-sm"></i>
+                </a>
+                @endif
                 <a href="{{ route('profile.edit') }}" wire:navigate class="w-full flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg transition-colors">
                     <div class="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
                         <i class="fa-solid fa-user-pen text-gray-600"></i>

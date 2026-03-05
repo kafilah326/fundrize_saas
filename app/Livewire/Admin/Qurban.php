@@ -13,6 +13,7 @@ use App\Models\QurbanTabunganSetting;
 use App\Services\MetaConversionService;
 use App\Services\StarSenderService;
 use Illuminate\Support\Facades\Storage;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 use Livewire\WithPagination;
@@ -75,6 +76,10 @@ class Qurban extends Component
 
     public $is_active = true;
 
+    public $commission_type = 'none';
+
+    public $commission_amount = 0;
+
     public $isAnimalModalOpen = false;
 
     // Detail Modals
@@ -131,6 +136,8 @@ class Qurban extends Component
         'image' => 'nullable|image|max:2048',
         'description' => 'nullable|string|max:500',
         'is_active' => 'boolean',
+        'commission_type' => 'required|in:none,fixed,percentage',
+        'commission_amount' => 'nullable|numeric|min:0',
         'docFiles.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240', // Limit to images for now? No, need videos too.
     ];
 
@@ -543,6 +550,7 @@ class Qurban extends Component
         $this->resetPage();
     }
 
+    #[Layout('layouts.admin')]
     public function render()
     {
         $data = [];
@@ -556,11 +564,11 @@ class Qurban extends Component
                 ->paginate($this->perPage);
         } elseif ($this->activeTab === 'orders') {
             // Stats for orders tab
-            $statQ = QurbanOrder::where('status', 'paid');
-            $statToday = (clone $statQ)->whereDate('created_at', now()->toDateString())->sum('amount');
-            $statYesterday = (clone $statQ)->whereDate('created_at', now()->subDay()->toDateString())->sum('amount');
-            $statThisMonth = (clone $statQ)->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->sum('amount');
-            $statLastMonth = (clone $statQ)->whereMonth('created_at', now()->subMonth()->month)->whereYear('created_at', now()->subMonth()->year)->sum('amount');
+            $statQ = \App\Models\Payment::where('transaction_type', 'qurban_langsung')->where('status', 'paid');
+            $statToday = (clone $statQ)->whereDate('created_at', now()->toDateString())->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
+            $statYesterday = (clone $statQ)->whereDate('created_at', now()->subDay()->toDateString())->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
+            $statThisMonth = (clone $statQ)->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
+            $statLastMonth = (clone $statQ)->whereMonth('created_at', now()->subMonth()->month)->whereYear('created_at', now()->subMonth()->year)->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
 
             $data = QurbanOrder::with(['user', 'animal', 'payment.whatsappMessageLogs'])
                 ->where(function ($query) {
@@ -574,11 +582,11 @@ class Qurban extends Component
                 ->paginate($this->perPage);
         } elseif ($this->activeTab === 'savings') {
             // Stats for savings tab — based on deposits
-            $statQ = QurbanSavingsDeposit::where('status', 'paid');
-            $statToday = (clone $statQ)->whereDate('created_at', now()->toDateString())->sum('amount');
-            $statYesterday = (clone $statQ)->whereDate('created_at', now()->subDay()->toDateString())->sum('amount');
-            $statThisMonth = (clone $statQ)->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->sum('amount');
-            $statLastMonth = (clone $statQ)->whereMonth('created_at', now()->subMonth()->month)->whereYear('created_at', now()->subMonth()->year)->sum('amount');
+            $statQ = \App\Models\Payment::where('transaction_type', 'qurban_tabungan')->where('status', 'paid');
+            $statToday = (clone $statQ)->whereDate('created_at', now()->toDateString())->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
+            $statYesterday = (clone $statQ)->whereDate('created_at', now()->subDay()->toDateString())->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
+            $statThisMonth = (clone $statQ)->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
+            $statLastMonth = (clone $statQ)->whereMonth('created_at', now()->subMonth()->month)->whereYear('created_at', now()->subMonth()->year)->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
             // For Savings tab, we display SAVINGS ACCOUNTS, not individual payments directly in the main table usually.
             // But if the user wants FU on savings, maybe they mean FU on the saving account progress?
             // Or FU on specific deposits?
@@ -626,7 +634,7 @@ class Qurban extends Component
             'statYesterday' => $statYesterday,
             'statThisMonth' => $statThisMonth,
             'statLastMonth' => $statLastMonth,
-        ])->layout('layouts.admin');
+        ]);
     }
 
     // Animal Methods
@@ -650,6 +658,8 @@ class Qurban extends Component
         $this->existingImage = $animal->image;
         $this->description = $animal->description;
         $this->is_active = $animal->is_active;
+        $this->commission_type = $animal->commission_type ?? 'none';
+        $this->commission_amount = $animal->commission_amount ?? 0;
         $this->isAnimalModalOpen = true;
     }
 
@@ -666,6 +676,8 @@ class Qurban extends Component
             'stock' => $this->stock,
             'description' => $this->description,
             'is_active' => $this->is_active,
+            'commission_type' => $this->commission_type,
+            'commission_amount' => $this->commission_amount ?: 0,
         ];
 
         if ($this->image) {
@@ -712,6 +724,8 @@ class Qurban extends Component
         $this->existingImage = null;
         $this->description = '';
         $this->is_active = true;
+        $this->commission_type = 'none';
+        $this->commission_amount = 0;
     }
 
     public function closeAnimalModal()
@@ -813,6 +827,11 @@ class Qurban extends Component
         // Update Order
         $order->update(['status' => 'paid']);
 
+        // Update Fundraiser Commission if exists
+        if ($order->fundraiserCommission) {
+            $order->fundraiserCommission->update(['status' => 'success']);
+        }
+
         // Refresh data modal
         $this->selectedOrder = QurbanOrder::with(['user', 'animal', 'payment'])->find($orderId);
 
@@ -903,6 +922,9 @@ class Qurban extends Component
 
         // Update Deposit
         $deposit->update(['status' => 'paid']);
+        if ($deposit->fundraiserCommission) {
+            $deposit->fundraiserCommission->update(['status' => 'success']);
+        }
 
         // Update Saving (tambah saldo + cek target)
         $saving = QurbanSaving::find($deposit->qurban_saving_id);

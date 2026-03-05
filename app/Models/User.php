@@ -74,6 +74,11 @@ class User extends Authenticatable
         return $this->hasMany(QurbanSaving::class);
     }
 
+    public function fundraiser()
+    {
+        return $this->hasOne(Fundraiser::class);
+    }
+
     public function getInitialsAttribute()
     {
         $name = trim($this->name);

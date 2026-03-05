@@ -105,8 +105,7 @@
                                     <img src="{{ $banner->image }}" class="w-full h-full object-cover">
                                     <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
                                     <div class="absolute bottom-0 left-0 right-0 p-4">
-                                        <h2 class="text-white font-bold text-base mb-2 line-clamp-2">
-                                            {{ $banner->title }}</h2>
+
                                         @if ($banner->link_url)
                                             <a href="{{ $banner->link_url }}"
                                                 class="bg-primary text-white px-5 py-2 rounded-full text-xs font-semibold inline-block">

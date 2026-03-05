@@ -4,9 +4,35 @@
     selectedPrice: 0,
     formatPrice(price) {
         return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0, maximumFractionDigits: 0 }).format(price);
+    },
+    share() {
+        if (navigator.share) {
+            let url = window.location.href;
+            @auth
+                @if(auth()->user()->fundraiser && auth()->user()->fundraiser->status === 'approved')
+                    if (!url.includes('ref=')) {
+                        url += (url.includes('?') ? '&' : '?') + 'ref={{ auth()->user()->fundraiser->referral_code }}';
+                    }
+                @endif
+            @endauth
+
+            navigator.share({
+                title: 'Program Qurban',
+                text: 'Mari tunaikan ibadah Qurban bersama kami',
+                url: url
+            });
+        } else {
+            alert('Fitur share tidak didukung di browser ini');
+        }
     }
 }">
-    <x-page-header title="Qurban" :showBack="true" />
+    <x-page-header title="Qurban" :showBack="true">
+        <x-slot:actions>
+            <button @click="share()" class="w-9 h-9 flex items-center justify-center">
+                <i class="fa-solid fa-share-nodes text-dark text-lg"></i>
+            </button>
+        </x-slot:actions>
+    </x-page-header>
 
     <main id="main-content" class="pb-32">
         <!-- Banner Section -->
