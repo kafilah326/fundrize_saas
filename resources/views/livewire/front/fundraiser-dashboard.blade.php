@@ -102,7 +102,7 @@
                     <span x-text="copied ? 'Link Tersalin!' : 'Salin Link Utama'"></span>
                 </button>
 
-                <div class="grid grid-cols-3 gap-2 mt-3">
+                {{-- <div class="grid grid-cols-3 gap-2 mt-3">
                     <button @click="shareWhatsApp" class="bg-white border border-gray-200 rounded-lg py-2.5 flex flex-col items-center justify-center gap-1 active:bg-gray-50 transition">
                         <i class="fa-brands fa-whatsapp text-green-600 text-lg"></i>
                         <span class="text-xs text-gray-600 font-medium">WhatsApp</span>
@@ -115,7 +115,7 @@
                         <i class="fa-solid fa-share-nodes text-gray-600 text-lg"></i>
                         <span class="text-xs text-gray-600 font-medium">Lainnya</span>
                     </button>
-                </div>
+                </div> --}}
             </div>
         </section>
 
@@ -123,7 +123,7 @@
         <section id="quick-nav-section" class="mb-6">
             <h3 class="text-dark font-semibold text-base mb-3 px-1">Menu Cepat</h3>
             <div class="space-y-2">
-                <a href="{{ route('fundraiser.programs') }}" wire:navigate class="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-between active:bg-gray-50 transition block">
+                {{-- <a href="{{ route('fundraiser.programs') }}" wire:navigate class="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-between active:bg-gray-50 transition block">
                     <div class="flex items-center gap-3">
                         <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md">
                             <i class="fa-solid fa-bullhorn text-white"></i>
@@ -134,7 +134,7 @@
                         </div>
                     </div>
                     <i class="fa-solid fa-chevron-right text-gray-400"></i>
-                </a>
+                </a> --}}
 
                 <a href="{{ route('fundraiser.history') }}" wire:navigate class="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-between active:bg-gray-50 transition block">
                     <div class="flex items-center gap-3">

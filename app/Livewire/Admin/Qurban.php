@@ -76,9 +76,7 @@ class Qurban extends Component
 
     public $is_active = true;
 
-    public $commission_type = 'none';
 
-    public $commission_amount = 0;
 
     public $isAnimalModalOpen = false;
 
@@ -136,8 +134,6 @@ class Qurban extends Component
         'image' => 'nullable|image|max:2048',
         'description' => 'nullable|string|max:500',
         'is_active' => 'boolean',
-        'commission_type' => 'required|in:none,fixed,percentage',
-        'commission_amount' => 'nullable|numeric|min:0',
         'docFiles.*' => 'image|mimes:jpeg,png,jpg,gif,svg|max:10240', // Limit to images for now? No, need videos too.
     ];
 
@@ -658,8 +654,6 @@ class Qurban extends Component
         $this->existingImage = $animal->image;
         $this->description = $animal->description;
         $this->is_active = $animal->is_active;
-        $this->commission_type = $animal->commission_type ?? 'none';
-        $this->commission_amount = $animal->commission_amount ?? 0;
         $this->isAnimalModalOpen = true;
     }
 
@@ -676,8 +670,6 @@ class Qurban extends Component
             'stock' => $this->stock,
             'description' => $this->description,
             'is_active' => $this->is_active,
-            'commission_type' => $this->commission_type,
-            'commission_amount' => $this->commission_amount ?: 0,
         ];
 
         if ($this->image) {
@@ -724,8 +716,6 @@ class Qurban extends Component
         $this->existingImage = null;
         $this->description = '';
         $this->is_active = true;
-        $this->commission_type = 'none';
-        $this->commission_amount = 0;
     }
 
     public function closeAnimalModal()

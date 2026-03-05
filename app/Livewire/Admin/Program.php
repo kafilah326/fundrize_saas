@@ -33,8 +33,6 @@ class Program extends Component
     public $is_active = true;
     public $is_featured = false;
     public $is_urgent = false;
-    public $commission_type = 'none';
-    public $commission_amount = 0;
 
     // Relations
     public $selectedCategories = [];
@@ -52,8 +50,6 @@ class Program extends Component
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
         'is_urgent' => 'boolean',
-        'commission_type' => 'required|in:none,fixed,percentage',
-        'commission_amount' => 'nullable|numeric|min:0',
         'selectedCategories' => 'array',
         'selectedAkadTypes' => 'array',
     ];
@@ -112,8 +108,6 @@ class Program extends Component
         $this->is_active = true;
         $this->is_featured = false;
         $this->is_urgent = false;
-        $this->commission_type = 'none';
-        $this->commission_amount = 0;
         $this->selectedCategories = [];
         $this->selectedAkadTypes = [];
         $this->resetValidation();
@@ -138,8 +132,6 @@ class Program extends Component
             'is_active' => $this->is_active,
             'is_featured' => $this->is_featured,
             'is_urgent' => $this->is_urgent,
-            'commission_type' => $this->commission_type,
-            'commission_amount' => $this->commission_amount ?: 0,
         ];
 
         if ($this->image) {
@@ -171,8 +163,6 @@ class Program extends Component
         $this->is_active = (bool) $program->is_active;
         $this->is_featured = (bool) $program->is_featured;
         $this->is_urgent = (bool) $program->is_urgent;
-        $this->commission_type = $program->commission_type ?? 'none';
-        $this->commission_amount = $program->commission_amount ?? 0;
 
         $this->loadRelationOptions();
         $this->selectedCategories = $program->categories->pluck('id')->map(fn($id) => (string) $id)->toArray();

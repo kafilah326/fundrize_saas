@@ -16,13 +16,23 @@
             @endauth
 
             navigator.share({
-                title: '{{ $program->title }}',
-                text: 'Mari bantu {{ $program->title }}',
+                title: '{{ addslashes($program->title) }}',
+                text: 'Mari bantu {{ addslashes($program->title) }}',
                 url: url
+            }).catch(error => {
+                console.log('Error sharing:', error);
+                this.copyToClipboard(url);
             });
         } else {
-            alert('Fitur share tidak didukung di browser ini');
+            this.copyToClipboard(window.location.href);
         }
+    },
+    copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => {
+            alert('Link berhasil disalin ke clipboard!');
+        }).catch(err => {
+            console.error('Failed to copy: ', err);
+        });
     }
 }">
     <x-page-header title="Detail Program" :showBack="true">

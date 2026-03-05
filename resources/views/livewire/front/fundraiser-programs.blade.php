@@ -38,10 +38,10 @@
                             <i class="fa-solid fa-coins text-primary text-xs"></i>
                             <span class="text-xs font-bold text-dark">
                                 Ujroh: 
-                                @if($program->commission_type === 'percentage')
-                                    {{ (int)$program->commission_amount }}%
+                                @if($commType === 'percentage')
+                                    {{ (int)$commAmount }}%
                                 @else
-                                    Rp {{ number_format($program->commission_amount, 0, ',', '.') }}
+                                    Rp {{ number_format($commAmount, 0, ',', '.') }}
                                 @endif
                             </span>
                         </div>

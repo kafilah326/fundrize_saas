@@ -106,6 +106,7 @@ class ProgramIndex extends Component
             'title' => 'Daftar Program Donasi - ' . $foundationName,
             'metaDescription' => 'Temukan berbagai program donasi, sedekah, zakat, dan infaq yang dapat Anda bantu melalui ' . $foundationName . '.',
             'metaKeywords' => 'donasi, sedekah, zakat, infaq, galang dana, ' . strtolower($foundationName) . ', program sosial',
+            'metaImage' => $foundation->logo ?? asset('images/default-og.jpg'),
         ]);
     }
 }

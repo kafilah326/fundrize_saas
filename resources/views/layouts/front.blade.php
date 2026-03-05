@@ -27,9 +27,11 @@
     <meta property="og:title" content="{{ $title ?? ($foundationName . ' - Berbagi Kebaikan') }}">
     <meta property="og:description"
         content="{{ $metaDescription ?? $defaultDescription }}">
-    <meta property="og:image" content="{{ $metaImage ?? asset('images/default-og.jpg') }}">
+    <meta property="og:image" content="{{ $metaImage ?? ($foundation->logo ?? '') }}">
+    <meta property="og:image:secure_url" content="{{ $metaImage ?? ($foundation->logo ?? '') }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
+    <meta property="og:image:type" content="image/jpeg">
     <meta property="og:image:alt" content="{{ $title ?? $foundationName }}">
     <meta property="og:site_name" content="{{ $foundationName }}">
     <meta property="og:locale" content="id_ID">
@@ -40,8 +42,14 @@
     <meta property="twitter:title" content="{{ $title ?? ($foundationName . ' - Berbagi Kebaikan') }}">
     <meta property="twitter:description"
         content="{{ $metaDescription ?? $defaultDescription }}">
-    <meta property="twitter:image" content="{{ $metaImage ?? asset('images/default-og.jpg') }}">
+    <meta property="twitter:image" content="{{ $metaImage ?? ($foundation->logo ?? '') }}">
     <meta property="twitter:image:alt" content="{{ $title ?? $foundationName }}">
+
+    <!-- Additional Meta for Sharing -->
+    <link rel="image_src" href="{{ $metaImage ?? ($foundation->logo ?? '') }}">
+    <meta itemprop="image" content="{{ $metaImage ?? ($foundation->logo ?? '') }}">
+    
+    @stack('meta')
 
 
     @php

@@ -37,12 +37,16 @@ class FundraiserList extends Component
     public $withdrawalId = null;
     public $withdrawalDetail = null;
     public $withdrawalRejectReason = '';
-    public $receiptImage = null;
-
-    // Modal Commission
+    public $receiptImage = null;    // Modal Commission
     public $isCommissionModalOpen = false;
     public $selectedFundraiserCommissions = [];
     public $selectedFundraiserName = '';
+
+    // Settings
+    public $program_commission_type = 'none';
+    public $program_commission_amount = 0;
+    public $qurban_commission_type = 'none';
+    public $qurban_commission_amount = 0;
 
     protected $queryString = [
         'activeTab' => ['except' => 'fundraisers'],
@@ -50,6 +54,15 @@ class FundraiserList extends Component
         'statusFilter' => ['except' => ''],
         'page' => ['except' => 1],
     ];
+
+
+    public function mount()
+    {
+        $this->program_commission_type = \App\Models\AppSetting::get('fundraiser_program_commission_type', 'none');
+        $this->program_commission_amount = \App\Models\AppSetting::get('fundraiser_program_commission_amount', 0);
+        $this->qurban_commission_type = \App\Models\AppSetting::get('fundraiser_qurban_commission_type', 'none');
+        $this->qurban_commission_amount = \App\Models\AppSetting::get('fundraiser_qurban_commission_amount', 0);
+    }
 
     public function setTab($tab)
     {
@@ -201,6 +214,39 @@ class FundraiserList extends Component
         $this->isCommissionModalOpen = false;
         $this->selectedFundraiserCommissions = [];
     }
+
+    public function saveSettings()
+    {
+        $this->validate([
+            'program_commission_type' => 'required|in:none,fixed,percentage',
+            'program_commission_amount' => 'required|numeric|min:0',
+            'qurban_commission_type' => 'required|in:none,fixed,percentage',
+            'qurban_commission_amount' => 'required|numeric|min:0',
+        ]);
+
+        $settings = [
+            'fundraiser_program_commission_type' => ['value' => $this->program_commission_type, 'type' => 'string'],
+            'fundraiser_program_commission_amount' => ['value' => $this->program_commission_amount, 'type' => 'number'],
+            'fundraiser_qurban_commission_type' => ['value' => $this->qurban_commission_type, 'type' => 'string'],
+            'fundraiser_qurban_commission_amount' => ['value' => $this->qurban_commission_amount, 'type' => 'number'],
+        ];
+
+        foreach ($settings as $key => $data) {
+            \App\Models\AppSetting::updateOrCreate(
+                ['key' => $key],
+                [
+                    'value' => $data['value'],
+                    'type' => $data['type'],
+                    'group' => 'fundraiser',
+                    'label' => ucwords(str_replace('_', ' ', $key))
+                ]
+            );
+            \Illuminate\Support\Facades\Cache::forget('app_setting_' . $key);
+        }
+
+        session()->flash('success', 'Pengaturan Ujroh berhasil disimpan.');
+    }
+
 
     #[Layout('layouts.admin')]
     public function render()

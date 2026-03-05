@@ -210,15 +210,17 @@ class PaymentMethod extends Component
                 'payment_expiry' => $payment->expired_at,
             ]);
 
-            // Calculate Commission
+            // Calculate Commission using Global Settings
             if ($fundraiserId) {
-                $program = \App\Models\Program::find($checkout['program_id']);
-                if ($program && $program->commission_type !== 'none') {
+                $commType = \App\Models\AppSetting::get('fundraiser_program_commission_type', 'none');
+                $commAmountSet = \App\Models\AppSetting::get('fundraiser_program_commission_amount', 0);
+                
+                if ($commType !== 'none') {
                     $commissionAmount = 0;
-                    if ($program->commission_type === 'fixed') {
-                        $commissionAmount = $program->commission_amount;
-                    } elseif ($program->commission_type === 'percentage') {
-                        $commissionAmount = ($this->amount * $program->commission_amount) / 100;
+                    if ($commType === 'fixed') {
+                        $commissionAmount = $commAmountSet;
+                    } elseif ($commType === 'percentage') {
+                        $commissionAmount = ($this->amount * $commAmountSet) / 100;
                     }
 
                     if ($commissionAmount > 0) {
@@ -256,15 +258,17 @@ class PaymentMethod extends Component
             // Link payment to order
             $payment->update(['qurban_order_id' => $order->id]);
 
-            // Calculate Commission
+            // Calculate Commission using Global Settings
             if ($fundraiserId) {
-                $animal = \App\Models\QurbanAnimal::find($checkout['animal_data']['id']);
-                if ($animal && $animal->commission_type !== 'none') {
+                $commType = \App\Models\AppSetting::get('fundraiser_qurban_commission_type', 'none');
+                $commAmountSet = \App\Models\AppSetting::get('fundraiser_qurban_commission_amount', 0);
+                
+                if ($commType !== 'none') {
                     $commissionAmount = 0;
-                    if ($animal->commission_type === 'fixed') {
-                        $commissionAmount = $animal->commission_amount;
-                    } elseif ($animal->commission_type === 'percentage') {
-                        $commissionAmount = ($this->amount * $animal->commission_amount) / 100;
+                    if ($commType === 'fixed') {
+                        $commissionAmount = $commAmountSet;
+                    } elseif ($commType === 'percentage') {
+                        $commissionAmount = ($this->amount * $commAmountSet) / 100;
                     }
 
                     if ($commissionAmount > 0) {
@@ -319,15 +323,17 @@ class PaymentMethod extends Component
             // Link payment to saving
             $payment->update(['qurban_saving_id' => $saving->id]);
 
-            // Calculate Commission
-            if ($fundraiserId && isset($checkout['animal_id'])) {
-                $animal = \App\Models\QurbanAnimal::find($checkout['animal_id']);
-                if ($animal && $animal->commission_type !== 'none') {
+            // Calculate Commission using Global Settings
+            if ($fundraiserId) {
+                $commType = \App\Models\AppSetting::get('fundraiser_qurban_commission_type', 'none');
+                $commAmountSet = \App\Models\AppSetting::get('fundraiser_qurban_commission_amount', 0);
+                
+                if ($commType !== 'none') {
                     $commissionAmount = 0;
-                    if ($animal->commission_type === 'fixed') {
-                        $commissionAmount = $animal->commission_amount;
-                    } elseif ($animal->commission_type === 'percentage') {
-                        $commissionAmount = ($this->amount * $animal->commission_amount) / 100;
+                    if ($commType === 'fixed') {
+                        $commissionAmount = $commAmountSet;
+                    } elseif ($commType === 'percentage') {
+                        $commissionAmount = ($this->amount * $commAmountSet) / 100;
                     }
 
                     if ($commissionAmount > 0) {
