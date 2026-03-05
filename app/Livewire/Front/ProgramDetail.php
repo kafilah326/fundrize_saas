@@ -37,42 +37,26 @@ class ProgramDetail extends Component
             ->get();
     }
 
-    public function render()
+        public function render()
     {
         $foundation = \App\Models\FoundationSetting::first();
-        $foundationName = $foundation->name ?? 'Yayasan Peduli';
         
-        // Clean description for meta (max 160 chars)
-        $rawDescription = $this->program->description;
-        $cleanDescription = str_replace(['&nbsp;', '&amp;', "\r", "\n"], [' ', '&', ' ', ' '], strip_tags($rawDescription));
-        $metaDescription = \Illuminate\Support\Str::limit(trim(preg_replace('/\s+/', ' ', $cleanDescription)), 160);
-        
-        // Ensure absolute URL for image
+        // Simple Absolute Image URL
         $image = $this->program->image;
-        if (!$image || str_contains($image, 'placehold.co')) {
-            $image = $foundation->logo ?? '';
+        if (!$image || str_contains($image, "placehold.co")) {
+            $image = $foundation->logo ?? "";
         }
         
-        if ($image && !str_starts_with($image, 'http')) {
+        // Force URL helper to ensure absolute path if not already http
+        if ($image && !str_starts_with($image, "http")) {
             $image = url($image);
         }
 
-        // Final fallback if still empty
-        if (!$image) {
-            $image = asset('images/default-og.jpg');
-        }
-
-        // Keywords from categories
-        $categories = $this->program->categories->pluck('name')->toArray();
-        $metaKeywords = 'donasi, sedekah, infaq, yayasan, ' . implode(', ', $categories) . ', ' . $this->program->title;
-
-        return view('livewire.front.program-detail')
-            ->layout('layouts.front', [
-                'title' => $this->program->title . ' - ' . $foundationName,
-                'metaDescription' => $metaDescription,
-                'metaImage' => $image,
-                'metaKeywords' => $metaKeywords,
-                'metaAuthor' => $foundationName,
+        return view("livewire.front.program-detail")
+            ->layout("layouts.front", [
+                "title" => $this->program->title,
+                "metaDescription" => \Illuminate\Support\Str::limit(strip_tags($this->program->description), 160),
+                "metaImage" => $image,
             ]);
     }
 }
