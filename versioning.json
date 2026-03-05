@@ -1,6 +1,6 @@
 {
-  "version": "1.17.0",
+  "version": "1.18.0",
   "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur validasi aspek rasio (1:1), dukungan format file baru (webp), serta perbaikan pada logika pemanggilan path gambar favicon.",
-  "updatedAt": "2026-02-22T23:43:27.964Z"
+  "aiReason": "Perubahan ini mencakup penambahan fitur baru yang 'backward compatible' yaitu section 'Pejuang Kebaikan' (daftar fundraiser) di halaman detail program, serta banyak perbaikan logika (bug fixes) terkait perhitungan total donasi yang kini menyertakan kode unik di berbagai modul.",
+  "updatedAt": "2026-03-05T01:02:55.531Z"
 }

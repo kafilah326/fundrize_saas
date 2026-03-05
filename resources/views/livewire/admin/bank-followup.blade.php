@@ -215,36 +215,36 @@
                                         (Klik untuk menyisipkan)</label>
                                     <div class="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-xl border border-gray-200">
                                         @php
-                                            $commonParams = ['{{ nama }}', '{{ tanggal }}'];
+                                            $commonParams = ['{{nama}}', '{{tanggal}}'];
                                             $params = [];
                                             if ($type == 'donasi') {
                                                 $params = array_merge($commonParams, [
-                                                    '{{ program }}',
-                                                    '{{ nilai_donasi }}',
-                                                    '{{ link_donasi }}',
-                                                    '{{ link_pembayaran }}',
+                                                    '{{program}}',
+                                                    '{{nilai_donasi}}',
+                                                    '{{link_donasi}}',
+                                                    '{{link_pembayaran}}',
                                                 ]);
                                             } elseif ($type == 'qurban') {
                                                 $params = array_merge($commonParams, [
-                                                    '{{ jenis_hewan }}',
-                                                    '{{ tipe_qurban }}',
-                                                    '{{ harga }}',
-                                                    '{{ link_pembayaran }}',
+                                                    '{{jenis_hewan}}',
+                                                    '{{tipe_qurban}}',
+                                                    '{{harga}}',
+                                                    '{{link_pembayaran}}',
                                                 ]);
                                             } elseif ($type == 'tabungan_qurban') {
                                                 $params = array_merge($commonParams, [
-                                                    '{{ target_tabungan }}',
-                                                    '{{ saldo_saat_ini }}',
-                                                    '{{ sisa_pembayaran }}',
-                                                    '{{ link_topup }}',
-                                                    '{{ link_pembayaran }}',
+                                                    '{{target_tabungan}}',
+                                                    '{{saldo_saat_ini}}',
+                                                    '{{sisa_pembayaran}}',
+                                                    '{{link_topup}}',
+                                                    '{{link_pembayaran}}',
                                                 ]);
                                             }
                                         @endphp
 
                                         @foreach ($params as $param)
                                             <button type="button"
-                                                wire:click="insertParameter('{{ $param }}')"
+                                                wire:click="insertParameter('{{$param}}')"
                                                 class="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-medium bg-white border border-gray-300 text-gray-700 shadow-sm hover:bg-gray-50 hover:text-primary hover:border-primary transition-all cursor-pointer group">
                                                 <i
                                                     class="fa-solid fa-code mr-1.5 text-gray-400 group-hover:text-primary"></i>

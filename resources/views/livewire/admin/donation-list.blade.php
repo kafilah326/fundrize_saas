@@ -262,12 +262,12 @@
                                                         $rawContent = $hasTemplate->content;
                                                         // Common Replacements
                                                         $rawContent = str_replace(
-                                                            '{{ nama }}',
+                                                            '{{nama}}',
                                                             $payment->customer_name ?? 'Hamba Allah',
                                                             $rawContent,
                                                         );
                                                         $rawContent = str_replace(
-                                                            '{{ tanggal }}',
+                                                            '{{tanggal}}',
                                                             $payment->created_at->translatedFormat('d F Y'),
                                                             $rawContent,
                                                         );
@@ -278,22 +278,22 @@
                                                             $payment->program
                                                         ) {
                                                             $rawContent = str_replace(
-                                                                '{{ program }}',
+                                                                '{{program}}',
                                                                 $payment->program->title,
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ nilai_donasi }}',
+                                                                '{{nilai_donasi}}',
                                                                 'Rp ' . number_format($payment->amount, 0, ',', '.'),
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ link_donasi }}',
+                                                                '{{link_donasi}}',
                                                                 route('program.detail', $payment->program->slug),
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ link_pembayaran }}',
+                                                                '{{link_pembayaran}}',
                                                                 route('payment.status', [
                                                                     'id' => $payment->external_id,
                                                                 ]),
@@ -304,22 +304,22 @@
                                                             $payment->qurbanOrder
                                                         ) {
                                                             $rawContent = str_replace(
-                                                                '{{ jenis_hewan }}',
+                                                                '{{jenis_hewan}}',
                                                                 $payment->qurbanOrder->animal->name ?? '-',
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ tipe_qurban }}',
+                                                                '{{tipe_qurban}}',
                                                                 $payment->qurbanOrder->animal->type ?? '-',
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ harga }}',
+                                                                '{{harga}}',
                                                                 'Rp ' . number_format($payment->amount, 0, ',', '.'),
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ link_pembayaran }}',
+                                                                '{{link_pembayaran}}',
                                                                 route('payment.status', [
                                                                     'id' => $payment->external_id,
                                                                 ]),
@@ -330,7 +330,7 @@
                                                             $payment->qurbanSaving
                                                         ) {
                                                             $rawContent = str_replace(
-                                                                '{{ target_tabungan }}',
+                                                                '{{target_tabungan}}',
                                                                 'Rp ' .
                                                                     number_format(
                                                                         $payment->qurbanSaving->target_amount,
@@ -341,7 +341,7 @@
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ saldo_saat_ini }}',
+                                                                '{{saldo_saat_ini}}',
                                                                 'Rp ' .
                                                                     number_format(
                                                                         $payment->qurbanSaving->saved_amount,
@@ -352,7 +352,7 @@
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ sisa_pembayaran }}',
+                                                                '{{sisa_pembayaran}}',
                                                                 'Rp ' .
                                                                     number_format(
                                                                         $payment->qurbanSaving->target_amount -
@@ -364,7 +364,7 @@
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ link_topup }}',
+                                                                '{{link_topup}}',
                                                                 route(
                                                                     'qurban.savings.detail',
                                                                     $payment->qurbanSaving->id,
@@ -372,7 +372,7 @@
                                                                 $rawContent,
                                                             );
                                                             $rawContent = str_replace(
-                                                                '{{ link_pembayaran }}',
+                                                                '{{link_pembayaran}}',
                                                                 route('payment.status', [
                                                                     'id' => $payment->external_id,
                                                                 ]),
