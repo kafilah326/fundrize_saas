@@ -24,7 +24,7 @@
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $title ?? ($foundationName . ' - Berbagi Kebaikan') }}">
+    <meta property="og:title" content="{{ $title ?? ($foundationName) }}">
     <meta property="og:description"
         content="{{ $metaDescription ?? $defaultDescription }}">
     <meta property="og:image" content="{{ $metaImage ?? ($foundation->logo ?? '') }}">
