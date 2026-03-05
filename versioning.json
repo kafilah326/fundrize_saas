@@ -1,6 +1,6 @@
 {
-  "version": "1.19.0",
+  "version": "1.20.0",
   "aiDecision": "MINOR",
-  "aiReason": "Perubahan ini memperkenalkan fitur baru berupa pengaturan komisi (ujroh) secara global dan melakukan refactor besar dengan menghapus properti komisi pada level individual model (Program dan Qurban) untuk standarisasi sistem.",
-  "updatedAt": "2026-03-05T04:09:51.699Z"
+  "aiReason": "Penambahan fitur metadata SEO (Open Graph) yang lebih lengkap, perbaikan logika pembersihan teks deskripsi, serta penambahan fungsi fallback 'copy to clipboard' pada fitur berbagi tanpa merusak fungsi yang sudah ada.",
+  "updatedAt": "2026-03-05T04:17:53.255Z"
 }

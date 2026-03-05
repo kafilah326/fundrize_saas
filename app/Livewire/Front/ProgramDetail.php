@@ -39,15 +39,35 @@ class ProgramDetail extends Component
 
     public function render()
     {
-        $foundationName = \App\Models\FoundationSetting::value('name') ?? 'Yayasan Peduli';
+        $foundation = \App\Models\FoundationSetting::first();
+        $foundationName = $foundation->name ?? 'Yayasan Peduli';
+        
+        // Clean description for meta (max 160 chars)
+        $rawDescription = $this->program->description;
+        $cleanDescription = str_replace(['&nbsp;', '&amp;', "\r", "\n"], [' ', '&', ' ', ' '], strip_tags($rawDescription));
+        $metaDescription = \Illuminate\Support\Str::limit(trim(preg_replace('/\s+/', ' ', $cleanDescription)), 160);
+        
+        // Ensure absolute URL for image
+        $image = $this->program->image;
+        if (!$image || $image === 'https://placehold.co/600x400?text=No+Image') {
+            $image = $foundation->logo ?? asset('images/default-og.jpg');
+        }
+        
+        if (!str_starts_with($image, 'http')) {
+            $image = url($image);
+        }
 
-        return view('livewire.front.program-detail')->layout('layouts.front', [
-            'title' => $this->program->title.' - ' . $foundationName,
-            'metaDescription' => \Illuminate\Support\Str::limit(strip_tags($this->program->description), 160),
-            'metaImage' => str_starts_with($this->program->image, 'http')
-                                    ? $this->program->image
-                                    : url($this->program->image),
-            'metaKeywords' => 'donasi, '.implode(', ', $this->program->categories->pluck('name')->toArray()).', '.$this->program->title,
-        ]);
+        // Keywords from categories
+        $categories = $this->program->categories->pluck('name')->toArray();
+        $metaKeywords = 'donasi, sedekah, infaq, yayasan, ' . implode(', ', $categories) . ', ' . $this->program->title;
+
+        return view('livewire.front.program-detail')
+            ->layout('layouts.front', [
+                'title' => $this->program->title . ' - ' . $foundationName,
+                'metaDescription' => $metaDescription,
+                'metaImage' => $image,
+                'metaKeywords' => $metaKeywords,
+                'metaAuthor' => $foundationName,
+            ]);
     }
 }
