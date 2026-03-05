@@ -379,34 +379,41 @@
                                                                 $rawContent = $hasTemplate->content;
                                                                 // Common Replacements
                                                                 $rawContent = str_replace(
-                                                                    '{{ nama }}',
+                                                                    '{{nama}}',
                                                                     $order->donor_name ?? 'Hamba Allah',
                                                                     $rawContent,
                                                                 );
                                                                 $rawContent = str_replace(
-                                                                    '{{ tanggal }}',
+                                                                    '{{tanggal}}',
                                                                     $order->created_at->translatedFormat('d F Y'),
                                                                     $rawContent,
                                                                 );
 
                                                                 // Specific Replacements for Qurban Order
                                                                 $rawContent = str_replace(
-                                                                    '{{ jenis_hewan }}',
+                                                                    '{{jenis_hewan}}',
                                                                     $order->animal->name ?? '-',
                                                                     $rawContent,
                                                                 );
                                                                 $rawContent = str_replace(
-                                                                    '{{ tipe_qurban }}',
+                                                                    '{{tipe_qurban}}',
                                                                     $order->animal->type ?? '-',
                                                                     $rawContent,
                                                                 );
                                                                 $rawContent = str_replace(
-                                                                    '{{ harga }}',
-                                                                    'Rp ' . number_format($order->amount + ($order->payment?->unique_code ?? 0), 0, ',', '.'),
+                                                                    '{{harga}}',
+                                                                    'Rp ' .
+                                                                        number_format(
+                                                                            $order->amount +
+                                                                                ($order->payment?->unique_code ?? 0),
+                                                                            0,
+                                                                            ',',
+                                                                            '.',
+                                                                        ),
                                                                     $rawContent,
                                                                 );
                                                                 $rawContent = str_replace(
-                                                                    '{{ link_pembayaran }}',
+                                                                    '{{link_pembayaran}}',
                                                                     route('payment.status', [
                                                                         'id' => $order->payment->external_id ?? '',
                                                                     ]),
@@ -888,8 +895,10 @@ if ($isSent) {
                                     @enderror
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Besaran Komisi</label>
-                                    <input wire:model="commission_amount" type="number" step="0.01" min="0"
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Besaran
+                                        Komisi</label>
+                                    <input wire:model="commission_amount" type="number" step="0.01"
+                                        min="0"
                                         class="block w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-base bg-gray-50 focus:bg-white transition-colors">
                                     @error('commission_amount')
                                         <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
@@ -1055,17 +1064,20 @@ if ($isSent) {
 
                             <div class="border-t border-gray-100 pt-4 flex justify-between items-center">
                                 <span class="text-sm text-gray-600">Nominal Qurban</span>
-                                <span class="font-semibold text-gray-900">Rp {{ number_format($selectedOrder->amount, 0, ',', '.') }}</span>
+                                <span class="font-semibold text-gray-900">Rp
+                                    {{ number_format($selectedOrder->amount, 0, ',', '.') }}</span>
                             </div>
-                            
-                            @if($selectedOrder->payment && $selectedOrder->payment->unique_code > 0)
-                            <div class="mt-2 flex justify-between items-center">
-                                <span class="text-sm text-gray-600">Kode Unik</span>
-                                <span class="font-semibold text-gray-900">Rp {{ number_format($selectedOrder->payment->unique_code, 0, ',', '.') }}</span>
-                            </div>
+
+                            @if ($selectedOrder->payment && $selectedOrder->payment->unique_code > 0)
+                                <div class="mt-2 flex justify-between items-center">
+                                    <span class="text-sm text-gray-600">Kode Unik</span>
+                                    <span class="font-semibold text-gray-900">Rp
+                                        {{ number_format($selectedOrder->payment->unique_code, 0, ',', '.') }}</span>
+                                </div>
                             @endif
 
-                            <div class="border-t border-dashed border-gray-200 mt-3 pt-3 flex justify-between items-center">
+                            <div
+                                class="border-t border-dashed border-gray-200 mt-3 pt-3 flex justify-between items-center">
                                 <span class="font-bold text-gray-700">Total Pembayaran</span>
                                 <span class="text-xl font-bold text-primary">Rp
                                     {{ number_format($selectedOrder->amount + ($selectedOrder->payment?->unique_code ?? 0), 0, ',', '.') }}</span>
@@ -1249,7 +1261,8 @@ if ($isSent) {
                                                     <td class="px-4 py-2.5 text-xs text-gray-500">
                                                         {{ $deposit->created_at->format('d M Y') }}</td>
                                                     <td class="px-4 py-2.5 text-xs font-medium">Rp
-                                                        {{ number_format($deposit->amount + ($deposit->payment?->unique_code ?? 0), 0, ',', '.') }}</td>
+                                                        {{ number_format($deposit->amount + ($deposit->payment?->unique_code ?? 0), 0, ',', '.') }}
+                                                    </td>
                                                     <td class="px-4 py-2.5 text-xs text-gray-600 capitalize">
                                                         {{ str_replace('_', ' ', $deposit->payment_method ?? '-') }}
                                                     </td>
