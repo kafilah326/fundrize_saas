@@ -40,7 +40,7 @@ class ProgramDetail extends Component
     public function render()
     {
         $foundation = \App\Models\FoundationSetting::first();
-        
+
         // Get the raw image value from database to avoid accessor interference if any
         $imagePath = $this->program->getRawOriginal("image");
         $finalImage = "";
@@ -60,16 +60,16 @@ class ProgramDetail extends Component
             $finalImage = url($finalImage);
         }
 
+        // Null if empty — layout will use default-og.jpg fallback
         if (!$finalImage) {
             $finalImage = null;
         }
 
-        return view("livewire.front.program-detail")
-            ->layout("layouts.front", [
-                "title" => trim($this->program->title),
-                "metaDescription" => trim(\Illuminate\Support\Str::limit(strip_tags($this->program->description), 160)),
-                "metaImage" => $finalImage,
-            ]);
+        return view("livewire.front.program-detail")->layout("layouts.front", [
+            "title"           => trim($this->program->title),
+            "metaDescription" => trim(\Illuminate\Support\Str::limit(strip_tags($this->program->description ?? ''), 160)),
+            "metaImage"       => $finalImage,
+        ]);
     }
 }
 

@@ -47,10 +47,10 @@ class QurbanIndex extends Component
         }
 
         return view('livewire.front.qurban-index')->layout('layouts.front', [
-            'title' => 'Qurban Online Terpercaya - ' . $foundationName,
+            'title'           => 'Qurban Online Terpercaya - ' . $foundationName,
             'metaDescription' => 'Layanan Qurban Online mudah dan terpercaya. Tersedia berbagai pilihan hewan qurban (Sapi, Kambing, Domba) dengan harga terjangkau.',
-            'metaKeywords' => 'qurban, qurban online, jual hewan qurban, sapi qurban, kambing qurban, domba qurban, ' . strtolower($foundationName),
-            'metaImage' => $logo ?: null,
+            'metaKeywords'    => 'qurban, qurban online, jual hewan qurban, sapi qurban, kambing qurban, domba qurban, ' . strtolower($foundationName),
+            'metaImage'       => $logo ?: null,
         ]);
     }
 }

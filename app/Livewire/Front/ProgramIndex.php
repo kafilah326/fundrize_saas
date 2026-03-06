@@ -103,13 +103,13 @@ class ProgramIndex extends Component
         }
 
         return view('livewire.front.program-index', [
-            'programs' => $programs,
+            'programs'      => $programs,
             'totalPrograms' => $totalPrograms,
         ])->layout('layouts.front', [
-            'title' => 'Daftar Program Donasi - ' . $foundationName,
+            'title'           => 'Daftar Program Donasi - ' . $foundationName,
             'metaDescription' => 'Temukan berbagai program donasi, sedekah, zakat, dan infaq yang dapat Anda bantu melalui ' . $foundationName . '.',
-            'metaKeywords' => 'donasi, sedekah, zakat, infaq, galang dana, ' . strtolower($foundationName) . ', program sosial',
-            'metaImage' => $logo ?: null,
+            'metaKeywords'    => 'donasi, sedekah, zakat, infaq, galang dana, ' . strtolower($foundationName) . ', program sosial',
+            'metaImage'       => $logo ?: null,
         ]);
     }
 }
