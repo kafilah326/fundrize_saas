@@ -36,18 +36,21 @@ class QurbanIndex extends Component
         }
     }
 
-    #[Layout('layouts.front')]
-    #[Title('Qurban')]
     public function render()
     {
         $foundation = \App\Models\FoundationSetting::first();
         $foundationName = $foundation->name ?? 'Yayasan Peduli';
 
+        $logo = $foundation->logo ?? null;
+        if ($logo && !str_starts_with($logo, 'http')) {
+            $logo = url($logo);
+        }
+
         return view('livewire.front.qurban-index')->layout('layouts.front', [
             'title' => 'Qurban Online Terpercaya - ' . $foundationName,
             'metaDescription' => 'Layanan Qurban Online mudah dan terpercaya. Tersedia berbagai pilihan hewan qurban (Sapi, Kambing, Domba) dengan harga terjangkau.',
             'metaKeywords' => 'qurban, qurban online, jual hewan qurban, sapi qurban, kambing qurban, domba qurban, ' . strtolower($foundationName),
-            'metaImage' => $foundation->logo ?? asset('images/default-og.jpg'),
+            'metaImage' => $logo ?: null,
         ]);
     }
 }

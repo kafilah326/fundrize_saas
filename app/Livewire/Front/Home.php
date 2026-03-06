@@ -50,15 +50,18 @@ class Home extends Component
         $this->akads = AkadType::where('is_active', true)->get();
     }
 
-    #[Layout('layouts.front')]
-    #[Title('Home')]
     public function render()
     {
+        $logo = $this->foundation->logo;
+        if ($logo && !str_starts_with($logo, 'http')) {
+            $logo = url($logo);
+        }
+
         return view('livewire.front.home')->layout('layouts.front', [
-            'title' => $this->foundation->name,
-            'metaDescription' => strip_tags($this->foundation->about),
-            'metaKeywords' => 'donasi, yayasan, sedekah, zakat, infaq, qurban, galang dana, crowdfunding, '.$this->foundation->name,
-            'metaImage' => $this->foundation->logo,
+            'title'           => $this->foundation->name,
+            'metaDescription' => \Illuminate\Support\Str::limit(strip_tags($this->foundation->about ?? ''), 160),
+            'metaKeywords'    => 'donasi, yayasan, sedekah, zakat, infaq, qurban, galang dana, crowdfunding, ' . $this->foundation->name,
+            'metaImage'       => $logo ?: null,
         ]);
     }
 }

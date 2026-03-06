@@ -1,6 +1,6 @@
 {
-  "version": "1.20.5",
+  "version": "1.20.6",
   "aiDecision": "PATCH",
-  "aiReason": "Perbaikan bug pada logika resolusi URL gambar untuk meta tags serta peningkatan minor pada struktur SEO tanpa mengubah fungsi utama aplikasi.",
-  "updatedAt": "2026-03-05T04:54:32.648Z"
+  "aiReason": "Default karena error API",
+  "updatedAt": "2026-03-06T21:58:10.781Z"
 }

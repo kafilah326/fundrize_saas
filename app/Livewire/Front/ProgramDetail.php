@@ -37,7 +37,7 @@ class ProgramDetail extends Component
             ->get();
     }
 
-                public function render()
+    public function render()
     {
         $foundation = \App\Models\FoundationSetting::first();
         
@@ -60,6 +60,10 @@ class ProgramDetail extends Component
             $finalImage = url($finalImage);
         }
 
+        if (!$finalImage) {
+            $finalImage = null;
+        }
+
         return view("livewire.front.program-detail")
             ->layout("layouts.front", [
                 "title" => trim($this->program->title),
@@ -68,3 +72,4 @@ class ProgramDetail extends Component
             ]);
     }
 }
+
