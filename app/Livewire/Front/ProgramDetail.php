@@ -41,7 +41,28 @@ class ProgramDetail extends Component
     {
         $foundation = \App\Models\FoundationSetting::first();
 
-        // Get the raw image value from database to avoid accessor interference if any
+        // Get the raw image value from database to avoid accessor interference
+        $imagePath = $this->program->getRawOriginal("image");
+        $finalImage = "";
+
+        if ($imagePath && !str_contains($imagePath, "placehold.co")) {
+            // If already an absolute URL (e.g. external CDN), use directly
+            if (str_starts_with($imagePath, 'http')) {
+                $finalImage = $imagePath;
+            } else {
+                $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($imagePath);
+            }
+        } else {
+            // Fallback to foundation logo
+            $logoPath = $foundation ? $foundation->getRawOriginal("logo") : null;
+            if ($logoPath) {
+                if (str_starts_with($logoPath, 'http')) {
+                    $finalImage = $logoPath;
+                } else {
+                    $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($logoPath);
+                }
+            }
+        }
         $imagePath = $this->program->getRawOriginal("image");
         $finalImage = "";
 
