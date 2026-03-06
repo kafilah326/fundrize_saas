@@ -75,7 +75,7 @@
                 target="_blank"
                 class="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors shadow-lg active:scale-[0.98] transition-transform">
                 <i class="fa-brands fa-whatsapp text-lg"></i>
-                <span class="text-sm">Hubungi Tim Legal Kami</span>
+                <span class="text-sm">Hubungi CS</span>
             </a>
         </section>
         @endif

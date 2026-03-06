@@ -3,6 +3,12 @@
     $foundationName = $foundation->name ?? 'Yayasan Peduli';
     $foundationAbout = strip_tags($foundation->about ?? '');
     $defaultDescription = $foundationAbout ?: 'Platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.';
+    
+    // OG Image: ensure always absolute URL, fallback to default-og.jpg
+    $ogImage = isset($metaImage) && $metaImage ? $metaImage : asset('images/default-og.jpg');
+    if (!str_starts_with($ogImage, 'http')) {
+        $ogImage = url($ogImage);
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="id" prefix="og: http://ogp.me/ns#">
@@ -21,25 +27,21 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="{{ $title ?? $foundationName }}">
     <meta property="og:description" content="{{ $metaDescription ?? $defaultDescription }}">
-    @if(isset($metaImage) && $metaImage)
-    <meta property="og:image" content="{{ $metaImage }}">
-    <meta property="og:image:secure_url" content="{{ str_replace('http://', 'https://', $metaImage) }}">
+    <meta property="og:image" content="{{ $ogImage }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    @endif
+    <meta property="og:image:alt" content="{{ $title ?? $foundationName }}">
+    <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="{{ $foundationName }}">
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $title ?? $foundationName }}">
     <meta name="twitter:description" content="{{ $metaDescription ?? $defaultDescription }}">
-    @if(isset($metaImage) && $metaImage)
-    <meta name="twitter:image" content="{{ $metaImage }}">
-    @endif
+    <meta name="twitter:image" content="{{ $ogImage }}">
+    <meta name="twitter:image:alt" content="{{ $title ?? $foundationName }}">
 
-    @if(isset($metaImage) && $metaImage)
-    <meta itemprop="image" content="{{ $metaImage }}">
-    <link rel="image_src" href="{{ $metaImage }}">
-    @endif
+    <meta itemprop="image" content="{{ $ogImage }}">
+    <link rel="image_src" href="{{ $ogImage }}">
     @stack('meta')
 
     @php

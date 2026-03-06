@@ -37,21 +37,30 @@ class ProgramDetail extends Component
             ->get();
     }
 
-                public function render()
+    public function render()
     {
         $foundation = \App\Models\FoundationSetting::first();
-        
-        // Get the raw image value from database to avoid accessor interference if any
+
+        // Get the raw image value from database to avoid accessor interference
         $imagePath = $this->program->getRawOriginal("image");
         $finalImage = "";
 
         if ($imagePath && !str_contains($imagePath, "placehold.co")) {
-            $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($imagePath);
+            // If already an absolute URL (e.g. external CDN), use directly
+            if (str_starts_with($imagePath, 'http')) {
+                $finalImage = $imagePath;
+            } else {
+                $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($imagePath);
+            }
         } else {
             // Fallback to foundation logo
             $logoPath = $foundation ? $foundation->getRawOriginal("logo") : null;
             if ($logoPath) {
-                $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($logoPath);
+                if (str_starts_with($logoPath, 'http')) {
+                    $finalImage = $logoPath;
+                } else {
+                    $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($logoPath);
+                }
             }
         }
 
@@ -60,11 +69,16 @@ class ProgramDetail extends Component
             $finalImage = url($finalImage);
         }
 
-        return view("livewire.front.program-detail")
-            ->layout("layouts.front", [
-                "title" => trim($this->program->title),
-                "metaDescription" => trim(\Illuminate\Support\Str::limit(strip_tags($this->program->description), 160)),
-                "metaImage" => $finalImage,
-            ]);
+        // Null if empty — layout will use default-og.jpg fallback
+        if (!$finalImage) {
+            $finalImage = null;
+        }
+
+        return view("livewire.front.program-detail")->layout("layouts.front", [
+            "title"           => trim($this->program->title),
+            "metaDescription" => trim(\Illuminate\Support\Str::limit(strip_tags($this->program->description ?? ''), 160)),
+            "metaImage"       => $finalImage,
+        ]);
     }
 }
+

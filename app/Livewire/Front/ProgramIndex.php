@@ -75,8 +75,6 @@ class ProgramIndex extends Component
         $this->resetPage();
     }
 
-    #[Layout('layouts.front')]
-    #[Title('Program')]
     public function render()
     {
         $foundation = \App\Models\FoundationSetting::first();
@@ -99,14 +97,19 @@ class ProgramIndex extends Component
         $programs = $query->latest()->take($this->limit)->get();
         $totalPrograms = $query->count();
 
+        $logo = $foundation->logo ?? null;
+        if ($logo && !str_starts_with($logo, 'http')) {
+            $logo = url($logo);
+        }
+
         return view('livewire.front.program-index', [
-            'programs' => $programs,
+            'programs'      => $programs,
             'totalPrograms' => $totalPrograms,
         ])->layout('layouts.front', [
-            'title' => 'Daftar Program Donasi - ' . $foundationName,
+            'title'           => 'Daftar Program Donasi - ' . $foundationName,
             'metaDescription' => 'Temukan berbagai program donasi, sedekah, zakat, dan infaq yang dapat Anda bantu melalui ' . $foundationName . '.',
-            'metaKeywords' => 'donasi, sedekah, zakat, infaq, galang dana, ' . strtolower($foundationName) . ', program sosial',
-            'metaImage' => $foundation->logo ?? asset('images/default-og.jpg'),
+            'metaKeywords'    => 'donasi, sedekah, zakat, infaq, galang dana, ' . strtolower($foundationName) . ', program sosial',
+            'metaImage'       => $logo ?: null,
         ]);
     }
 }

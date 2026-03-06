@@ -16,15 +16,18 @@ class FoundationProfile extends Component
         $this->foundation = FoundationSetting::firstOrFail();
     }
 
-    #[Layout('layouts.front')]
-    #[Title('Profil Yayasan')]
     public function render()
     {
+        $logo = $this->foundation->logo;
+        if ($logo && !str_starts_with($logo, 'http')) {
+            $logo = url($logo);
+        }
+
         return view('livewire.front.foundation-profile')->layout('layouts.front', [
-            'title' => 'Tentang Kami - ' . $this->foundation->name,
-            'metaDescription' => strip_tags($this->foundation->about),
-            'metaKeywords' => 'profil yayasan, tentang kami, visi misi, ' . $this->foundation->name,
-            'metaImage' => $this->foundation->logo,
+            'title'           => 'Tentang Kami - ' . $this->foundation->name,
+            'metaDescription' => \Illuminate\Support\Str::limit(strip_tags($this->foundation->about ?? ''), 160),
+            'metaKeywords'    => 'profil yayasan, tentang kami, visi misi, ' . $this->foundation->name,
+            'metaImage'       => $logo ?: null,
         ]);
     }
 }
