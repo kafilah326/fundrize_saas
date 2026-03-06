@@ -71,7 +71,11 @@
         @if($foundation && $foundation->phone)
         <section id="contact-section" class="mt-2 bg-white px-4 py-5">
             <h3 class="text-sm font-bold text-dark mb-3">Butuh Informasi Lebih Lanjut?</h3>
-            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $foundation->phone) }}"
+            @php
+                $waPhone = preg_replace('/[^0-9]/', '', $foundation->phone);
+                if (str_starts_with($waPhone, '0')) { $waPhone = '62' . substr($waPhone, 1); }
+            @endphp
+            <a href="https://wa.me/{{ $waPhone }}"
                 target="_blank"
                 class="w-full flex items-center justify-center gap-2 bg-green-600 text-white py-3 rounded-xl font-semibold hover:bg-green-700 transition-colors shadow-lg active:scale-[0.98] transition-transform">
                 <i class="fa-brands fa-whatsapp text-lg"></i>

@@ -412,7 +412,11 @@
                         <div>
                             <h4 class="text-xs font-semibold text-gray-500 uppercase">Nomor WhatsApp</h4>
                             <p class="text-base font-medium text-gray-900">
-                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $fundraiserDetail->whatsapp) }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                                @php
+                                    $waNumber = preg_replace('/[^0-9]/', '', $fundraiserDetail->whatsapp);
+                                    if (str_starts_with($waNumber, '0')) { $waNumber = '62' . substr($waNumber, 1); }
+                                @endphp
+                                <a href="https://wa.me/{{ $waNumber }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
                                     <i class="fa-brands fa-whatsapp text-green-500"></i> {{ $fundraiserDetail->whatsapp }}
                                 </a>
                             </p>

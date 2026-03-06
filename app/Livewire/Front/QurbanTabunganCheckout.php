@@ -82,6 +82,10 @@ class QurbanTabunganCheckout extends Component
 
     public function submit()
     {
+        if (str_starts_with($this->whatsapp, '0')) {
+            $this->whatsapp = '62' . substr($this->whatsapp, 1);
+        }
+
         $this->validate([
             'target' => 'required',
             'name' => 'required_if:isAnonymous,false',
