@@ -46,7 +46,7 @@ class Program extends Component
         'description' => 'required',
         'target_amount' => 'nullable|numeric|min:0',
         'end_date' => 'nullable|date',
-        'image' => 'nullable|image|max:2048', // 2MB Max
+        'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', // 5MB Max
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
         'is_urgent' => 'boolean',
@@ -135,8 +135,22 @@ class Program extends Component
         ];
 
         if ($this->image) {
-            $imageName = $this->image->store('programs', 'public');
-            $data['image'] = $imageName;
+            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+            $image = $manager->read($this->image->getRealPath());
+            $processed = $image->cover(1200, 630)->toJpeg(85);
+            $filename = 'programs/' . uniqid() . '.jpg';
+            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $processed);
+
+            if ($this->programId) {
+                $oldProgram = \App\Models\Program::find($this->programId);
+                if ($oldProgram) {
+                    $oldPath = $oldProgram->getRawOriginal('image');
+                    if ($oldPath && !str_starts_with($oldPath, 'http')) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                    }
+                }
+            }
+            $data['image'] = $filename;
         }
 
         $program = ProgramModel::updateOrCreate(['id' => $this->programId], $data);

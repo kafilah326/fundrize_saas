@@ -144,8 +144,20 @@ class Settings extends Component
         ];
 
         if ($this->logo) {
-            $logoName = $this->logo->store('foundation', 'public');
-            $data['logo'] = $logoName;
+            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+            $image = $manager->read($this->logo->getRealPath());
+            $processed = $image->cover(1200, 630)->toJpeg(85);
+            $filename = 'foundation/' . uniqid() . '.jpg';
+            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $processed);
+            
+            $foundation = FoundationSetting::first();
+            if ($foundation) {
+                $oldPath = $foundation->getRawOriginal('logo');
+                if ($oldPath && !str_starts_with($oldPath, 'http')) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
+                }
+            }
+            $data['logo'] = $filename;
         }
 
         if ($this->favicon) {
