@@ -63,18 +63,6 @@ class ProgramDetail extends Component
                 }
             }
         }
-        $imagePath = $this->program->getRawOriginal("image");
-        $finalImage = "";
-
-        if ($imagePath && !str_contains($imagePath, "placehold.co")) {
-            $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($imagePath);
-        } else {
-            // Fallback to foundation logo
-            $logoPath = $foundation ? $foundation->getRawOriginal("logo") : null;
-            if ($logoPath) {
-                $finalImage = \Illuminate\Support\Facades\Storage::disk("public")->url($logoPath);
-            }
-        }
 
         // Ensure absolute URL
         if ($finalImage && !str_starts_with($finalImage, "http")) {
