@@ -34,6 +34,10 @@ class FundraiserRegister extends Component
 
     public function register()
     {
+        if (str_starts_with($this->whatsapp, '0')) {
+            $this->whatsapp = '62' . substr($this->whatsapp, 1);
+        }
+
         $this->validate([
             'name' => 'required|string|max:255',
             'whatsapp' => 'required|string|max:20',

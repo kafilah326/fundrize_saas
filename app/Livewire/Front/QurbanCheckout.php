@@ -50,6 +50,10 @@ class QurbanCheckout extends Component
 
     public function submit()
     {
+        if (str_starts_with($this->whatsapp, '0')) {
+            $this->whatsapp = '62' . substr($this->whatsapp, 1);
+        }
+
         $rules = [
             'name' => 'required',
             'whatsapp' => 'required',
