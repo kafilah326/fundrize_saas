@@ -10,6 +10,7 @@ use App\Models\Program;
 use App\Models\QurbanOrder;
 use App\Models\QurbanSaving;
 use App\Models\QurbanSavingsDeposit;
+use App\Models\ZakatTransaction;
 use App\Services\MetaConversionService;
 use App\Services\WhatsAppNotificationService;
 use Illuminate\Http\Request;
@@ -133,6 +134,11 @@ class XenditWebhookController extends Controller
                     }
                 }
             }
+        } elseif ($payment->transaction_type === 'zakat') {
+            $zakatTrx = ZakatTransaction::where('transaction_id', $payment->external_id)->first();
+            if ($zakatTrx) {
+                $zakatTrx->update(['status' => 'success']);
+            }
         }
 
         $this->waService->notifyPaymentSuccess($payment);
@@ -175,6 +181,11 @@ class XenditWebhookController extends Controller
                 if ($deposit->fundraiserCommission) {
                     $deposit->fundraiserCommission->update(['status' => 'cancelled']);
                 }
+            }
+        } elseif ($payment->transaction_type === 'zakat') {
+            $zakatTrx = ZakatTransaction::where('transaction_id', $payment->external_id)->first();
+            if ($zakatTrx) {
+                $zakatTrx->update(['status' => 'expired']);
             }
         }
 

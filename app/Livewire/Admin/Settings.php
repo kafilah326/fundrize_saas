@@ -14,7 +14,7 @@ class Settings extends Component
     use WithFileUploads;
     use WithPagination;
 
-    public $activeTab = 'foundation'; // foundation, bank, api
+    public $activeTab = 'foundation'; // foundation, bank, api, appearance
     public $perPage = 5;
 
     // Foundation Fields

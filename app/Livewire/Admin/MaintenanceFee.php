@@ -6,6 +6,7 @@ use App\Models\Donation;
 use App\Models\MaintenanceFee as MaintenanceFeeModel;
 use App\Models\QurbanOrder;
 use App\Models\QurbanSavingsDeposit;
+use App\Models\ZakatTransaction;
 use Carbon\Carbon;
 use Livewire\Component;
 use Livewire\WithFileUploads;
@@ -136,6 +137,23 @@ class MaintenanceFee extends Component
             ];
         }
 
+        // Zakat Transactions
+        $zakats = ZakatTransaction::whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
+            ->where('status', 'success')
+            ->get();
+
+        foreach ($zakats as $zakat) {
+            $transactions[] = [
+                'id_trx' => $zakat->transaction_id,
+                'title' => 'Zakat: ' . ($zakat->zakat_type === 'fitrah' ? 'Fitrah' : 'Mal'),
+                'type' => 'Zakat',
+                'amount' => $zakat->amount,
+                'fee'    => ($zakat->amount * env('SYSTEM_FEE_PERCENTAGE', 0)) / 100,
+                'date'   => $zakat->created_at,
+            ];
+        }
+
         return $transactions;
     }
 
@@ -173,7 +191,13 @@ class MaintenanceFee extends Component
                 ->where('transaction_type', 'qurban_tabungan')
                 ->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
 
-            $totalCollected = $totalDonations + $totalQurban + $totalSavings;
+            $totalZakat = \App\Models\Payment::whereYear('paid_at', $this->year)
+                ->whereMonth('paid_at', $m)
+                ->where('status', 'paid')
+                ->where('transaction_type', 'zakat')
+                ->sum(\Illuminate\Support\Facades\DB::raw('amount + COALESCE(unique_code, 0)'));
+
+            $totalCollected = $totalDonations + $totalQurban + $totalSavings + $totalZakat;
             $feeMaintenance = ($totalCollected * $feePercentage) / 100;
 
             // Check existing record

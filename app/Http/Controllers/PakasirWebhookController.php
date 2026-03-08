@@ -9,6 +9,7 @@ use App\Models\Program;
 use App\Models\QurbanOrder;
 use App\Models\QurbanSaving;
 use App\Models\QurbanSavingsDeposit;
+use App\Models\ZakatTransaction;
 use App\Services\MetaConversionService;
 use App\Services\PakasirService;
 use App\Services\WhatsAppNotificationService;
@@ -144,6 +145,11 @@ class PakasirWebhookController extends Controller
                         $saving->update(['status' => 'completed']);
                     }
                 }
+            }
+        } elseif ($payment->transaction_type === 'zakat') {
+            $zakatTrx = ZakatTransaction::where('transaction_id', $payment->external_id)->first();
+            if ($zakatTrx) {
+                $zakatTrx->update(['status' => 'success']);
             }
         }
 
