@@ -1,4 +1,4 @@
-<div>
+<div @if ($paymentStatus === 'pending') wire:poll.5s="refreshStatus" @endif>
     <x-page-header title="Status Transaksi" :showBack="true" />
 
     <main id="main-content" class="pb-24">
