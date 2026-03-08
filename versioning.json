@@ -1,6 +1,6 @@
 {
-  "version": "1.21.1",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini hanya mencakup penambahan dokumentasi rencana (planning) dan draf perbaikan bug tanpa mengubah fungsionalitas kode utama atau API yang sudah ada.",
-  "updatedAt": "2026-03-08T07:38:47.085Z"
+  "version": "1.22.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan modul fungsional baru yang besar mencakup halaman front-end, kalkulator, manajemen admin, dan tabel database baru tanpa merusak fitur yang sudah ada (backward compatible).",
+  "updatedAt": "2026-03-08T13:00:40.194Z"
 }

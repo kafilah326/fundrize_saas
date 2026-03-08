@@ -27,6 +27,7 @@ use App\Livewire\Front\Report;
 use App\Livewire\Front\SearchPage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use App\Livewire\Front\ZakatIndex;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,7 @@ Route::get('/program', ProgramIndex::class)->name('program.index');
 Route::get('/program/{slug}', ProgramDetail::class)->name('program.detail');
 Route::get('/program/{slug}/checkout', ProgramCheckout::class)->name('program.checkout');
 Route::get('/foundation/profile', FoundationProfile::class)->name('foundation.profile');
+Route::get('/zakat', \App\Livewire\Front\ZakatIndex::class)->name('zakat.index');
 
 // Qurban Routes
 Route::get('/qurban', QurbanIndex::class)->name('qurban.index');
@@ -127,6 +129,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/maintenance-fee', \App\Livewire\Admin\MaintenanceFee::class)->name('maintenance-fee');
     Route::get('/bank-followup', \App\Livewire\Admin\BankFollowup::class)->name('bank-followup');
     Route::get('/whatsapp-template', \App\Livewire\Admin\WhatsappTemplate::class)->name('whatsapp-template');
+    Route::get('/zakat', \App\Livewire\Admin\ZakatList::class)->name('zakat');
 
     // Quill Editor Image Upload
     Route::post('/upload-editor-image', [\App\Http\Controllers\EditorImageUploadController::class, 'store'])->name('upload-editor-image');

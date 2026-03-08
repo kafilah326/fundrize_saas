@@ -10,6 +10,7 @@ use App\Models\Payment;
 use App\Models\QurbanOrder;
 use App\Models\QurbanSaving;
 use App\Models\QurbanSavingsDeposit;
+use App\Models\ZakatTransaction;
 use App\Services\MetaConversionService;
 use App\Services\WhatsAppNotificationService;
 use App\Services\XenditService;
@@ -347,6 +348,36 @@ class PaymentMethod extends Component
                     }
                 }
             }
+        } elseif ($this->type === 'zakat') {
+            $zakatData = [
+                'transaction_id'   => $trxId,
+                'user_id'          => Auth::id(),
+                'zakat_type'       => $checkout['zakat_type'] ?? 'fitrah',
+                'amount'           => $this->amount,
+                'admin_fee'        => $this->adminFee,
+                'total'            => $finalTotal,
+                'donor_name'       => $checkout['name'] ?? 'Hamba Allah',
+                'donor_phone'      => $checkout['phone'] ?? null,
+                'donor_email'      => $checkout['email'] ?? null,
+                'payment_method'   => $this->selectedMethod,
+                'status'           => 'pending',
+                'payment_expiry'   => now()->addHours(24),
+            ];
+
+            // Fitrah specific
+            if (($checkout['zakat_type'] ?? '') === 'fitrah') {
+                $zakatData['jumlah_jiwa'] = $checkout['jumlah_jiwa'] ?? 1;
+            }
+
+            // Maal specific
+            if (($checkout['zakat_type'] ?? '') === 'maal') {
+                $zakatData['total_harta']      = $checkout['total_harta'] ?? null;
+                $zakatData['nisab_at_time']    = $checkout['nisab_at_time'] ?? null;
+                $zakatData['calculated_zakat'] = $checkout['calculated_zakat'] ?? $this->amount;
+            }
+
+            $zakatTrx = ZakatTransaction::create($zakatData);
+            $payment->update(['zakat_transaction_id' => $zakatTrx->id]);
         }
 
         // 4. Send Notification (Async if queue is setup, but synchronous for now)

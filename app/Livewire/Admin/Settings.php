@@ -14,7 +14,7 @@ class Settings extends Component
     use WithFileUploads;
     use WithPagination;
 
-    public $activeTab = 'foundation'; // foundation, bank, api
+    public $activeTab = 'foundation'; // foundation, bank, api, appearance, zakat
     public $perPage = 5;
 
     // Foundation Fields
@@ -50,6 +50,10 @@ class Settings extends Component
     public $default_theme_color = '#FF6B35';
     public $secondary_color;
     public $default_secondary_color = '#FDF2EB'; // Very light orange/cream
+
+    // Zakat Fields
+    public $zakat_fitrah_price;
+    public $zakat_gold_price_per_gram;
 
     protected $rules = [
         'name' => 'required|string',
@@ -98,6 +102,10 @@ class Settings extends Component
         // Load Appearance Settings
         $this->theme_color = AppSetting::get('theme_color', $this->default_theme_color);
         $this->secondary_color = AppSetting::get('secondary_color', $this->default_secondary_color);
+
+        // Load Zakat Settings
+        $this->zakat_fitrah_price = AppSetting::get('zakat_fitrah_price', 45000);
+        $this->zakat_gold_price_per_gram = AppSetting::get('zakat_gold_price_per_gram', 1500000);
     }
 
     public function setTab($tab)
@@ -438,5 +446,40 @@ class Settings extends Component
         \Illuminate\Support\Facades\Cache::forget('app_setting_secondary_color');
         
         session()->flash('success', 'Warna tema dikembalikan ke default.');
+    }
+
+    // Zakat Methods
+    public function saveZakat()
+    {
+        $this->validate([
+            'zakat_fitrah_price'        => 'required|numeric|min:0',
+            'zakat_gold_price_per_gram' => 'required|numeric|min:0',
+        ]);
+
+        AppSetting::updateOrCreate(
+            ['key' => 'zakat_fitrah_price'],
+            [
+                'value'       => $this->zakat_fitrah_price,
+                'group'       => 'zakat',
+                'type'        => 'number',
+                'label'       => 'Harga Zakat Fitrah per Jiwa',
+                'description' => 'Nominal zakat fitrah untuk satu jiwa (dalam rupiah)',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_fitrah_price');
+
+        AppSetting::updateOrCreate(
+            ['key' => 'zakat_gold_price_per_gram'],
+            [
+                'value'       => $this->zakat_gold_price_per_gram,
+                'group'       => 'zakat',
+                'type'        => 'number',
+                'label'       => 'Harga Emas per Gram (untuk Nisab)',
+                'description' => 'Harga emas per gram, digunakan untuk menghitung nisab zakat mal (85 gram emas)',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_gold_price_per_gram');
+
+        session()->flash('success', 'Pengaturan zakat berhasil diperbarui.');
     }
 }

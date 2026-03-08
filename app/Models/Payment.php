@@ -11,11 +11,12 @@ class Payment extends Model
 
     protected $fillable = [
         'external_id',
-        'transaction_type', // program, qurban_langsung, qurban_tabungan
+        'transaction_type', // program, qurban_langsung, qurban_tabungan, zakat
         'user_id',
         'program_id',
         'qurban_order_id',
         'qurban_saving_id',
+        'zakat_transaction_id',
         'unique_code',
         'customer_name',
         'customer_email',
@@ -51,6 +52,11 @@ class Payment extends Model
     public function qurbanSaving()
     {
         return $this->belongsTo(QurbanSaving::class);
+    }
+
+    public function zakatTransaction()
+    {
+        return $this->belongsTo(ZakatTransaction::class);
     }
 
     public function whatsappMessageLogs()

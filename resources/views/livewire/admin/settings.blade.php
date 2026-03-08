@@ -26,6 +26,11 @@
                     {{ $activeTab === 'appearance' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
                     <i class="fa-solid fa-paintbrush mr-2"></i> Tampilan
                 </button>
+                <button wire:click="setTab('zakat')"
+                    class="px-6 py-4 text-sm font-medium rounded-t-xl transition-all duration-200 border-b-2 
+                    {{ $activeTab === 'zakat' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
+                    <i class="fa-solid fa-moon mr-2"></i> Zakat
+                </button>
             </nav>
         </div>
 
@@ -83,7 +88,8 @@
                                     <div class="flex-1">
                                         <input wire:model="logo" type="file" accept="image/*"
                                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors">
-                                        <p class="text-xs text-gray-500 mt-2">Format: PNG transparan. Rekomendasi ukuran: 512x128 px (Landscape). Max: 2MB.</p>
+                                        <p class="text-xs text-gray-500 mt-2">Format: PNG transparan. Rekomendasi
+                                            ukuran: 512x128 px (Landscape). Max: 2MB.</p>
                                     </div>
                                 </div>
                                 @error('logo')
@@ -110,7 +116,8 @@
                                     <div class="flex-1">
                                         <input wire:model="favicon" type="file" accept="image/*"
                                             class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20 transition-colors">
-                                        <p class="text-xs text-gray-500 mt-2">Format: PNG. Rekomendasi ukuran: 512x512 px (Square). Max: 1MB.</p>
+                                        <p class="text-xs text-gray-500 mt-2">Format: PNG. Rekomendasi ukuran: 512x512
+                                            px (Square). Max: 1MB.</p>
                                     </div>
                                 </div>
                                 @error('favicon')
@@ -346,21 +353,25 @@
                 <!-- API Tab -->
             @elseif($activeTab === 'api')
                 <form wire:submit.prevent="saveApi">
-                    
+
                     <div class="mb-8">
-                        <label class="block text-sm font-bold text-gray-900 mb-3">Pilih Gateway Pembayaran Otomatis Utama</label>
+                        <label class="block text-sm font-bold text-gray-900 mb-3">Pilih Gateway Pembayaran Otomatis
+                            Utama</label>
                         <div class="flex flex-wrap gap-4">
-                            <label class="relative flex cursor-pointer rounded-2xl border-2 p-4 transition-all {{ $payment_gateway === 'xendit' ? 'border-primary bg-primary/5' : 'border-gray-200 bg-white hover:border-gray-300' }}">
-                                <input type="radio" wire:model.live="payment_gateway" value="xendit" class="peer sr-only">
+                            <label
+                                class="relative flex cursor-pointer rounded-2xl border-2 p-4 transition-all {{ $payment_gateway === 'xendit' ? 'border-primary bg-primary/5' : 'border-gray-200 bg-white hover:border-gray-300' }}">
+                                <input type="radio" wire:model.live="payment_gateway" value="xendit"
+                                    class="peer sr-only">
                                 <div class="flex items-center gap-4">
-                                    <div class="flex h-12 w-12 items-center justify-center rounded-xl {{ $payment_gateway === 'xendit' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400' }}">
+                                    <div
+                                        class="flex h-12 w-12 items-center justify-center rounded-xl {{ $payment_gateway === 'xendit' ? 'bg-primary text-white' : 'bg-gray-100 text-gray-400' }}">
                                         <i class="fa-solid fa-credit-card text-xl"></i>
                                     </div>
                                     <div>
                                         <p class="font-bold text-gray-900">Xendit</p>
                                         <p class="text-sm text-gray-500">Gateway pembayaran populer di Indonesia</p>
                                     </div>
-                                    @if($payment_gateway === 'xendit')
+                                    @if ($payment_gateway === 'xendit')
                                         <div class="absolute right-4 top-1/2 -translate-y-1/2 text-primary">
                                             <i class="fa-solid fa-circle-check text-xl"></i>
                                         </div>
@@ -368,17 +379,20 @@
                                 </div>
                             </label>
 
-                            <label class="relative flex cursor-pointer rounded-2xl border-2 p-4 transition-all {{ $payment_gateway === 'pakasir' ? 'border-teal-500 bg-teal-50' : 'border-gray-200 bg-white hover:border-gray-300' }}">
-                                <input type="radio" wire:model.live="payment_gateway" value="pakasir" class="peer sr-only">
+                            <label
+                                class="relative flex cursor-pointer rounded-2xl border-2 p-4 transition-all {{ $payment_gateway === 'pakasir' ? 'border-teal-500 bg-teal-50' : 'border-gray-200 bg-white hover:border-gray-300' }}">
+                                <input type="radio" wire:model.live="payment_gateway" value="pakasir"
+                                    class="peer sr-only">
                                 <div class="flex items-center gap-4">
-                                    <div class="flex h-12 w-12 items-center justify-center rounded-xl {{ $payment_gateway === 'pakasir' ? 'bg-teal-500 text-white' : 'bg-gray-100 text-gray-400' }}">
+                                    <div
+                                        class="flex h-12 w-12 items-center justify-center rounded-xl {{ $payment_gateway === 'pakasir' ? 'bg-teal-500 text-white' : 'bg-gray-100 text-gray-400' }}">
                                         <i class="fa-solid fa-wallet text-xl"></i>
                                     </div>
                                     <div>
                                         <p class="font-bold text-gray-900">Pakasir</p>
                                         <p class="text-sm text-gray-500">Gateway pembayaran via URL</p>
                                     </div>
-                                    @if($payment_gateway === 'pakasir')
+                                    @if ($payment_gateway === 'pakasir')
                                         <div class="absolute right-4 top-1/2 -translate-y-1/2 text-teal-500">
                                             <i class="fa-solid fa-circle-check text-xl"></i>
                                         </div>
@@ -389,157 +403,185 @@
                     </div>
 
                     <div class="grid grid-cols-1 gap-8">
-                        @if($payment_gateway === 'xendit')
-                        <!-- Xendit Info -->
-                        <div class="rounded-2xl border p-6 {{ $xendit_mode === 'live' ? 'bg-red-50/50 border-red-200' : 'bg-blue-50/50 border-blue-100' }} transition-colors duration-300">
-                            <div class="flex items-center justify-between mb-6">
-                                <div class="flex items-center">
+                        @if ($payment_gateway === 'xendit')
+                            <!-- Xendit Info -->
+                            <div
+                                class="rounded-2xl border p-6 {{ $xendit_mode === 'live' ? 'bg-red-50/50 border-red-200' : 'bg-blue-50/50 border-blue-100' }} transition-colors duration-300">
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="flex items-center">
+                                        <span
+                                            class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 {{ $xendit_mode === 'live' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600' }}">
+                                            <i class="fa-solid fa-credit-card text-lg"></i>
+                                        </span>
+                                        <h3
+                                            class="text-lg font-bold {{ $xendit_mode === 'live' ? 'text-red-900' : 'text-blue-900' }}">
+                                            Xendit Payment</h3>
+                                    </div>
                                     <span
-                                        class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 {{ $xendit_mode === 'live' ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600' }}">
-                                        <i class="fa-solid fa-credit-card text-lg"></i>
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold {{ $xendit_mode === 'live' ? 'bg-red-100 text-red-700 border border-red-300' : 'bg-green-100 text-green-700 border border-green-300' }}">
+                                        <span
+                                            class="w-2 h-2 rounded-full mr-1.5 {{ $xendit_mode === 'live' ? 'bg-red-500 animate-pulse' : 'bg-green-500' }}"></span>
+                                        {{ $xendit_mode === 'live' ? 'LIVE / Production' : 'TEST / Sandbox' }}
                                     </span>
-                                    <h3 class="text-lg font-bold {{ $xendit_mode === 'live' ? 'text-red-900' : 'text-blue-900' }}">Xendit Payment</h3>
-                                </div>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold {{ $xendit_mode === 'live' ? 'bg-red-100 text-red-700 border border-red-300' : 'bg-green-100 text-green-700 border border-green-300' }}">
-                                    <span class="w-2 h-2 rounded-full mr-1.5 {{ $xendit_mode === 'live' ? 'bg-red-500 animate-pulse' : 'bg-green-500' }}"></span>
-                                    {{ $xendit_mode === 'live' ? 'LIVE / Production' : 'TEST / Sandbox' }}
-                                </span>
-                            </div>
-
-                            {{-- Mode Toggle --}}
-                            <div class="mb-6">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Mode Environment</label>
-                                <div class="flex items-center gap-2 p-1 bg-gray-100 rounded-xl w-fit">
-                                    <button type="button" wire:click="$set('xendit_mode', 'test')"
-                                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $xendit_mode === 'test' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
-                                        <i class="fa-solid fa-flask mr-1"></i> Test
-                                    </button>
-                                    <button type="button" wire:click="$set('xendit_mode', 'live')"
-                                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $xendit_mode === 'live' ? 'bg-white text-red-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
-                                        <i class="fa-solid fa-globe mr-1"></i> Live
-                                    </button>
                                 </div>
 
-                                @if($xendit_mode === 'live')
-                                    <div class="mt-3 p-3 bg-red-100 border border-red-300 rounded-xl">
-                                        <div class="flex items-start gap-2">
-                                            <i class="fa-solid fa-triangle-exclamation text-red-600 mt-0.5"></i>
-                                            <div>
-                                                <p class="text-xs font-bold text-red-700">Mode Production Aktif</p>
-                                                <p class="text-xs text-red-600 mt-0.5">Semua transaksi akan diproses secara nyata. Pastikan credential yang digunakan adalah credential production dari Dashboard Xendit.</p>
+                                {{-- Mode Toggle --}}
+                                <div class="mb-6">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Mode
+                                        Environment</label>
+                                    <div class="flex items-center gap-2 p-1 bg-gray-100 rounded-xl w-fit">
+                                        <button type="button" wire:click="$set('xendit_mode', 'test')"
+                                            class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $xendit_mode === 'test' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                                            <i class="fa-solid fa-flask mr-1"></i> Test
+                                        </button>
+                                        <button type="button" wire:click="$set('xendit_mode', 'live')"
+                                            class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $xendit_mode === 'live' ? 'bg-white text-red-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                                            <i class="fa-solid fa-globe mr-1"></i> Live
+                                        </button>
+                                    </div>
+
+                                    @if ($xendit_mode === 'live')
+                                        <div class="mt-3 p-3 bg-red-100 border border-red-300 rounded-xl">
+                                            <div class="flex items-start gap-2">
+                                                <i class="fa-solid fa-triangle-exclamation text-red-600 mt-0.5"></i>
+                                                <div>
+                                                    <p class="text-xs font-bold text-red-700">Mode Production Aktif</p>
+                                                    <p class="text-xs text-red-600 mt-0.5">Semua transaksi akan
+                                                        diproses secara nyata. Pastikan credential yang digunakan adalah
+                                                        credential production dari Dashboard Xendit.</p>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                @else
-                                    <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-xl">
-                                        <div class="flex items-start gap-2">
-                                            <i class="fa-solid fa-shield-halved text-green-600 mt-0.5"></i>
-                                            <div>
-                                                <p class="text-xs font-bold text-green-700">Mode Sandbox Aktif</p>
-                                                <p class="text-xs text-green-600 mt-0.5">Transaksi tidak akan diproses secara nyata. Gunakan credential test dari Dashboard Xendit.</p>
+                                    @else
+                                        <div class="mt-3 p-3 bg-green-50 border border-green-200 rounded-xl">
+                                            <div class="flex items-start gap-2">
+                                                <i class="fa-solid fa-shield-halved text-green-600 mt-0.5"></i>
+                                                <div>
+                                                    <p class="text-xs font-bold text-green-700">Mode Sandbox Aktif</p>
+                                                    <p class="text-xs text-green-600 mt-0.5">Transaksi tidak akan
+                                                        diproses secara nyata. Gunakan credential test dari Dashboard
+                                                        Xendit.</p>
+                                                </div>
                                             </div>
                                         </div>
+                                    @endif
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Secret
+                                            Key</label>
+                                        <input wire:model="xendit_secret_key" type="password"
+                                            class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 bg-white focus:bg-white transition-colors"
+                                            placeholder="{{ $xendit_mode === 'live' ? 'xnd_production_...' : 'xnd_development_...' }}">
+                                        @error('xendit_secret_key')
+                                            <span class="text-xs text-red-500">{{ $message }}</span>
+                                        @enderror
                                     </div>
-                                @endif
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Webhook
+                                            Token</label>
+                                        <input wire:model="xendit_webhook_token" type="password"
+                                            class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 bg-white focus:bg-white transition-colors"
+                                            placeholder="Webhook verification token">
+                                        @error('xendit_webhook_token')
+                                            <span class="text-xs text-red-500">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div
+                                        class="bg-white p-4 rounded-xl border {{ $xendit_mode === 'live' ? 'border-red-200' : 'border-blue-200' }} shadow-sm mt-4">
+                                        <p
+                                            class="text-xs font-bold {{ $xendit_mode === 'live' ? 'text-red-600' : 'text-blue-600' }} uppercase mb-1">
+                                            Webhook URL</p>
+                                        <code
+                                            class="font-mono text-gray-700 block break-all text-sm">{{ route('webhooks.xendit.invoice') }}</code>
+                                    </div>
+                                    <p
+                                        class="text-xs {{ $xendit_mode === 'live' ? 'text-red-600' : 'text-blue-600' }}">
+                                        <i class="fa-solid fa-info-circle mr-1"></i> Pastikan URL ini didaftarkan di
+                                        Dashboard Xendit Anda pada bagian Invoice callback.
+                                    </p>
+                                </div>
                             </div>
-
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Secret Key</label>
-                                    <input wire:model="xendit_secret_key" type="password"
-                                        class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 bg-white focus:bg-white transition-colors"
-                                        placeholder="{{ $xendit_mode === 'live' ? 'xnd_production_...' : 'xnd_development_...' }}">
-                                    @error('xendit_secret_key')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Webhook Token</label>
-                                    <input wire:model="xendit_webhook_token" type="password"
-                                        class="w-full rounded-xl border-gray-300 focus:border-blue-500 focus:ring-blue-500/20 bg-white focus:bg-white transition-colors"
-                                        placeholder="Webhook verification token">
-                                    @error('xendit_webhook_token')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="bg-white p-4 rounded-xl border {{ $xendit_mode === 'live' ? 'border-red-200' : 'border-blue-200' }} shadow-sm mt-4">
-                                    <p class="text-xs font-bold {{ $xendit_mode === 'live' ? 'text-red-600' : 'text-blue-600' }} uppercase mb-1">Webhook URL</p>
-                                    <code
-                                        class="font-mono text-gray-700 block break-all text-sm">{{ route('webhooks.xendit.invoice') }}</code>
-                                </div>
-                                <p class="text-xs {{ $xendit_mode === 'live' ? 'text-red-600' : 'text-blue-600' }}">
-                                    <i class="fa-solid fa-info-circle mr-1"></i> Pastikan URL ini didaftarkan di
-                                    Dashboard Xendit Anda pada bagian Invoice callback.
-                                </p>
-                            </div>
-                        </div>
                         @endif
 
-                        @if($payment_gateway === 'pakasir')
-                        <!-- Pakasir Info -->
-                        <div class="rounded-2xl border p-6 {{ $pakasir_mode === 'live' ? 'bg-red-50/50 border-red-200' : 'bg-teal-50/50 border-teal-100' }} transition-colors duration-300">
-                            <div class="flex items-center justify-between mb-6">
-                                <div class="flex items-center">
+                        @if ($payment_gateway === 'pakasir')
+                            <!-- Pakasir Info -->
+                            <div
+                                class="rounded-2xl border p-6 {{ $pakasir_mode === 'live' ? 'bg-red-50/50 border-red-200' : 'bg-teal-50/50 border-teal-100' }} transition-colors duration-300">
+                                <div class="flex items-center justify-between mb-6">
+                                    <div class="flex items-center">
+                                        <span
+                                            class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 {{ $pakasir_mode === 'live' ? 'bg-red-100 text-red-600' : 'bg-teal-100 text-teal-600' }}">
+                                            <i class="fa-solid fa-wallet text-lg"></i>
+                                        </span>
+                                        <h3
+                                            class="text-lg font-bold {{ $pakasir_mode === 'live' ? 'text-red-900' : 'text-teal-900' }}">
+                                            Pakasir Payment</h3>
+                                    </div>
                                     <span
-                                        class="w-8 h-8 rounded-lg flex items-center justify-center mr-3 {{ $pakasir_mode === 'live' ? 'bg-red-100 text-red-600' : 'bg-teal-100 text-teal-600' }}">
-                                        <i class="fa-solid fa-wallet text-lg"></i>
+                                        class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold {{ $pakasir_mode === 'live' ? 'bg-red-100 text-red-700 border border-red-300' : 'bg-green-100 text-green-700 border border-green-300' }}">
+                                        <span
+                                            class="w-2 h-2 rounded-full mr-1.5 {{ $pakasir_mode === 'live' ? 'bg-red-500 animate-pulse' : 'bg-green-500' }}"></span>
+                                        {{ $pakasir_mode === 'live' ? 'LIVE / Production' : 'TEST / Sandbox' }}
                                     </span>
-                                    <h3 class="text-lg font-bold {{ $pakasir_mode === 'live' ? 'text-red-900' : 'text-teal-900' }}">Pakasir Payment</h3>
                                 </div>
-                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold {{ $pakasir_mode === 'live' ? 'bg-red-100 text-red-700 border border-red-300' : 'bg-green-100 text-green-700 border border-green-300' }}">
-                                    <span class="w-2 h-2 rounded-full mr-1.5 {{ $pakasir_mode === 'live' ? 'bg-red-500 animate-pulse' : 'bg-green-500' }}"></span>
-                                    {{ $pakasir_mode === 'live' ? 'LIVE / Production' : 'TEST / Sandbox' }}
-                                </span>
+
+                                {{-- Mode Toggle --}}
+                                <div class="mb-6">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Mode
+                                        Environment</label>
+                                    <div class="flex items-center gap-2 p-1 bg-gray-100 rounded-xl w-fit">
+                                        <button type="button" wire:click="$set('pakasir_mode', 'sandbox')"
+                                            class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $pakasir_mode === 'sandbox' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                                            <i class="fa-solid fa-flask mr-1"></i> Sandbox
+                                        </button>
+                                        <button type="button" wire:click="$set('pakasir_mode', 'live')"
+                                            class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $pakasir_mode === 'live' ? 'bg-white text-red-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
+                                            <i class="fa-solid fa-globe mr-1"></i> Live
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="space-y-4">
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">Slug
+                                            Proyek</label>
+                                        <input wire:model="pakasir_slug" type="text"
+                                            class="w-full rounded-xl border-gray-300 focus:border-teal-500 focus:ring-teal-500/20 bg-white focus:bg-white transition-colors"
+                                            placeholder="nama-proyek">
+                                        @error('pakasir_slug')
+                                            <span class="text-xs text-red-500">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-sm font-semibold text-gray-700 mb-1">API Key</label>
+                                        <input wire:model="pakasir_api_key" type="password"
+                                            class="w-full rounded-xl border-gray-300 focus:border-teal-500 focus:ring-teal-500/20 bg-white focus:bg-white transition-colors"
+                                            placeholder="API Key dari Dashboard Pakasir">
+                                        @error('pakasir_api_key')
+                                            <span class="text-xs text-red-500">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+
+                                    <div
+                                        class="bg-white p-4 rounded-xl border {{ $pakasir_mode === 'live' ? 'border-red-200' : 'border-teal-200' }} shadow-sm mt-4">
+                                        <p
+                                            class="text-xs font-bold {{ $pakasir_mode === 'live' ? 'text-red-600' : 'text-teal-600' }} uppercase mb-1">
+                                            Webhook URL</p>
+                                        <code
+                                            class="font-mono text-gray-700 block break-all text-sm">{{ route('webhooks.pakasir.invoice') }}</code>
+                                    </div>
+                                    <p
+                                        class="text-xs {{ $pakasir_mode === 'live' ? 'text-red-600' : 'text-teal-600' }}">
+                                        <i class="fa-solid fa-info-circle mr-1"></i> Masukkan URL ini ke form Webhook
+                                        URL di pengaturan proyek Pakasir Anda.
+                                    </p>
+                                </div>
                             </div>
-
-                            {{-- Mode Toggle --}}
-                            <div class="mb-6">
-                                <label class="block text-sm font-semibold text-gray-700 mb-2">Mode Environment</label>
-                                <div class="flex items-center gap-2 p-1 bg-gray-100 rounded-xl w-fit">
-                                    <button type="button" wire:click="$set('pakasir_mode', 'sandbox')"
-                                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $pakasir_mode === 'sandbox' ? 'bg-white text-green-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
-                                        <i class="fa-solid fa-flask mr-1"></i> Sandbox
-                                    </button>
-                                    <button type="button" wire:click="$set('pakasir_mode', 'live')"
-                                        class="px-4 py-2 rounded-lg text-sm font-semibold transition-all {{ $pakasir_mode === 'live' ? 'bg-white text-red-700 shadow-sm' : 'text-gray-500 hover:text-gray-700' }}">
-                                        <i class="fa-solid fa-globe mr-1"></i> Live
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="space-y-4">
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Slug Proyek</label>
-                                    <input wire:model="pakasir_slug" type="text"
-                                        class="w-full rounded-xl border-gray-300 focus:border-teal-500 focus:ring-teal-500/20 bg-white focus:bg-white transition-colors"
-                                        placeholder="nama-proyek">
-                                    @error('pakasir_slug')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">API Key</label>
-                                    <input wire:model="pakasir_api_key" type="password"
-                                        class="w-full rounded-xl border-gray-300 focus:border-teal-500 focus:ring-teal-500/20 bg-white focus:bg-white transition-colors"
-                                        placeholder="API Key dari Dashboard Pakasir">
-                                    @error('pakasir_api_key')
-                                        <span class="text-xs text-red-500">{{ $message }}</span>
-                                    @enderror
-                                </div>
-
-                                <div class="bg-white p-4 rounded-xl border {{ $pakasir_mode === 'live' ? 'border-red-200' : 'border-teal-200' }} shadow-sm mt-4">
-                                    <p class="text-xs font-bold {{ $pakasir_mode === 'live' ? 'text-red-600' : 'text-teal-600' }} uppercase mb-1">Webhook URL</p>
-                                    <code
-                                        class="font-mono text-gray-700 block break-all text-sm">{{ route('webhooks.pakasir.invoice') }}</code>
-                                </div>
-                                <p class="text-xs {{ $pakasir_mode === 'live' ? 'text-red-600' : 'text-teal-600' }}">
-                                    <i class="fa-solid fa-info-circle mr-1"></i> Masukkan URL ini ke form Webhook URL di pengaturan proyek Pakasir Anda.
-                                </p>
-                            </div>
-                        </div>
                         @endif
                     </div>
 
@@ -646,6 +688,80 @@
                         <button type="submit"
                             class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:-translate-y-0.5 inline-flex items-center">
                             <i class="fa-solid fa-save mr-2"></i> Simpan Tampilan
+                        </button>
+                    </div>
+                </form>
+            @elseif($activeTab === 'zakat')
+                {{-- Zakat Tab --}}
+                <form wire:submit.prevent="saveZakat">
+                    <div class="space-y-8">
+                        <div class="bg-green-50/50 rounded-2xl border border-green-100 p-6">
+                            <div class="flex items-center mb-6">
+                                <span
+                                    class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
+                                    <i class="fa-solid fa-moon text-lg"></i>
+                                </span>
+                                <h3 class="text-lg font-bold text-green-900">Pengaturan Zakat</h3>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                {{-- Zakat Fitrah --}}
+                                <div class="bg-white rounded-xl border border-green-200 p-5 shadow-sm">
+                                    <h4 class="text-sm font-bold text-gray-800 mb-1">Zakat Fitrah</h4>
+                                    <p class="text-xs text-gray-500 mb-4">Harga zakat fitrah per jiwa dalam rupiah.
+                                        Nilai ini akan menjadi dasar perhitungan di halaman depan.</p>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Harga per Jiwa
+                                        (Rp)</label>
+                                    <div
+                                        class="flex rounded-xl overflow-hidden border border-gray-300 focus-within:border-primary focus-within:ring focus-within:ring-primary/20">
+                                        <span
+                                            class="inline-flex items-center px-4 bg-gray-50 border-r border-gray-300 text-gray-500 text-sm font-semibold">Rp</span>
+                                        <input wire:model="zakat_fitrah_price" type="number" min="0"
+                                            step="1000"
+                                            class="flex-1 block w-full py-2.5 px-4 text-base bg-white focus:outline-none"
+                                            placeholder="45000">
+                                    </div>
+                                    @error('zakat_fitrah_price')
+                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                    @enderror
+                                    <p class="text-xs text-gray-400 mt-2">Contoh: 45000 = Rp 45.000/jiwa</p>
+                                </div>
+
+                                {{-- Zakat Mal / Nisab --}}
+                                <div class="bg-white rounded-xl border border-green-200 p-5 shadow-sm">
+                                    <h4 class="text-sm font-bold text-gray-800 mb-1">Zakat Mal — Harga Emas</h4>
+                                    <p class="text-xs text-gray-500 mb-4">Harga emas per gram digunakan untuk
+                                        menghitung nisab zakat mal. Nisab = harga emas × 85 gram.</p>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Harga Emas per Gram
+                                        (Rp)</label>
+                                    <div
+                                        class="flex rounded-xl overflow-hidden border border-gray-300 focus-within:border-primary focus-within:ring focus-within:ring-primary/20">
+                                        <span
+                                            class="inline-flex items-center px-4 bg-gray-50 border-r border-gray-300 text-gray-500 text-sm font-semibold">Rp</span>
+                                        <input wire:model="zakat_gold_price_per_gram" type="number" min="0"
+                                            step="1000"
+                                            class="flex-1 block w-full py-2.5 px-4 text-base bg-white focus:outline-none"
+                                            placeholder="1500000">
+                                    </div>
+                                    @error('zakat_gold_price_per_gram')
+                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                    @enderror
+                                    @if ($zakat_gold_price_per_gram)
+                                        <p class="text-xs text-green-600 mt-2 font-medium">
+                                            <i class="fa-solid fa-circle-info mr-1"></i>
+                                            Nisab saat ini = Rp
+                                            {{ number_format($zakat_gold_price_per_gram * 85, 0, ',', '.') }}
+                                        </p>
+                                    @endif
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-8 flex justify-end">
+                        <button type="submit"
+                            class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:-translate-y-0.5 inline-flex items-center">
+                            <i class="fa-solid fa-save mr-2"></i> Simpan Pengaturan Zakat
                         </button>
                     </div>
                 </form>

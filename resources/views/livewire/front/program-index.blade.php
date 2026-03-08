@@ -63,10 +63,17 @@
                             Semua
                         </button>
                         @foreach ($akads as $akad)
-                            <button wire:key="akad-{{ $akad->id }}" wire:click="toggleAkad('{{ $akad->slug }}')"
-                                class="px-4 py-2 rounded-full text-sm font-medium border-2 transition-colors {{ in_array($akad->slug, $selectedAkad) ? 'border-primary bg-orange-50 text-primary' : 'border-gray-200 text-gray-600' }}">
-                                {{ $akad->name }}
-                            </button>
+                            @if ($akad->slug == 'zakat')
+                                <a href="{{ route('zakat.index') }}" wire:navigate
+                                    class="px-4 py-2 rounded-full text-sm font-medium border-2 transition-colors border-gray-200 text-gray-600 hover:border-primary hover:bg-orange-50 hover:text-primary">
+                                    {{ $akad->name }}
+                                </a>
+                            @else
+                                <button wire:key="akad-{{ $akad->id }}" wire:click="toggleAkad('{{ $akad->slug }}')"
+                                    class="px-4 py-2 rounded-full text-sm font-medium border-2 transition-colors {{ in_array($akad->slug, $selectedAkad) ? 'border-primary bg-orange-50 text-primary' : 'border-gray-200 text-gray-600' }}">
+                                    {{ $akad->name }}
+                                </button>
+                            @endif
                         @endforeach
                     </div>
                 </div>
