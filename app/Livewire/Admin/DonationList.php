@@ -351,6 +351,13 @@ class DonationList extends Component
         try {
             $metaService = app(MetaConversionService::class);
             $metaService->sendPurchase($payment);
+        // Send WhatsApp notification
+        try {
+            app(\App\Services\WhatsAppNotificationService::class)->notifyPaymentSuccess($payment);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('WhatsApp Notification Error (Admin): '.$e->getMessage());
+        }
+
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Meta CAPI Purchase Error (Admin): '.$e->getMessage());
         }
