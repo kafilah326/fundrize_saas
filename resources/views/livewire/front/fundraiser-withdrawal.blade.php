@@ -4,7 +4,7 @@
     <main id="main-content" class="px-4 pb-20">
         <!-- Balance Info Section -->
         <section id="balance-info" class="py-6">
-            <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl p-6 shadow-lg text-center">
+            <div class="bg-primary rounded-2xl p-6 shadow-lg text-center">
                 <div class="mb-4">
                     <p class="text-orange-100 text-sm font-medium">Saldo Tersedia</p>
                     <h2 class="text-white text-3xl font-bold">Rp {{ number_format($availableBalance, 0, ',', '.') }}</h2>

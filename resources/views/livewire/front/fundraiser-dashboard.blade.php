@@ -4,7 +4,7 @@
     <main id="main-content" class="px-4 pb-20">
         <!-- Greeting Section -->
         <section id="greeting-section" class="py-6">
-            <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl p-5 shadow-lg">
+            <div class="bg-primary rounded-2xl p-5 shadow-lg">
                 <div class="flex items-start justify-between mb-3">
                     <div class="flex-1">
                         <p class="text-orange-100 text-sm font-medium mb-1">Assalamu'alaikum,</p>
@@ -21,7 +21,7 @@
             <div class="grid grid-cols-1 gap-3">
                 <div id="stat-card-1" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
                     <div class="flex items-center justify-between mb-3">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md">
+                        <div class="w-11 h-11 rounded-xl bg-primary flex items-center justify-center shadow-md">
                             <i class="fa-solid fa-hand-holding-heart text-white text-lg"></i>
                         </div>
                         <span class="text-xs font-medium text-primary bg-orange-50 px-2.5 py-1 rounded-full">+0%</span>
@@ -33,7 +33,7 @@
 
                 <div class="grid grid-cols-2 gap-3">
                     <div id="stat-card-2" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-md mb-3">
                             <i class="fa-solid fa-users text-white"></i>
                         </div>
                         <p class="text-gray-500 text-xs mb-1 font-medium">Jangkauan Kebaikan</p>
@@ -42,7 +42,7 @@
                     </div>
 
                     <div id="stat-card-3" class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-md mb-3">
                             <i class="fa-solid fa-coins text-white"></i>
                         </div>
                         <p class="text-gray-500 text-xs mb-1 font-medium">Ujroh Perjuangan</p>
@@ -81,7 +81,7 @@
                 }
             }
         }">
-            <div class="bg-gradient-to-br from-white to-orange-50 rounded-2xl p-5 shadow-sm border border-orange-100">
+            <div class="bg-white rounded-2xl p-5 shadow-sm border border-orange-100">
                 <div class="flex items-center gap-2 mb-3">
                     <div class="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                         <i class="fa-solid fa-link text-white text-sm"></i>
@@ -97,7 +97,7 @@
                 
                 <button @click="copyLink" 
                     class="w-full text-white font-semibold py-3.5 rounded-xl shadow-lg active:scale-[0.98] transition-all flex items-center justify-center gap-2"
-                    :class="copied ? 'bg-emerald-600 shadow-emerald-600/30' : 'bg-gradient-to-r from-primary to-secondary shadow-primary/30'">
+                    :class="copied ? 'bg-emerald-600 shadow-emerald-600/30' : 'bg-primary shadow-primary/30'">
                     <i class="fa-solid" :class="copied ? 'fa-check' : 'fa-copy'"></i>
                     <span x-text="copied ? 'Link Tersalin!' : 'Salin Link Utama'"></span>
                 </button>
@@ -138,7 +138,7 @@
 
                 <a href="{{ route('fundraiser.history') }}" wire:navigate class="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-between active:bg-gray-50 transition block">
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md">
+                        <div class="w-11 h-11 rounded-xl bg-primary flex items-center justify-center shadow-md">
                             <i class="fa-solid fa-clock-rotate-left text-white"></i>
                         </div>
                         <div class="text-left">
@@ -151,7 +151,7 @@
 
                 <a href="{{ route('fundraiser.banks') }}" wire:navigate class="w-full bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center justify-between active:bg-gray-50 transition block">
                     <div class="flex items-center gap-3">
-                        <div class="w-11 h-11 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md">
+                        <div class="w-11 h-11 rounded-xl bg-primary flex items-center justify-center shadow-md">
                             <i class="fa-solid fa-building-columns text-white"></i>
                         </div>
                         <div class="text-left">
@@ -166,9 +166,9 @@
 
         <!-- Tips Section -->
         <section id="tips-section" class="mb-6">
-            <div class="bg-gradient-to-br from-orange-50 to-orange-100 rounded-2xl p-5 border border-orange-200">
+            <div class="bg-white rounded-2xl p-5 border border-orange-100">
                 <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-secondary flex items-center justify-center shadow-md flex-shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-primary flex items-center justify-center shadow-md flex-shrink-0">
                         <i class="fa-solid fa-lightbulb text-white"></i>
                     </div>
                     <div>

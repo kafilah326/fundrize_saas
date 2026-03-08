@@ -5,7 +5,7 @@
         <!-- Summary Section -->
         <section id="ujroh-summary" class="py-6">
             <div class="grid grid-cols-1 gap-3 mb-4">
-                <div class="bg-gradient-to-br from-primary to-secondary rounded-2xl p-5 shadow-lg">
+                <div class="bg-primary rounded-2xl p-5 shadow-lg">
                     <div class="flex items-center gap-3 mb-3">
                         <div>
                             <p class="text-orange-100 text-xs font-medium">Saldo Ujroh</p>
