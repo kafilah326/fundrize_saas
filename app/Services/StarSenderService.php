@@ -23,12 +23,12 @@ class StarSenderService
 
         // Replace leading 0 with 62
         if (substr($number, 0, 1) === '0') {
-            $number = '62' . substr($number, 1);
+            $number = '62'.substr($number, 1);
         }
 
         // Add 62 if missing (assuming Indonesia)
         if (substr($number, 0, 2) !== '62') {
-            $number = '62' . $number;
+            $number = '62'.$number;
         }
 
         return $number;
@@ -39,7 +39,7 @@ class StarSenderService
      */
     public function getDeviceDetail(string $deviceId): array
     {
-        if (!$this->getAccountApiKey()) {
+        if (! $this->getAccountApiKey()) {
             return ['status' => false, 'message' => 'STARSENDER_API_KEY not found in .env'];
         }
 
@@ -47,24 +47,25 @@ class StarSenderService
             // Updated to use /devices/{id} as confirmed by user testing
             $response = Http::withHeaders([
                 'Authorization' => $this->getAccountApiKey(), // No Bearer
-                'Content-Type' => 'application/json'
-            ])->get($this->getBaseUrl() . '/devices/' . $deviceId);
+                'Content-Type' => 'application/json',
+            ])->get($this->getBaseUrl().'/devices/'.$deviceId);
 
             if ($response->successful()) {
                 $data = $response->json();
-                
+
                 // Response format: {"success":true,"data":{"device":{...}},"message":"..."}
                 if (isset($data['data']['device'])) {
-                     return ['status' => true, 'data' => $data['data']['device']];
+                    return ['status' => true, 'data' => $data['data']['device']];
                 }
-                
+
                 return ['status' => false, 'message' => 'Device data not found in response'];
             }
 
             return ['status' => false, 'message' => $response->json()['message'] ?? 'Failed to fetch device detail'];
 
         } catch (\Exception $e) {
-            Log::error('StarSender device detail error: ' . $e->getMessage());
+            Log::error('StarSender device detail error: '.$e->getMessage());
+
             return ['status' => false, 'message' => $e->getMessage()];
         }
     }
@@ -92,6 +93,7 @@ class StarSenderService
     {
         // Reverting to api.starsender.online/api as it seems correct with the new endpoint paths
         $url = AppSetting::get('starsender_base_url', 'https://api.starsender.online/api');
+
         return rtrim($url, '/');
     }
 
@@ -102,7 +104,7 @@ class StarSenderService
     {
         $enabled = (bool) AppSetting::get('starsender_enabled');
         $hasKey = $this->getDeviceApiKey() || $this->getAccountApiKey();
-        
+
         return $enabled && $hasKey;
     }
 
@@ -116,30 +118,33 @@ class StarSenderService
      */
     public function createDevice(string $name): array
     {
-        if (!$this->getAccountApiKey()) {
+        if (! $this->getAccountApiKey()) {
             return ['status' => false, 'message' => 'STARSENDER_API_KEY not found in .env'];
         }
 
         try {
-            $url = $this->getBaseUrl() . '/devices/create/scan';
+            $url = $this->getBaseUrl().'/devices/create/scan';
             $response = Http::withHeaders([
                 'Authorization' => $this->getAccountApiKey(), // No Bearer prefix
-                'Content-Type' => 'application/json'
+                'Content-Type' => 'application/json',
             ])->post($url, [
-                'name' => $name
+                'name' => $name,
             ]);
 
             if ($response->successful()) {
                 $data = $response->json();
+
                 // Response format: { "success": true, "data": {"kode_gambar": "base64..."}, "message": "..." }
                 return ['status' => true, 'data' => $data];
             }
 
-            Log::warning('StarSender create device failed (URL: ' . $url . '): ' . $response->body());
-            return ['status' => false, 'message' => 'API Error: ' . $response->body()];
+            Log::warning('StarSender create device failed (URL: '.$url.'): '.$response->body());
+
+            return ['status' => false, 'message' => 'API Error: '.$response->body()];
 
         } catch (\Exception $e) {
-            Log::error('StarSender create device error: ' . $e->getMessage());
+            Log::error('StarSender create device error: '.$e->getMessage());
+
             return ['status' => false, 'message' => $e->getMessage()];
         }
     }
@@ -150,34 +155,35 @@ class StarSenderService
      */
     public function getDeviceByName(string $name): array
     {
-        if (!$this->getAccountApiKey()) {
+        if (! $this->getAccountApiKey()) {
             return ['status' => false, 'message' => 'STARSENDER_API_KEY not found in .env'];
         }
 
         try {
             $response = Http::withHeaders([
                 'Authorization' => $this->getAccountApiKey(), // No Bearer prefix
-                'Content-Type' => 'application/json'
-            ])->get($this->getBaseUrl() . '/devices');
+                'Content-Type' => 'application/json',
+            ])->get($this->getBaseUrl().'/devices');
 
             if ($response->successful()) {
                 $data = $response->json();
                 // Structure: { data: { devices: [ {name: "...", id: "...", status: "..."}, ... ] } }
-                
+
                 $devices = $data['data']['devices'] ?? [];
                 foreach ($devices as $device) {
                     if (($device['name'] ?? '') === $name) {
                         return ['status' => true, 'data' => $device];
                     }
                 }
-                
+
                 return ['status' => false, 'message' => 'Device not found in list'];
             }
 
             return ['status' => false, 'message' => $response->json()['message'] ?? 'Failed to fetch devices'];
 
         } catch (\Exception $e) {
-            Log::error('StarSender get devices error: ' . $e->getMessage());
+            Log::error('StarSender get devices error: '.$e->getMessage());
+
             return ['status' => false, 'message' => $e->getMessage()];
         }
     }
@@ -189,9 +195,41 @@ class StarSenderService
      */
     public function relogDevice(string $deviceId): array
     {
-        // If V3 API doesn't support relog, we might just return error or try create/scan flow
-        // For now, let's assume createDevice is the way to relog/re-scan
-        return ['status' => false, 'message' => 'Please use connect/scan to relog'];
+        if (! $this->getAccountApiKey()) {
+            return ['status' => false, 'message' => 'STARSENDER_API_KEY not found in .env'];
+        }
+
+        try {
+            $url = $this->getBaseUrl().'/devices/'.$deviceId.'/relog';
+            $response = Http::withHeaders([
+                'Authorization' => $this->getAccountApiKey(),
+                'Content-Type' => 'application/json',
+            ])->post($url);
+
+            if ($response->successful()) {
+                return ['status' => true, 'data' => $response->json()];
+            }
+
+            $responseData = $response->json();
+            $message = $responseData['message'] ?? $response->body();
+
+            // If device not found, try to create a new one
+            if (str_contains($message, 'Device not found')) {
+                $foundationName = \App\Models\FoundationSetting::value('name') ?? 'Yayasan';
+                $name = substr($foundationName, 0, 20).'-'.rand(1000, 9999);
+
+                return $this->createDevice($name);
+            }
+
+            Log::warning('StarSender relog device failed (URL: '.$url.'): '.$response->body());
+
+            return ['status' => false, 'message' => 'API Error: '.$message];
+
+        } catch (\Exception $e) {
+            Log::error('StarSender relog device error: '.$e->getMessage());
+
+            return ['status' => false, 'message' => $e->getMessage()];
+        }
     }
 
     // =========================================================================
@@ -203,33 +241,36 @@ class StarSenderService
      */
     public function checkNumber(string $number): bool
     {
-        if (!$this->isEnabled()) {
+        if (! $this->isEnabled()) {
             return false;
         }
 
         $number = $this->normalizePhone($number);
-        if (!$number) {
+        if (! $number) {
             return false;
         }
 
         try {
             $response = Http::withHeaders([
                 'Authorization' => $this->getDeviceApiKey(), // No Bearer prefix? Assuming same pattern
-                'Content-Type' => 'application/json'
-            ])->post($this->getBaseUrl() . '/check-number', [
-                'phone' => $number 
+                'Content-Type' => 'application/json',
+            ])->post($this->getBaseUrl().'/check-number', [
+                'phone' => $number,
             ]);
 
             if ($response->successful()) {
                 $data = $response->json();
+
                 return isset($data['valid']) && $data['valid'] === true;
             }
-            
-            Log::warning('StarSender check-number failed: ' . $response->body());
+
+            Log::warning('StarSender check-number failed: '.$response->body());
+
             return false;
 
         } catch (\Exception $e) {
-            Log::error('StarSender check-number error: ' . $e->getMessage());
+            Log::error('StarSender check-number error: '.$e->getMessage());
+
             return false;
         }
     }
@@ -241,25 +282,27 @@ class StarSenderService
     {
         // Normalize phone first
         $normalizedTo = $this->normalizePhone($to);
-        
+
         // Log attempt
-        $log = new WhatsappMessageLog();
+        $log = new WhatsappMessageLog;
         $log->phone = $normalizedTo ?? $to;
         $log->message = $body;
         $log->event_type = $eventType;
         $log->payment_id = $paymentId;
-        
-        if (!$this->isEnabled()) {
+
+        if (! $this->isEnabled()) {
             $log->status = 'failed';
             $log->response_data = ['error' => 'WhatsApp disabled or API Key missing'];
             $log->save();
+
             return ['status' => false, 'message' => 'Disabled or missing API Key'];
         }
 
-        if (!$normalizedTo) {
+        if (! $normalizedTo) {
             $log->status = 'failed';
             $log->response_data = ['error' => 'Invalid phone number'];
             $log->save();
+
             return ['status' => false, 'message' => 'Invalid number'];
         }
 
@@ -274,12 +317,13 @@ class StarSenderService
         // If so, we might not need 'device' param in body if the key is scoped.
         // But previous docs required 'device'.
         // Let's keep sending 'device' just in case, it usually doesn't hurt.
-        
-        if (!$deviceId) {
-             $log->status = 'failed';
-             $log->response_data = ['error' => 'No device ID configured'];
-             $log->save();
-             return ['status' => false, 'message' => 'No device ID configured'];
+
+        if (! $deviceId) {
+            $log->status = 'failed';
+            $log->response_data = ['error' => 'No device ID configured'];
+            $log->save();
+
+            return ['status' => false, 'message' => 'No device ID configured'];
         }
 
         try {
@@ -290,16 +334,16 @@ class StarSenderService
             // IF the API only uses ONE Account Key for everything, then we should use Account Key here too.
             // Given the complexity, let's try using Account Key if Device Key is empty.
             // But usually messaging requires selecting the device.
-            
+
             $apiKey = $this->getDeviceApiKey() ?: $this->getAccountApiKey();
 
             $response = Http::withHeaders([
                 'Authorization' => $apiKey, // No Bearer
-                'Content-Type' => 'application/json'
-            ])->post($this->getBaseUrl() . '/send', [
+                'Content-Type' => 'application/json',
+            ])->post($this->getBaseUrl().'/send', [
                 'to' => $normalizedTo,
                 'body' => $body,
-                'messageType' => 'text'
+                'messageType' => 'text',
             ]);
 
             $responseData = $response->json();
@@ -308,19 +352,22 @@ class StarSenderService
             if ($response->successful()) {
                 $log->status = 'sent';
                 $log->save();
+
                 return ['status' => true, 'data' => $responseData];
             }
 
-            Log::warning('StarSender send failed: ' . $response->body());
+            Log::warning('StarSender send failed: '.$response->body());
             $log->status = 'failed';
             $log->save();
+
             return ['status' => false, 'message' => $response->body()];
 
         } catch (\Exception $e) {
-            Log::error('StarSender send error: ' . $e->getMessage());
+            Log::error('StarSender send error: '.$e->getMessage());
             $log->status = 'failed';
             $log->response_data = ['exception' => $e->getMessage()];
             $log->save();
+
             return ['status' => false, 'message' => $e->getMessage()];
         }
     }
