@@ -58,6 +58,14 @@ class TransactionStatus extends Component
         }
     }
 
+    public function refreshStatus()
+    {
+        if ($this->payment) {
+            $this->payment->refresh();
+            $this->paymentStatus = $this->payment->status;
+        }
+    }
+
     #[Layout('layouts.front')]
     #[Title('Detail Transaksi')]
     public function render()
