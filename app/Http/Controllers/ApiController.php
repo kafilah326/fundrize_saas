@@ -6,6 +6,8 @@ use App\Models\Donation;
 use App\Models\MaintenanceFee;
 use App\Models\QurbanOrder;
 use App\Models\QurbanSavingsDeposit;
+use App\Models\ZakatTransaction;
+
 use Illuminate\Http\Request;
 
 class ApiController extends Controller
@@ -41,7 +43,13 @@ class ApiController extends Controller
                 ->where('status', 'paid')
                 ->sum('amount');
 
-            $totalCollected = $totalDonations + $totalQurban + $totalSavings;
+            $totalZakat = ZakatTransaction::whereYear('created_at', $yearParam)
+                ->whereMonth('created_at', $m)
+                ->where('status', 'success')
+                ->sum('amount');
+
+            $totalCollected = $totalDonations + $totalQurban + $totalSavings + $totalZakat;
+
 
             if ($totalCollected == 0) {
                 continue;
@@ -185,11 +193,33 @@ class ApiController extends Controller
             ];
         });
 
+        // Fetch Zakat Transactions
+        $zakatQuery = ZakatTransaction::latest();
+        if ($startDate && $endDate) {
+            $zakatQuery->whereBetween('created_at', [$startDate.' 00:00:00', $endDate.' 23:59:59']);
+        } else {
+            $zakatQuery->take($limit);
+        }
+        $zakats = $zakatQuery->get()->map(function ($z) use ($feePercentage) {
+            return [
+                'transaction_id' => $z->transaction_id,
+                'type' => 'Zakat',
+                'title' => 'Zakat: '.$z->zakat_type_label,
+                'amount' => $z->amount,
+                'fee_maintenance' => ($z->amount * $feePercentage) / 100,
+                'status' => $z->status,
+                'customer_name' => $z->donor_name,
+                'created_at' => $z->created_at,
+            ];
+        });
+
         // Combine all and sort by created_at descending
         $all = collect()
             ->merge($donations)
             ->merge($qurbans)
             ->merge($savings)
+            ->merge($zakats)
+
             ->sortByDesc('created_at')
             ->values();
 
