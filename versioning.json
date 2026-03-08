@@ -1,6 +1,6 @@
 {
-  "version": "1.23.0",
+  "version": "1.24.0",
   "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur baru berupa halaman riwayat zakat untuk pengguna, formulir informasi muzakki, serta reorganisasi menu pengaturan zakat di sisi admin yang bersifat backward compatible.",
-  "updatedAt": "2026-03-08T16:01:49.199Z"
+  "aiReason": "Penambahan fungsionalitas baru pada metode 'relogDevice' yang sebelumnya hanya berupa stub/pesan statis, kini memiliki logika integrasi API yang lengkap termasuk mekanisme fallback pembuatan device baru.",
+  "updatedAt": "2026-03-08T22:13:17.894Z"
 }
