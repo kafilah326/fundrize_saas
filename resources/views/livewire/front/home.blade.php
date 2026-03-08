@@ -133,7 +133,7 @@
             <h3 class="text-sm font-bold text-dark mb-4">Pilih Akad</h3>
             <div class="grid grid-cols-4 gap-3">
                 @foreach ($akads as $akad)
-                    @if (strtolower($akad->name) !== 'qurban')
+                    @if (!in_array(strtolower($akad->name), ['qurban', 'zakat']))
                         <a href="{{ route('program.index', ['akad' => $akad->slug]) }}" wire:navigate
                             class="flex flex-col items-center gap-2">
                             <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
@@ -143,6 +143,14 @@
                         </a>
                     @endif
                 @endforeach
+
+                <!-- Explicit Zakat Link -->
+                <a href="{{ route('zakat.index') }}" wire:navigate class="flex flex-col items-center gap-2">
+                    <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                        <i class="fa-solid fa-scale-balanced text-primary text-xl"></i>
+                    </div>
+                    <span class="text-xs font-medium text-dark">Zakat</span>
+                </a>
 
                 <!-- Explicit Qurban Link -->
                 <a href="{{ route('qurban.index') }}" wire:navigate class="flex flex-col items-center gap-2">

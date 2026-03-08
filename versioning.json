@@ -1,6 +1,6 @@
 {
-  "version": "1.22.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan modul fungsional baru yang besar mencakup halaman front-end, kalkulator, manajemen admin, dan tabel database baru tanpa merusak fitur yang sudah ada (backward compatible).",
-  "updatedAt": "2026-03-08T13:00:40.194Z"
+  "version": "1.22.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Default karena error API",
+  "updatedAt": "2026-03-08T15:03:13.328Z"
 }
