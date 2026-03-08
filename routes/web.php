@@ -82,6 +82,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/qurban/history/{id}', QurbanTransactionDetail::class)->name('qurban.transaction.detail');
     Route::get('/qurban/savings/{id}', QurbanSavingsDetail::class)->name('qurban.savings.detail');
 
+    Route::get('/zakat/history', \App\Livewire\Front\ZakatHistory::class)->name('zakat.history');
+
     Route::get('/my-donation', MyDonation::class)->name('my-donation.index');
 
     Route::get('/profile', Profile::class)->name('profile.index');

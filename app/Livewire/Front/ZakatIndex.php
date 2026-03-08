@@ -25,6 +25,11 @@ class ZakatIndex extends Component
     public $aset = '';
     public $hutang = '';
 
+    // Personal Info
+    public $name;
+    public $phone;
+    public $email;
+
     // Gold price & computed nisab (from setting)
     public $goldPricePerGram = 1500000;
     public $nisab = 127500000; // 85 * 1_500_000
@@ -39,6 +44,14 @@ class ZakatIndex extends Component
         $this->fitrahPrice = (int) AppSetting::get('zakat_fitrah_price', 45000);
         $this->goldPricePerGram = (int) AppSetting::get('zakat_gold_price_per_gram', 1500000);
         $this->nisab = $this->goldPricePerGram * 85;
+
+        if (auth()->check()) {
+            $user = auth()->user();
+            $this->name = $user->name;
+            $this->phone = $user->phone;
+            $this->email = $user->email;
+        }
+
         $this->calculate();
     }
 
@@ -98,14 +111,20 @@ class ZakatIndex extends Component
             return;
         }
 
+        $this->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'required|string|min:8|max:16',
+            'email' => 'nullable|email|max:255',
+        ]);
+
         $checkoutData = [
             'type'         => 'zakat',
             'zakat_type'   => $this->activeTab,
             'amount'       => $this->calculatedZakat,
             'program_name' => 'Zakat ' . ($this->activeTab === 'fitrah' ? 'Fitrah' : 'Mal'),
-            'name'         => auth()->check() ? auth()->user()->name : '',
-            'phone'        => auth()->check() ? auth()->user()->phone : '',
-            'email'        => auth()->check() ? auth()->user()->email : '',
+            'name'         => $this->name,
+            'phone'        => $this->phone,
+            'email'        => $this->email,
         ];
 
         // Fitrah metadata

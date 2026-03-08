@@ -206,6 +206,55 @@
             @endif
         </div>
 
+        <div class="px-4 mt-4">
+            <section class="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                <h3 class="text-base font-bold text-dark mb-4">Informasi Muzakki</h3>
+                <div class="space-y-4">
+                    {{-- Nama --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Nama Lengkap</label>
+                        <div class="relative">
+                            <i
+                                class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" wire:model="name" placeholder="Masukkan nama lengkap"
+                                class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        </div>
+                        @error('name')
+                            <span class="text-[10px] text-red-500 mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- WhatsApp --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Nomor WhatsApp</label>
+                        <div class="relative">
+                            <i
+                                class="fa-brands fa-whatsapp absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="text" wire:model="phone" placeholder="Contoh: 08123456789"
+                                class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        </div>
+                        @error('phone')
+                            <span class="text-[10px] text-red-500 mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+
+                    {{-- Email --}}
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">Email (Opsional)</label>
+                        <div class="relative">
+                            <i
+                                class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                            <input type="email" wire:model="email" placeholder="Masukkan alamat email"
+                                class="w-full pl-11 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all">
+                        </div>
+                        @error('email')
+                            <span class="text-[10px] text-red-500 mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
+                </div>
+            </section>
+        </div>
+
         {{-- Collapsible Info --}}
         <section class="px-4 mt-4 space-y-2" x-data="{ niat: false, nisab: false }">
             <div class="bg-white rounded-xl">

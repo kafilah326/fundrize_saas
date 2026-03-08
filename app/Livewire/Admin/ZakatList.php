@@ -23,6 +23,13 @@ class ZakatList extends Component
     public $dateFrom;
     public $dateTo;
 
+    // Tabs
+    public $activeTab = 'transactions';
+
+    // Settings
+    public $zakat_fitrah_price;
+    public $zakat_gold_price_per_gram;
+
     // Detail Modal
     public $isOpen = false;
     public $selectedPayment = null;
@@ -33,11 +40,57 @@ class ZakatList extends Component
         'zakatTypeFilter' => ['except' => ''],
         'dateFrom'        => ['except' => ''],
         'dateTo'          => ['except' => ''],
+        'activeTab'       => ['except' => 'transactions'],
     ];
+
+    public function mount()
+    {
+        $this->zakat_fitrah_price = \App\Models\AppSetting::get('zakat_fitrah_price', 45000);
+        $this->zakat_gold_price_per_gram = \App\Models\AppSetting::get('zakat_gold_price_per_gram', 1500000);
+    }
 
     public function resetFilters()
     {
         $this->reset(['search', 'statusFilter', 'zakatTypeFilter', 'dateFrom', 'dateTo']);
+    }
+
+    public function setTab($tab)
+    {
+        $this->activeTab = $tab;
+    }
+
+    public function saveZakat()
+    {
+        $this->validate([
+            'zakat_fitrah_price'        => 'required|numeric|min:0',
+            'zakat_gold_price_per_gram' => 'required|numeric|min:0',
+        ]);
+
+        \App\Models\AppSetting::updateOrCreate(
+            ['key' => 'zakat_fitrah_price'],
+            [
+                'value'       => $this->zakat_fitrah_price,
+                'group'       => 'zakat',
+                'type'        => 'number',
+                'label'       => 'Harga Zakat Fitrah per Jiwa',
+                'description' => 'Nominal zakat fitrah untuk satu jiwa (dalam rupiah)',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_fitrah_price');
+
+        \App\Models\AppSetting::updateOrCreate(
+            ['key' => 'zakat_gold_price_per_gram'],
+            [
+                'value'       => $this->zakat_gold_price_per_gram,
+                'group'       => 'zakat',
+                'type'        => 'number',
+                'label'       => 'Harga Emas per Gram (untuk Nisab)',
+                'description' => 'Harga emas per gram, digunakan untuk menghitung nisab zakat mal (85 gram emas)',
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_gold_price_per_gram');
+
+        session()->flash('success', 'Pengaturan zakat berhasil diperbarui.');
     }
 
     public function updatingSearch()

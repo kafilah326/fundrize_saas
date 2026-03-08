@@ -26,11 +26,6 @@
                     {{ $activeTab === 'appearance' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
                     <i class="fa-solid fa-paintbrush mr-2"></i> Tampilan
                 </button>
-                <button wire:click="setTab('zakat')"
-                    class="px-6 py-4 text-sm font-medium rounded-t-xl transition-all duration-200 border-b-2 
-                    {{ $activeTab === 'zakat' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
-                    <i class="fa-solid fa-moon mr-2"></i> Zakat
-                </button>
             </nav>
         </div>
 
@@ -688,80 +683,6 @@
                         <button type="submit"
                             class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:-translate-y-0.5 inline-flex items-center">
                             <i class="fa-solid fa-save mr-2"></i> Simpan Tampilan
-                        </button>
-                    </div>
-                </form>
-            @elseif($activeTab === 'zakat')
-                {{-- Zakat Tab --}}
-                <form wire:submit.prevent="saveZakat">
-                    <div class="space-y-8">
-                        <div class="bg-green-50/50 rounded-2xl border border-green-100 p-6">
-                            <div class="flex items-center mb-6">
-                                <span
-                                    class="w-8 h-8 rounded-lg bg-green-100 text-green-600 flex items-center justify-center mr-3">
-                                    <i class="fa-solid fa-moon text-lg"></i>
-                                </span>
-                                <h3 class="text-lg font-bold text-green-900">Pengaturan Zakat</h3>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                                {{-- Zakat Fitrah --}}
-                                <div class="bg-white rounded-xl border border-green-200 p-5 shadow-sm">
-                                    <h4 class="text-sm font-bold text-gray-800 mb-1">Zakat Fitrah</h4>
-                                    <p class="text-xs text-gray-500 mb-4">Harga zakat fitrah per jiwa dalam rupiah.
-                                        Nilai ini akan menjadi dasar perhitungan di halaman depan.</p>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Harga per Jiwa
-                                        (Rp)</label>
-                                    <div
-                                        class="flex rounded-xl overflow-hidden border border-gray-300 focus-within:border-primary focus-within:ring focus-within:ring-primary/20">
-                                        <span
-                                            class="inline-flex items-center px-4 bg-gray-50 border-r border-gray-300 text-gray-500 text-sm font-semibold">Rp</span>
-                                        <input wire:model="zakat_fitrah_price" type="number" min="0"
-                                            step="1000"
-                                            class="flex-1 block w-full py-2.5 px-4 text-base bg-white focus:outline-none"
-                                            placeholder="45000">
-                                    </div>
-                                    @error('zakat_fitrah_price')
-                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
-                                    @enderror
-                                    <p class="text-xs text-gray-400 mt-2">Contoh: 45000 = Rp 45.000/jiwa</p>
-                                </div>
-
-                                {{-- Zakat Mal / Nisab --}}
-                                <div class="bg-white rounded-xl border border-green-200 p-5 shadow-sm">
-                                    <h4 class="text-sm font-bold text-gray-800 mb-1">Zakat Mal — Harga Emas</h4>
-                                    <p class="text-xs text-gray-500 mb-4">Harga emas per gram digunakan untuk
-                                        menghitung nisab zakat mal. Nisab = harga emas × 85 gram.</p>
-                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Harga Emas per Gram
-                                        (Rp)</label>
-                                    <div
-                                        class="flex rounded-xl overflow-hidden border border-gray-300 focus-within:border-primary focus-within:ring focus-within:ring-primary/20">
-                                        <span
-                                            class="inline-flex items-center px-4 bg-gray-50 border-r border-gray-300 text-gray-500 text-sm font-semibold">Rp</span>
-                                        <input wire:model="zakat_gold_price_per_gram" type="number" min="0"
-                                            step="1000"
-                                            class="flex-1 block w-full py-2.5 px-4 text-base bg-white focus:outline-none"
-                                            placeholder="1500000">
-                                    </div>
-                                    @error('zakat_gold_price_per_gram')
-                                        <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
-                                    @enderror
-                                    @if ($zakat_gold_price_per_gram)
-                                        <p class="text-xs text-green-600 mt-2 font-medium">
-                                            <i class="fa-solid fa-circle-info mr-1"></i>
-                                            Nisab saat ini = Rp
-                                            {{ number_format($zakat_gold_price_per_gram * 85, 0, ',', '.') }}
-                                        </p>
-                                    @endif
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="mt-8 flex justify-end">
-                        <button type="submit"
-                            class="bg-primary hover:bg-primary-hover text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-primary/30 hover:shadow-primary/50 transition-all hover:-translate-y-0.5 inline-flex items-center">
-                            <i class="fa-solid fa-save mr-2"></i> Simpan Pengaturan Zakat
                         </button>
                     </div>
                 </form>

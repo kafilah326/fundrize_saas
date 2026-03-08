@@ -1,6 +1,6 @@
 {
-  "version": "1.22.2",
-  "aiDecision": "PATCH",
-  "aiReason": "Default karena error API",
-  "updatedAt": "2026-03-08T15:13:12.691Z"
+  "version": "1.23.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan fitur baru berupa halaman riwayat zakat untuk pengguna, formulir informasi muzakki, serta reorganisasi menu pengaturan zakat di sisi admin yang bersifat backward compatible.",
+  "updatedAt": "2026-03-08T16:01:49.199Z"
 }
