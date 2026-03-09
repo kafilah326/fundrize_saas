@@ -15,9 +15,9 @@ class QurbanTabunganCheckout extends Component
 
     public $deposit = 50000;
 
-    public $customDeposit;
-
     public $showCustomDeposit = false;
+
+    public $customDepositError = null;
 
     // Muqorib Data
     public $name;
@@ -78,6 +78,12 @@ class QurbanTabunganCheckout extends Component
     public function updatedCustomDeposit()
     {
         $this->deposit = (int) str_replace(['.', ','], '', $this->customDeposit);
+
+        if ($this->deposit > 0 && $this->deposit < 10000) {
+            $this->customDepositError = 'Minimal setoran adalah Rp 10.000';
+        } else {
+            $this->customDepositError = null;
+        }
     }
 
     public function submit()
@@ -91,7 +97,14 @@ class QurbanTabunganCheckout extends Component
             'name' => 'required_if:isAnonymous,false',
             'whatsapp' => 'required',
             'deposit' => 'numeric|min:0',
+        ], [
+            'deposit.min' => 'Minimal setoran adalah Rp 10.000',
         ]);
+
+        if ($this->deposit > 0 && $this->deposit < 10000) {
+            $this->addError('deposit', 'Minimal setoran adalah Rp 10.000');
+            return;
+        }
 
         $targetData = $this->targets[$this->target];
 

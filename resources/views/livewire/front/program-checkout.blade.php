@@ -5,8 +5,9 @@
         <!-- Program Summary -->
         <section id="program-summary" class="bg-white px-4 py-4">
             <div class="flex flex-wrap gap-2 mb-3">
-                @foreach($program->categories as $category)
-                <span class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">{{ $category->name }}</span>
+                @foreach ($program->categories as $category)
+                    <span
+                        class="px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-full">{{ $category->name }}</span>
                 @endforeach
             </div>
             <h2 class="text-lg font-bold text-dark">{{ $program->title }}</h2>
@@ -17,7 +18,7 @@
             <h3 class="text-base font-bold text-dark mb-4">Nominal Donasi</h3>
 
             <div class="grid grid-cols-2 gap-3 mb-4">
-                @foreach([10000, 25000, 50000, 100000, 250000] as $value)
+                @foreach ([10000, 25000, 50000, 100000, 250000] as $value)
                     <button wire:click="setAmount({{ $value }})"
                         class="px-4 py-3 border-2 rounded-lg text-sm font-semibold transition-colors
                         {{ $amount == $value && !$showCustomAmount ? 'border-primary bg-primary text-white' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">
@@ -31,18 +32,23 @@
                 </button>
             </div>
 
-            @if($showCustomAmount)
-            <div id="custom-amount">
-                <label class="block text-sm font-semibold text-dark mb-2">Nominal Bebas</label>
-                <div class="relative">
-                    <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
-                    <input type="number" wire:model.live="customAmount"
-                        class="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary"
-                        placeholder="0" />
+            @if ($showCustomAmount)
+                <div id="custom-amount">
+                    <label class="block text-sm font-semibold text-dark mb-2">Nominal Bebas</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-500 text-sm">Rp</span>
+                        <input type="number" wire:model.live="customAmount" min="10000"
+                            class="w-full pl-8 pr-4 py-3 border rounded-lg text-sm focus:outline-none 
+                        {{ $customAmountError ? 'border-red-400 focus:border-red-400' : 'border-gray-200 focus:border-primary' }}"
+                            placeholder="0" />
+                    </div>
+                    @if ($customAmountError)
+                        <p class="text-xs text-red-600 mt-1">{{ $customAmountError }}</p>
+                    @endif
+                    @error('amount')
+                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-                <p class="text-xs text-gray-500 mt-1">Minimum donasi Rp 10.000</p>
-                @error('amount') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
-            </div>
             @endif
         </section>
 
@@ -55,9 +61,10 @@
                     <label class="block text-sm font-semibold text-dark mb-2">Nama Lengkap *</label>
                     <input type="text" wire:model="name"
                         class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary"
-                        placeholder="Masukkan nama lengkap" 
-                        {{ $isAnonymous ? 'disabled' : '' }} />
-                    @error('name') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                        placeholder="Masukkan nama lengkap" {{ $isAnonymous ? 'disabled' : '' }} />
+                    @error('name')
+                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
@@ -65,7 +72,9 @@
                     <input type="tel" wire:model="phone"
                         class="w-full px-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-primary"
                         placeholder="08xxx" />
-                    @error('phone') <p class="text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
+                    @error('phone')
+                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div>
@@ -92,11 +101,13 @@
     </main>
 
     <!-- Summary CTA -->
-    <div id="summary-cta" class="fixed bottom-0 left-0 right-0 max-w-[460px] mx-auto bg-white border-t border-gray-200 px-4 py-4 z-50">
+    <div id="summary-cta"
+        class="fixed bottom-0 left-0 right-0 max-w-[460px] mx-auto bg-white border-t border-gray-200 px-4 py-4 z-50">
         <div class="mb-3">
             <div class="flex items-center justify-between text-sm mb-1">
                 <span class="text-gray-600">Total Donasi</span>
-                <span class="font-bold text-dark">Rp {{ number_format($showCustomAmount ? (int)$customAmount : $amount, 0, ',', '.') }}</span>
+                <span class="font-bold text-dark">Rp
+                    {{ number_format($showCustomAmount ? (int) $customAmount : $amount, 0, ',', '.') }}</span>
             </div>
             <div class="flex items-center justify-between text-xs">
                 <span class="text-gray-500">Biaya Admin</span>
@@ -105,7 +116,8 @@
             <div class="border-t border-gray-200 pt-2 mt-2">
                 <div class="flex items-center justify-between">
                     <span class="text-sm font-bold text-dark">Total Bayar</span>
-                    <span class="text-lg font-bold text-primary">Rp {{ number_format($showCustomAmount ? (int)$customAmount : $amount, 0, ',', '.') }}</span>
+                    <span class="text-lg font-bold text-primary">Rp
+                        {{ number_format($showCustomAmount ? (int) $customAmount : $amount, 0, ',', '.') }}</span>
                 </div>
             </div>
         </div>

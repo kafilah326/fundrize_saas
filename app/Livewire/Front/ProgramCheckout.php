@@ -20,6 +20,7 @@ class ProgramCheckout extends Component
     public $doa;
     public $isAnonymous = false;
     public $showCustomAmount = false;
+    public $customAmountError = null;
 
     public function mount($slug)
     {
@@ -49,6 +50,12 @@ class ProgramCheckout extends Component
     public function updatedCustomAmount()
     {
         $this->amount = (int) str_replace(['.', ','], '', $this->customAmount);
+
+        if ($this->amount > 0 && $this->amount < 10000) {
+            $this->customAmountError = 'Minimal donasi adalah Rp 10.000';
+        } else {
+            $this->customAmountError = null;
+        }
     }
 
     public function submit()
@@ -57,6 +64,8 @@ class ProgramCheckout extends Component
             'amount' => 'required|numeric|min:10000',
             'name' => 'required_if:isAnonymous,false',
             'phone' => 'required',
+        ], [
+            'amount.min' => 'Minimal donasi adalah Rp 10.000',
         ]);
 
         session([
