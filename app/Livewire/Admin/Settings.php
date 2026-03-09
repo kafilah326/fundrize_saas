@@ -144,12 +144,8 @@ class Settings extends Component
         ];
 
         if ($this->logo) {
-            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
-            $image = $manager->read($this->logo->getRealPath());
-            $processed = $image->cover(1200, 630)->toJpeg(85);
-            $filename = 'foundation/' . uniqid() . '.jpg';
-            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $processed);
-            
+            $logoName = $this->logo->store('foundation', 'public');
+
             $foundation = FoundationSetting::first();
             if ($foundation) {
                 $oldPath = $foundation->getRawOriginal('logo');
@@ -157,7 +153,7 @@ class Settings extends Component
                     \Illuminate\Support\Facades\Storage::disk('public')->delete($oldPath);
                 }
             }
-            $data['logo'] = $filename;
+            $data['logo'] = $logoName;
         }
 
         if ($this->favicon) {
