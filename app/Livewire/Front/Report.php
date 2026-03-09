@@ -70,8 +70,9 @@ class Report extends Component
         $tersalurkan = ProgramDistribution::whereBetween('documentation_date', [$startOfMonth, $endOfMonth])
             ->sum('amount_distributed');
 
-        // Operational Cost (5% of donations)
-        $biayaOperasional = $danaMasuk * 0.05;
+        // Operational Cost (from config)
+        $systemFeePercentage = config('system.system_fee_percentage') / 100;
+        $biayaOperasional = $danaMasuk * $systemFeePercentage;
 
         // Remaining funds
         $sisaDana = max(0, $danaMasuk - $tersalurkan - $biayaOperasional);
