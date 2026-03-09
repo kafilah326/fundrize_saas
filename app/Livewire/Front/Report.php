@@ -2,22 +2,25 @@
 
 namespace App\Livewire\Front;
 
+use App\Models\AkadType;
+use App\Models\Donation;
+use App\Models\Program;
+use App\Models\ProgramDistribution;
+use Carbon\Carbon;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use App\Models\Program;
-use App\Models\Donation;
-use App\Models\ProgramDistribution;
-use Carbon\Carbon;
-
-use App\Models\AkadType;
 
 class Report extends Component
 {
     public $period;
+
     public $filter = 'semua';
+
     public $programs;
+
     public $financials;
+
     public $akadTypes;
 
     public function mount()
@@ -37,14 +40,14 @@ class Report extends Component
         $value = (float) $value;
 
         if ($value >= 1000000000) {
-            return 'Rp ' . number_format($value / 1000000000, 1, ',', '.') . ' Milyar';
+            return 'Rp '.number_format($value / 1000000000, 1, ',', '.').' Milyar';
         } elseif ($value >= 1000000) {
-            return 'Rp ' . number_format($value / 1000000, 1, ',', '.') . ' Juta';
+            return 'Rp '.number_format($value / 1000000, 1, ',', '.').' Juta';
         } elseif ($value >= 1000) {
-            return 'Rp ' . number_format($value / 1000, 1, ',', '.') . ' Ribu';
+            return 'Rp '.number_format($value / 1000, 1, ',', '.').' Ribu';
         }
 
-        return 'Rp ' . number_format($value, 0, ',', '.');
+        return 'Rp '.number_format($value, 0, ',', '.');
     }
 
     #[Layout('layouts.front')]
@@ -64,7 +67,7 @@ class Report extends Component
         // Financial Summary (Global - all donations in this period)
         $danaMasuk = Donation::where('status', 'success')
             ->whereBetween('created_at', [$startOfMonth, $endOfMonth])
-            ->sum('amount');
+            ->sum('total');
 
         // Total distributed in this period
         $tersalurkan = ProgramDistribution::whereBetween('documentation_date', [$startOfMonth, $endOfMonth])
@@ -81,7 +84,7 @@ class Report extends Component
             'dana_masuk' => $danaMasuk,
             'tersalurkan' => $tersalurkan,
             'sisa_dana' => $sisaDana,
-            'biaya_operasional' => $biayaOperasional
+            'biaya_operasional' => $biayaOperasional,
         ];
 
         // Program Reports - show all active programs with their distributions
@@ -89,7 +92,7 @@ class Report extends Component
             ->with(['categories', 'akads', 'distributions']);
 
         if ($this->filter !== 'semua') {
-            $query->whereHas('akads', function($q) {
+            $query->whereHas('akads', function ($q) {
                 $q->where('slug', $this->filter);
             });
         }
