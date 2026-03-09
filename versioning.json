@@ -1,6 +1,6 @@
 {
-  "version": "1.24.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fungsionalitas baru pada metode 'relogDevice' yang sebelumnya hanya berupa stub/pesan statis, kini memiliki logika integrasi API yang lengkap termasuk mekanisme fallback pembuatan device baru.",
-  "updatedAt": "2026-03-08T22:13:17.894Z"
+  "version": "1.24.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini bersifat internal yang mencakup penambahan dokumentasi, rencana pengembangan fitur (drafting), dan refaktorisasi nilai hardcoded ke file konfigurasi tanpa mengubah perilaku API atau fungsionalitas utama yang sudah ada.",
+  "updatedAt": "2026-03-09T05:37:06.130Z"
 }
