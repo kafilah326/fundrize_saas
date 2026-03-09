@@ -13,7 +13,9 @@
     <title>@yield('title', 'Admin Panel') - {{ $foundationName }}</title>
 
     @if ($foundation && $foundation->favicon)
+        <link rel="shortcut icon" href="{{ $foundation->favicon }}">
         <link rel="icon" type="image/png" href="{{ $foundation->favicon }}">
+        <link rel="apple-touch-icon" href="{{ $foundation->favicon }}">
     @endif
 
     <!-- Fonts -->

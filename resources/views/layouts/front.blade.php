@@ -2,8 +2,9 @@
     $foundation = \App\Models\FoundationSetting::first();
     $foundationName = $foundation->name ?? 'Yayasan Peduli';
     $foundationAbout = strip_tags($foundation->about ?? '');
-    $defaultDescription = $foundationAbout ?: 'Platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.';
-    
+    $defaultDescription =
+        $foundationAbout ?: 'Platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.';
+
     // OG Image: ensure always absolute URL, fallback to default-og.jpg
     $ogImage = isset($metaImage) && $metaImage ? $metaImage : asset('images/default-og.jpg');
     if (!str_starts_with($ogImage, 'http')) {
@@ -70,7 +71,9 @@
         }
     @endphp
     @if ($foundation && $foundation->favicon)
+        <link rel="shortcut icon" href="{{ $foundation->favicon }}">
         <link rel="icon" type="image/png" href="{{ $foundation->favicon }}">
+        <link rel="apple-touch-icon" href="{{ $foundation->favicon }}">
     @endif
 
     <!-- Tailwind CDN -->
