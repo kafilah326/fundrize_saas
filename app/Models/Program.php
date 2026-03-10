@@ -13,6 +13,9 @@ class Program extends Model
         'slug',
         'image',
         'description',
+        'is_dynamic',
+        'package_price',
+        'package_label',
         'target_amount',
         'collected_amount',
         'donor_count',
@@ -25,6 +28,8 @@ class Program extends Model
     ];
 
     protected $casts = [
+        'is_dynamic' => 'boolean',
+        'package_price' => 'decimal:2',
         'target_amount' => 'decimal:2',
         'collected_amount' => 'decimal:2',
         'end_date' => 'date',

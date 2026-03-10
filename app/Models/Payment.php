@@ -64,6 +64,11 @@ class Payment extends Model
         return $this->hasMany(WhatsappMessageLog::class);
     }
 
+    public function donation()
+    {
+        return $this->hasOne(Donation::class, 'transaction_id', 'external_id');
+    }
+
     protected $casts = [
         'checkout_data' => 'array',
         'paid_at' => 'datetime',

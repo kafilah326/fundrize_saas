@@ -30,6 +30,9 @@ class Program extends Component
     public $end_date;
     public $image;
     public $existingImage;
+    public $is_dynamic = false;
+    public $package_price;
+    public $package_label = 'paket';
     public $is_active = true;
     public $is_featured = false;
     public $is_urgent = false;
@@ -44,6 +47,9 @@ class Program extends Component
         'title' => 'required|min:3',
         'slug' => 'required|unique:programs,slug',
         'description' => 'required',
+        'is_dynamic' => 'boolean',
+        'package_price' => 'required_if:is_dynamic,true|nullable|numeric|min:0',
+        'package_label' => 'required_if:is_dynamic,true|nullable|string|max:50',
         'target_amount' => 'nullable|numeric|min:0',
         'end_date' => 'nullable|date',
         'image' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120', // 5MB Max
@@ -105,6 +111,9 @@ class Program extends Component
         $this->end_date = '';
         $this->image = null;
         $this->existingImage = null;
+        $this->is_dynamic = false;
+        $this->package_price = '';
+        $this->package_label = 'paket';
         $this->is_active = true;
         $this->is_featured = false;
         $this->is_urgent = false;
@@ -127,6 +136,9 @@ class Program extends Component
             'title' => $this->title,
             'slug' => $this->slug,
             'description' => $this->description,
+            'is_dynamic' => $this->is_dynamic,
+            'package_price' => $this->is_dynamic ? $this->package_price : null,
+            'package_label' => $this->is_dynamic ? $this->package_label : null,
             'target_amount' => $this->target_amount !== '' ? $this->target_amount : null,
             'end_date' => $this->end_date ?: null,
             'is_active' => $this->is_active,
@@ -171,6 +183,9 @@ class Program extends Component
         $this->title = $program->title;
         $this->slug = $program->slug;
         $this->description = $program->description;
+        $this->is_dynamic = (bool) $program->is_dynamic;
+        $this->package_price = $program->package_price;
+        $this->package_label = $program->package_label ?? 'paket';
         $this->target_amount = $program->target_amount;
         $this->end_date = $program->end_date ? $program->end_date->format('Y-m-d') : null;
         $this->existingImage = $program->image;

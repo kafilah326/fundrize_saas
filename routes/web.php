@@ -14,6 +14,7 @@ use App\Livewire\Front\PaymentMethod;
 use App\Livewire\Front\Profile;
 use App\Livewire\Front\ProfileEdit;
 use App\Livewire\Front\ProgramCheckout;
+use App\Livewire\Front\DynamicProgramCheckout;
 use App\Livewire\Front\ProgramDetail;
 use App\Livewire\Front\ProgramIndex;
 use App\Livewire\Front\QurbanCheckout;
@@ -61,6 +62,7 @@ Route::get('/search', SearchPage::class)->name('search.index');
 Route::get('/program', ProgramIndex::class)->name('program.index');
 Route::get('/program/{slug}', ProgramDetail::class)->name('program.detail');
 Route::get('/program/{slug}/checkout', ProgramCheckout::class)->name('program.checkout');
+Route::get('/program/{slug}/checkout-dynamic', DynamicProgramCheckout::class)->name('program.checkout.dynamic');
 Route::get('/foundation/profile', FoundationProfile::class)->name('foundation.profile');
 Route::get('/zakat', \App\Livewire\Front\ZakatIndex::class)->name('zakat.index');
 

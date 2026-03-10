@@ -1,6 +1,6 @@
 {
-  "version": "1.24.5",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini merupakan perbaikan internal dan peningkatan UX pada validasi form yang sudah ada tanpa mengubah kompatibilitas API atau struktur arsitektur besar.",
-  "updatedAt": "2026-03-09T22:03:38.250Z"
+  "version": "1.25.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Perubahan ini memperkenalkan fitur baru yang signifikan berupa sistem program dinamis (paketan) dan halaman checkout baru, namun tetap menjaga kompatibilitas dengan fitur program donasi reguler yang sudah ada sebelumnya.",
+  "updatedAt": "2026-03-10T05:18:21.413Z"
 }

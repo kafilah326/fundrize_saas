@@ -2,33 +2,35 @@
 
 namespace App\Livewire\Front;
 
+use App\Models\Program;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
-use App\Models\Program;
-use Illuminate\Support\Facades\Auth;
 
-class ProgramCheckout extends Component
+class DynamicProgramCheckout extends Component
 {
     public $slug;
     public $program;
-    public $amount = 50000;
-    public $customAmount;
+    
+    // Dynamic fields
+    public $quantity = 1;
+
+    // Contact fields
     public $name;
     public $phone;
     public $email;
     public $doa;
     public $isAnonymous = false;
-    public $showCustomAmount = false;
-    public $customAmountError = null;
 
     public function mount($slug)
     {
         $this->slug = $slug;
         $this->program = Program::where('slug', $slug)->firstOrFail();
 
-        if ($this->program->is_dynamic) {
-            return redirect()->route('program.checkout.dynamic', $this->slug);
+        // Security check
+        if (!$this->program->is_dynamic) {
+            return redirect()->route('program.checkout', $this->slug);
         }
 
         if (Auth::check()) {
@@ -39,45 +41,43 @@ class ProgramCheckout extends Component
         }
     }
 
-    public function setAmount($value)
+    public function incrementQuantity()
     {
-        if ($value === 'custom') {
-            $this->showCustomAmount = true;
-            $this->amount = 0;
-        } else {
-            $this->showCustomAmount = false;
-            $this->amount = $value;
-            $this->customAmount = null;
+        $this->quantity++;
+    }
+
+    public function decrementQuantity()
+    {
+        if ($this->quantity > 1) {
+            $this->quantity--;
         }
     }
-    
-    public function updatedCustomAmount()
-    {
-        $this->amount = (int) str_replace(['.', ','], '', $this->customAmount);
 
-        if ($this->amount > 0 && $this->amount < 10000) {
-            $this->customAmountError = 'Minimal donasi adalah Rp 10.000';
-        } else {
-            $this->customAmountError = null;
+    public function updatedQuantity($value)
+    {
+        $val = (int) $value;
+        if ($val < 1) {
+            $this->quantity = 1;
         }
     }
 
     public function submit()
     {
         $this->validate([
-            'amount' => 'required|numeric|min:10000',
+            'quantity' => 'required|integer|min:1',
             'name' => 'required_if:isAnonymous,false',
             'phone' => 'required',
-        ], [
-            'amount.min' => 'Minimal donasi adalah Rp 10.000',
         ]);
+
+        $totalAmount = $this->quantity * $this->program->package_price;
 
         session([
             'checkout' => [
                 'type' => 'program',
                 'program_id' => $this->program->id,
-                'program_name' => $this->program->title,
-                'amount' => $this->showCustomAmount ? (int)$this->customAmount : $this->amount,
+                'program_name' => collect([$this->program->categories->first()->name ?? null, $this->program->title])->filter()->join(' - '),
+                'amount' => $totalAmount,
+                'package_quantity' => $this->quantity,
                 'name' => $this->name,
                 'phone' => $this->phone,
                 'email' => $this->email,
@@ -90,9 +90,12 @@ class ProgramCheckout extends Component
     }
     
     #[Layout('layouts.front')]
-    #[Title('Form Donasi')]
+    #[Title('Form Pembayaran')]
     public function render()
     {
-        return view('livewire.front.program-checkout');
+        return view('livewire.front.dynamic-program-checkout', [
+            'totalAmount' => $this->quantity * $this->program->package_price,
+            'packageLabel' => $this->program->package_label ?? 'paket'
+        ]);
     }
 }
