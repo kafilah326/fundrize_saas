@@ -360,6 +360,7 @@ class PaymentMethod extends Component
                 'donor_name'       => $checkout['name'] ?? 'Hamba Allah',
                 'donor_phone'      => $checkout['phone'] ?? null,
                 'donor_email'      => $checkout['email'] ?? null,
+                'fundraiser_id'    => $fundraiserId,
                 'payment_method'   => $this->selectedMethod,
                 'status'           => 'pending',
                 'payment_expiry'   => now()->addHours(24),
@@ -379,6 +380,31 @@ class PaymentMethod extends Component
 
             $zakatTrx = ZakatTransaction::create($zakatData);
             $payment->update(['zakat_transaction_id' => $zakatTrx->id]);
+
+            // Calculate Commission using Program Commission Settings
+            if ($fundraiserId) {
+                $commType = \App\Models\AppSetting::get('fundraiser_program_commission_type', 'none');
+                $commAmountSet = \App\Models\AppSetting::get('fundraiser_program_commission_amount', 0);
+
+                if ($commType !== 'none') {
+                    $commissionAmount = 0;
+                    if ($commType === 'fixed') {
+                        $commissionAmount = $commAmountSet;
+                    } elseif ($commType === 'percentage') {
+                        $commissionAmount = ($this->amount * $commAmountSet) / 100;
+                    }
+
+                    if ($commissionAmount > 0) {
+                        \App\Models\FundraiserCommission::create([
+                            'fundraiser_id'       => $fundraiserId,
+                            'commissionable_type' => ZakatTransaction::class,
+                            'commissionable_id'   => $zakatTrx->id,
+                            'amount'              => $commissionAmount,
+                            'status'              => 'pending',
+                        ]);
+                    }
+                }
+            }
         }
 
         // 4. Send Notification (Async if queue is setup, but synchronous for now)

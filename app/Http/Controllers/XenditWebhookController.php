@@ -138,6 +138,10 @@ class XenditWebhookController extends Controller
             $zakatTrx = ZakatTransaction::where('transaction_id', $payment->external_id)->first();
             if ($zakatTrx) {
                 $zakatTrx->update(['status' => 'success']);
+
+                if ($zakatTrx->fundraiserCommission) {
+                    $zakatTrx->fundraiserCommission->update(['status' => 'success']);
+                }
             }
         }
 
@@ -186,6 +190,10 @@ class XenditWebhookController extends Controller
             $zakatTrx = ZakatTransaction::where('transaction_id', $payment->external_id)->first();
             if ($zakatTrx) {
                 $zakatTrx->update(['status' => 'expired']);
+
+                if ($zakatTrx->fundraiserCommission) {
+                    $zakatTrx->fundraiserCommission->update(['status' => 'cancelled']);
+                }
             }
         }
 

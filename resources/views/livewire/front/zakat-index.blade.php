@@ -345,9 +345,20 @@
         <section class="bg-white px-4 py-4 mt-4" x-data="{ expanded: false }">
             <h3 class="text-base font-bold text-dark mb-3">Perolehan Zakat</h3>
 
-            <div class="flex items-center justify-between py-2 border-b border-gray-100">
-                <span class="text-sm text-gray-600">Dana Terkumpul</span>
-                <span class="text-sm font-bold text-dark">Rp {{ number_format($totalCollected, 0, ',', '.') }}</span>
+            <div class="py-2 border-b border-gray-100">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-sm text-gray-600">Dana Terkumpul</span>
+                    <span class="text-sm font-bold text-dark">Rp
+                        {{ number_format($totalCollected, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-gray-500">
+                    <span>Zakat Fitrah: </span>
+                    <span>Rp {{ number_format($totalFitrah, 0, ',', '.') }}</span>
+                </div>
+                <div class="flex items-center justify-between text-[11px] text-gray-500">
+                    <span>Zakat Mal: </span>
+                    <span>Rp {{ number_format($totalMaal, 0, ',', '.') }}</span>
+                </div>
             </div>
 
             <div x-show="expanded" x-collapse>

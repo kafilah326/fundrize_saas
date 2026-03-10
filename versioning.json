@@ -1,6 +1,6 @@
 {
-  "version": "1.25.1",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini bersifat perbaikan internal pada penanganan URL metadata (bug fix agar gambar muncul di media sosial) dan penambahan elemen SEO kecil tanpa mengubah fungsi utama atau memecah kompatibilitas kode.",
-  "updatedAt": "2026-03-10T14:39:58.617Z"
+  "version": "1.29.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan fitur baru berupa fungsionalitas export data ke format CSV yang bersifat backward compatible, serta penambahan logika bisnis baru untuk menangani status komisi fundraiser pada transaksi zakat.",
+  "updatedAt": "2026-03-10T22:08:04.018Z"
 }

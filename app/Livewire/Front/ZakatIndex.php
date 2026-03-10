@@ -3,12 +3,10 @@
 namespace App\Livewire\Front;
 
 use App\Models\AppSetting;
-use Livewire\Attributes\Layout;
-use Livewire\Attributes\Title;
-use Livewire\Component;
-use Illuminate\Support\Facades\Storage;
 use App\Models\ZakatDistribution;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Livewire\Component;
 
 class ZakatIndex extends Component
 {
@@ -16,36 +14,56 @@ class ZakatIndex extends Component
 
     // Fitrah
     public $fitrahPeople = 1;
+
     public $fitrahPrice = 45000; // from setting
 
     // Maal
     public $maalMode = 'calculator'; // 'calculator' or 'manual'
+
     public $maalManualAmount = '';
 
     // Maal calculator fields
     public $emas = '';
+
     public $uang = '';
+
     public $aset = '';
+
     public $hutang = '';
 
     // Personal Info
     public $name;
+
     public $phone;
+
     public $email;
 
     // Gold price & computed nisab (from setting)
     public $goldPricePerGram = 1500000;
+
     public $nisab = 127500000; // 85 * 1_500_000
 
     // Computed
     public $calculatedZakat = 0;
+
     public $totalHarta = 0;
+
     public $zakatStatus = 'belum'; // 'belum' or 'wajib'
+
     public $zakatBannerPath;
+
     public $totalCollected = 0;
+
     public $totalThisMonth = 0;
+
     public $totalTransactions = 0;
+
     public $totalDistributed = 0;
+
+    public $totalFitrah = 0;
+
+    public $totalMaal = 0;
+
     public $zakatDistributions;
 
     public function mount()
@@ -65,11 +83,19 @@ class ZakatIndex extends Component
         $this->zakatBannerPath = AppSetting::get('zakat_banner_image');
 
         $baseQuery = \App\Models\Payment::where('transaction_type', 'zakat')->where('status', 'paid');
-        $this->totalCollected   = (clone $baseQuery)->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
-        $this->totalThisMonth   = (clone $baseQuery)->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
+        $this->totalCollected = (clone $baseQuery)->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
+        $this->totalThisMonth = (clone $baseQuery)->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
         $this->totalTransactions = (clone $baseQuery)->count();
         $this->zakatDistributions = ZakatDistribution::latest()->limit(12)->get();
-        $this->totalDistributed  = ZakatDistribution::sum('amount');
+        $this->totalDistributed = ZakatDistribution::sum('amount');
+
+        $this->totalFitrah = (clone $baseQuery)->whereHas('zakatTransaction', function ($q) {
+            $q->where('zakat_type', 'fitrah');
+        })->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
+
+        $this->totalMaal = (clone $baseQuery)->whereHas('zakatTransaction', function ($q) {
+            $q->where('zakat_type', 'maal');
+        })->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
     }
 
     public function setTab(string $tab): void
@@ -103,9 +129,9 @@ class ZakatIndex extends Component
                 $this->zakatStatus = $nominal > 0 ? 'wajib' : 'belum';
                 $this->totalHarta = 0;
             } else {
-                $emas   = (int) preg_replace('/[^0-9]/', '', $this->emas);
-                $uang   = (int) preg_replace('/[^0-9]/', '', $this->uang);
-                $aset   = (int) preg_replace('/[^0-9]/', '', $this->aset);
+                $emas = (int) preg_replace('/[^0-9]/', '', $this->emas);
+                $uang = (int) preg_replace('/[^0-9]/', '', $this->uang);
+                $aset = (int) preg_replace('/[^0-9]/', '', $this->aset);
                 $hutang = (int) preg_replace('/[^0-9]/', '', $this->hutang);
 
                 $this->totalHarta = max(0, $emas + $uang + $aset - $hutang);
@@ -125,6 +151,7 @@ class ZakatIndex extends Component
     {
         if ($this->calculatedZakat <= 0) {
             session()->flash('error', 'Nominal zakat harus lebih dari 0.');
+
             return;
         }
 
@@ -135,13 +162,13 @@ class ZakatIndex extends Component
         ]);
 
         $checkoutData = [
-            'type'         => 'zakat',
-            'zakat_type'   => $this->activeTab,
-            'amount'       => $this->calculatedZakat,
-            'program_name' => 'Zakat ' . ($this->activeTab === 'fitrah' ? 'Fitrah' : 'Mal'),
-            'name'         => $this->name,
-            'phone'        => $this->phone,
-            'email'        => $this->email,
+            'type' => 'zakat',
+            'zakat_type' => $this->activeTab,
+            'amount' => $this->calculatedZakat,
+            'program_name' => 'Zakat '.($this->activeTab === 'fitrah' ? 'Fitrah' : 'Mal'),
+            'name' => $this->name,
+            'phone' => $this->phone,
+            'email' => $this->email,
         ];
 
         // Fitrah metadata
@@ -151,8 +178,8 @@ class ZakatIndex extends Component
 
         // Maal metadata
         if ($this->activeTab === 'maal') {
-            $checkoutData['total_harta']      = $this->totalHarta ?: null;
-            $checkoutData['nisab_at_time']    = $this->nisab;
+            $checkoutData['total_harta'] = $this->totalHarta ?: null;
+            $checkoutData['nisab_at_time'] = $this->nisab;
             $checkoutData['calculated_zakat'] = $this->calculatedZakat;
         }
 
@@ -163,11 +190,11 @@ class ZakatIndex extends Component
 
     public function render()
     {
-        $finalImage = $this->zakatBannerPath 
-            ? Storage::disk('public')->url($this->zakatBannerPath) 
+        $finalImage = $this->zakatBannerPath
+            ? Storage::disk('public')->url($this->zakatBannerPath)
             : null;
 
-        if ($finalImage && !str_starts_with($finalImage, 'http')) {
+        if ($finalImage && ! str_starts_with($finalImage, 'http')) {
             $finalImage = url($finalImage);
         }
 
