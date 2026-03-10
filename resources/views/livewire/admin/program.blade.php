@@ -245,6 +245,55 @@
                                     @enderror
                                 </div>
 
+                                <!-- Dynamic Program Toggle -->
+                                <div class="sm:col-span-6 bg-gray-50/50 p-4 rounded-xl border border-gray-100"
+                                    x-data="{ isDynamic: @entangle('is_dynamic') }">
+                                    <label class="flex items-center cursor-pointer group mb-4">
+                                        <div class="relative flex items-center">
+                                            <input wire:model="is_dynamic" type="checkbox"
+                                                class="peer h-5 w-5 text-primary border-gray-300 rounded focus:ring-primary cursor-pointer transition-all checked:bg-primary checked:border-transparent">
+                                        </div>
+                                        <div class="ml-3">
+                                            <span class="block text-sm font-semibold text-gray-900">Jadikan Program
+                                                Dinamis (Paketan)</span>
+                                            <span class="block text-xs text-gray-500">Gunakan model "Harga per Paket x
+                                                Jumlah Paket" (contoh: Fidyah Rp 65.000/paket)</span>
+                                        </div>
+                                    </label>
+
+                                    <!-- Dynamic Fields (Show when isDynamic = true) -->
+                                    <div x-show="isDynamic" x-collapse
+                                        class="grid grid-cols-1 sm:grid-cols-2 gap-4 border-t border-gray-200 pt-4">
+                                        <div>
+                                            <label for="package_price"
+                                                class="block text-sm font-semibold text-gray-700 mb-1">Harga per Paket
+                                                (Rp)</label>
+                                            <div class="relative rounded-xl shadow-sm">
+                                                <div
+                                                    class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                    <span class="text-gray-500 text-base">Rp</span>
+                                                </div>
+                                                <input wire:model="package_price" type="number" id="package_price"
+                                                    class="pl-10 block w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-base bg-white transition-colors">
+                                            </div>
+                                            @error('package_price')
+                                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                        <div>
+                                            <label for="package_label"
+                                                class="block text-sm font-semibold text-gray-700 mb-1">Label
+                                                Satuan</label>
+                                            <input wire:model="package_label" type="text" id="package_label"
+                                                placeholder="contoh: paket, porsi, jiwa"
+                                                class="block w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-base bg-white transition-colors">
+                                            @error('package_label')
+                                                <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
+                                            @enderror
+                                        </div>
+                                    </div>
+                                </div>
+
                                 <!-- End Date -->
                                 <div class="sm:col-span-3">
                                     <label for="end_date" class="block text-sm font-semibold text-gray-700 mb-1">Batas

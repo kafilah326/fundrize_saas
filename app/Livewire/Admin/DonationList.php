@@ -217,7 +217,7 @@ class DonationList extends Component
         $statThisMonth = (clone $statQuery)->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
         $statLastMonth = (clone $statQuery)->whereMonth('paid_at', now()->subMonth()->month)->whereYear('paid_at', now()->subMonth()->year)->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
 
-        $payments = Payment::with(['user', 'program', 'qurbanOrder', 'qurbanSaving', 'whatsappMessageLogs'])
+        $payments = Payment::with(['user', 'program', 'donation', 'qurbanOrder', 'qurbanSaving', 'whatsappMessageLogs'])
             ->where('transaction_type', 'program') // Only show program donations
             ->where(function ($query) {
                 $query->where('customer_name', 'like', '%'.$this->search.'%')
@@ -254,7 +254,7 @@ class DonationList extends Component
 
     public function showDetail($id)
     {
-        $this->selectedPayment = Payment::with(['user', 'program', 'qurbanOrder.animal', 'qurbanSaving'])->find($id);
+        $this->selectedPayment = Payment::with(['user', 'program', 'donation', 'qurbanOrder.animal', 'qurbanSaving'])->find($id);
         $this->isOpen = true;
     }
 

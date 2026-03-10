@@ -199,6 +199,7 @@ class PaymentMethod extends Component
                 'fundraiser_id' => $fundraiserId,
                 'program_id' => $checkout['program_id'],
                 'amount' => $this->amount,
+                'package_quantity' => $checkout['package_quantity'] ?? null,
                 'admin_fee' => $this->adminFee,
                 'total' => $finalTotal,
                 'donor_name' => $checkout['name'],

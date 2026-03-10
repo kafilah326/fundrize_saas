@@ -1,5 +1,31 @@
-<div>
-    <x-page-header title="Tunaikan Zakat" subtitle="Hitung dan bayar zakat Anda dalam satu langkah" />
+<div x-data="{
+    share() {
+        if (navigator.share) {
+            let url = window.location.href;
+            @auth
+@if (auth()->user()->fundraiser && auth()->user()->fundraiser->status === 'approved')
+                    if (!url.includes('ref=')) {
+                        url += (url.includes('?') ? '&' : '?') + 'ref={{ auth()->user()->fundraiser->referral_code }}';
+                    }
+                @endif @endauth
+
+            navigator.share({
+                title: 'Tunaikan Zakat',
+                text: 'Mari tunaikan kewajiban Zakat bersama kami.',
+                url: url
+            });
+        } else {
+            alert('Fitur share tidak didukung di browser ini');
+        }
+    }
+}">
+    <x-page-header title="Tunaikan Zakat" subtitle="Hitung dan bayar zakat Anda dalam satu langkah">
+        <x-slot:actions>
+            <button @click="share()" class="w-9 h-9 flex items-center justify-center">
+                <i class="fa-solid fa-share-nodes text-dark text-lg"></i>
+            </button>
+        </x-slot:actions>
+    </x-page-header>
 
     <main class="pb-32">
         {{-- Tabs --}}

@@ -14,6 +14,7 @@ class Donation extends Model
         'fundraiser_id',
         'program_id',
         'amount',
+        'package_quantity',
         'admin_fee',
         'total',
         'donor_name',
