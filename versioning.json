@@ -1,6 +1,6 @@
 {
-  "version": "1.25.1",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini bersifat perbaikan internal pada penanganan URL metadata (bug fix agar gambar muncul di media sosial) dan penambahan elemen SEO kecil tanpa mengubah fungsi utama atau memecah kompatibilitas kode.",
-  "updatedAt": "2026-03-10T14:39:58.617Z"
+  "version": "1.26.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Perubahan ini memperkenalkan fitur baru yaitu sistem komisi (ujroh) bagi fundraiser yang kini mencakup transaksi zakat, penambahan skema database baru (fundraiser_id), serta perbaikan logika internal pada manajemen penyaluran zakat tanpa merusak fungsi yang sudah ada.",
+  "updatedAt": "2026-03-10T21:31:47.101Z"
 }

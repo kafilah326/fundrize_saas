@@ -11,14 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-Schema::create('zakat_distributions', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
-            $table->decimal('amount', 15, 2);
-            $table->text('description');
-            $table->date('distribution_date');
-$table->timestamps();
-});
+        if (!Schema::hasTable('zakat_distributions')) {
+            Schema::create('zakat_distributions', function (Blueprint $table) {
+                $table->id();
+                $table->string('title');
+                $table->decimal('amount', 15, 2);
+                $table->text('description');
+                $table->date('distribution_date');
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -2,32 +2,36 @@
 
 namespace App\Livewire\Admin;
 
-use App\Models\AppSetting;
-use Livewire\WithFileUploads;
 use App\Models\AdminNotification;
+use App\Models\AppSetting;
 use App\Models\Payment;
-use App\Models\ZakatTransaction;
 use App\Models\ZakatDistribution;
-
-use App\Services\WhatsAppNotificationService;
+use App\Models\ZakatTransaction;
 use App\Services\MetaConversionService;
-use Livewire\Attributes\Layout;
-use Livewire\Component;
-use Livewire\WithPagination;
+use App\Services\WhatsAppNotificationService;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use Intervention\Image\ImageManager;
 use Intervention\Image\Drivers\Gd\Driver as GdDriver;
+use Intervention\Image\ImageManager;
+use Livewire\Attributes\Layout;
+use Livewire\Component;
+use Livewire\WithFileUploads;
+use Livewire\WithPagination;
 
 class ZakatList extends Component
 {
-    use WithPagination, WithFileUploads;
+    use WithFileUploads, WithPagination;
 
     public $search = '';
+
     public $perPage = 10;
+
     public $statusFilter = '';
+
     public $zakatTypeFilter = '';
+
     public $dateFrom;
+
     public $dateTo;
 
     // Tabs
@@ -35,32 +39,40 @@ class ZakatList extends Component
 
     // Settings
     public $zakat_fitrah_price;
+
     public $zakat_gold_price_per_gram;
+
     public $zakatBannerImage;
+
     public $existingZakatBanner;
 
     // Distribution CRUD
     public $showDistributionModal = false;
+
     public $confirmingDistributionDeletion = false;
+
     public $distributionId;
+
     public $distributionTitle;
+
     public $distributionAmount;
+
     public $distributionDescription;
+
     public $distributionDate;
-
-
 
     // Detail Modal
     public $isOpen = false;
+
     public $selectedPayment = null;
 
     protected $queryString = [
-        'search'          => ['except' => ''],
-        'statusFilter'    => ['except' => ''],
+        'search' => ['except' => ''],
+        'statusFilter' => ['except' => ''],
         'zakatTypeFilter' => ['except' => ''],
-        'dateFrom'        => ['except' => ''],
-        'dateTo'          => ['except' => ''],
-        'activeTab'       => ['except' => 'transactions'],
+        'dateFrom' => ['except' => ''],
+        'dateTo' => ['except' => ''],
+        'activeTab' => ['except' => 'transactions'],
     ];
 
     public function mount()
@@ -82,7 +94,9 @@ class ZakatList extends Component
 
     public function deleteZakatBanner()
     {
-        if (!$this->existingZakatBanner) return;
+        if (! $this->existingZakatBanner) {
+            return;
+        }
 
         Storage::disk('public')->delete($this->existingZakatBanner);
         AppSetting::where('key', 'zakat_banner_image')->delete();
@@ -97,19 +111,19 @@ class ZakatList extends Component
     public function saveZakat()
     {
         $this->validate([
-            'zakat_fitrah_price'        => 'required|numeric|min:0',
+            'zakat_fitrah_price' => 'required|numeric|min:0',
             'zakat_gold_price_per_gram' => 'required|numeric|min:0',
-            'zakatBannerImage'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
+            'zakatBannerImage' => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
         if ($this->zakatBannerImage) {
             Storage::disk('public')->makeDirectory('zakat');
-            $manager = new ImageManager(new GdDriver());
+            $manager = new ImageManager(new GdDriver);
             $image = $manager->read($this->zakatBannerImage->getRealPath());
             $processed = $image->cover(1200, 630)->toJpeg(85);
 
-            $filename = 'zakat-banner-' . time() . '.jpg';
-            $path = 'zakat/' . $filename;
+            $filename = 'zakat-banner-'.time().'.jpg';
+            $path = 'zakat/'.$filename;
 
             if ($this->existingZakatBanner) {
                 Storage::disk('public')->delete($this->existingZakatBanner);
@@ -119,10 +133,10 @@ class ZakatList extends Component
             AppSetting::updateOrCreate(
                 ['key' => 'zakat_banner_image'],
                 [
-                    'value'       => $path,
-                    'group'       => 'zakat',
-                    'type'        => 'text',
-                    'label'       => 'Banner Halaman Zakat',
+                    'value' => $path,
+                    'group' => 'zakat',
+                    'type' => 'text',
+                    'label' => 'Banner Halaman Zakat',
                     'description' => 'Gambar banner yang ditampilkan di halaman depan zakat',
                 ]
             );
@@ -135,10 +149,10 @@ class ZakatList extends Component
         AppSetting::updateOrCreate(
             ['key' => 'zakat_fitrah_price'],
             [
-                'value'       => $this->zakat_fitrah_price,
-                'group'       => 'zakat',
-                'type'        => 'number',
-                'label'       => 'Harga Zakat Fitrah per Jiwa',
+                'value' => $this->zakat_fitrah_price,
+                'group' => 'zakat',
+                'type' => 'number',
+                'label' => 'Harga Zakat Fitrah per Jiwa',
                 'description' => 'Nominal zakat fitrah untuk satu jiwa (dalam rupiah)',
             ]
         );
@@ -147,10 +161,10 @@ class ZakatList extends Component
         AppSetting::updateOrCreate(
             ['key' => 'zakat_gold_price_per_gram'],
             [
-                'value'       => $this->zakat_gold_price_per_gram,
-                'group'       => 'zakat',
-                'type'        => 'number',
-                'label'       => 'Harga Emas per Gram (untuk Nisab)',
+                'value' => $this->zakat_gold_price_per_gram,
+                'group' => 'zakat',
+                'type' => 'number',
+                'label' => 'Harga Emas per Gram (untuk Nisab)',
                 'description' => 'Harga emas per gram, digunakan untuk menghitung nisab zakat mal (85 gram emas)',
             ]
         );
@@ -182,30 +196,38 @@ class ZakatList extends Component
 
         if (! $payment) {
             session()->flash('error', 'Data pembayaran tidak ditemukan.');
+
             return;
         }
 
         if ($payment->payment_type !== 'bank_transfer') {
             session()->flash('error', 'Hanya pembayaran transfer bank yang dapat dikonfirmasi manual.');
+
             return;
         }
 
         if ($payment->status !== 'pending') {
             session()->flash('error', 'Hanya pembayaran dengan status pending yang dapat dikonfirmasi.');
+
             return;
         }
 
         // 1. Update Payment status
         $payment->update([
-            'status'  => 'paid',
+            'status' => 'paid',
             'paid_at' => now(),
         ]);
 
-        // 2. Update ZakatTransaction
+        // 2. Update ZakatTransaction & Commission
         if ($payment->transaction_type === 'zakat') {
             $zakatTrx = ZakatTransaction::where('transaction_id', $payment->external_id)->first();
             if ($zakatTrx) {
                 $zakatTrx->update(['status' => 'success']);
+
+                // Update related FundraiserCommission if exists
+                if ($zakatTrx->fundraiserCommission) {
+                    $zakatTrx->fundraiserCommission->update(['status' => 'success']);
+                }
             }
         }
 
@@ -213,7 +235,7 @@ class ZakatList extends Component
         AdminNotification::notify(
             'payment_success',
             'Pembayaran Zakat Dikonfirmasi!',
-            'Zakat ' . $payment->external_id . ' sebesar Rp ' . number_format($payment->total) . ' dari ' . ($payment->customer_name ?? 'Hamba Allah') . ' — dikonfirmasi manual',
+            'Zakat '.$payment->external_id.' sebesar Rp '.number_format($payment->total).' dari '.($payment->customer_name ?? 'Hamba Allah').' — dikonfirmasi manual',
             ['payment_id' => $payment->id, 'amount' => $payment->total]
         );
 
@@ -222,20 +244,19 @@ class ZakatList extends Component
             $metaService = app(MetaConversionService::class);
             $metaService->sendPurchase($payment);
         } catch (\Exception $e) {
-            Log::error('Meta CAPI Purchase Error (Zakat): ' . $e->getMessage());
+            Log::error('Meta CAPI Purchase Error (Zakat): '.$e->getMessage());
         }
 
         // 5. Send WhatsApp notification
         try {
             app(WhatsAppNotificationService::class)->notifyPaymentSuccess($payment);
         } catch (\Exception $e) {
-            Log::error('WhatsApp Notification Error (Zakat): ' . $e->getMessage());
+            Log::error('WhatsApp Notification Error (Zakat): '.$e->getMessage());
         }
 
         session()->flash('success', 'Pembayaran zakat berhasil dikonfirmasi.');
         $this->closeModal();
     }
-
 
     public function createDistribution()
     {
@@ -247,37 +268,37 @@ class ZakatList extends Component
     {
         $this->resetDistributionForm();
         $distribution = ZakatDistribution::findOrFail($id);
-        
+
         $this->distributionId = $distribution->id;
         $this->distributionTitle = $distribution->title;
         $this->distributionAmount = $distribution->amount;
         $this->distributionDescription = $distribution->description;
-        $this->distributionDate = $distribution->date->format('Y-m-d');
-        
+        $this->distributionDate = $distribution->distribution_date->format('Y-m-d');
+
         $this->showDistributionModal = true;
     }
 
     public function storeDistribution()
     {
         $this->validate([
-            'distributionTitle'       => 'required|string|max:255',
-            'distributionAmount'      => 'required|numeric|min:1',
+            'distributionTitle' => 'required|string|max:255',
+            'distributionAmount' => 'required|numeric|min:1',
             'distributionDescription' => 'required',
-            'distributionDate'        => 'required|date',
+            'distributionDate' => 'required|date',
         ]);
 
         ZakatDistribution::updateOrCreate(
             ['id' => $this->distributionId],
             [
-                'title'       => $this->distributionTitle,
-                'amount'      => $this->distributionAmount,
+                'title' => $this->distributionTitle,
+                'amount' => $this->distributionAmount,
                 'description' => $this->distributionDescription,
-                'date'        => $this->distributionDate,
+                'distribution_date' => $this->distributionDate,
             ]
         );
 
         session()->flash('success', $this->distributionId ? 'Penyaluran zakat berhasil diperbarui.' : 'Penyaluran zakat berhasil ditambahkan.');
-        
+
         $this->showDistributionModal = false;
         $this->resetDistributionForm();
     }
@@ -291,9 +312,9 @@ class ZakatList extends Component
     public function deleteDistribution()
     {
         ZakatDistribution::findOrFail($this->distributionId)->delete();
-        
+
         session()->flash('success', 'Penyaluran zakat berhasil dihapus.');
-        
+
         $this->confirmingDistributionDeletion = false;
         $this->resetDistributionForm();
     }
@@ -315,16 +336,16 @@ class ZakatList extends Component
     {
         $statQuery = Payment::where('transaction_type', 'zakat')->where('status', 'paid');
 
-        $statToday     = (clone $statQuery)->whereDate('paid_at', now()->toDateString())->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
+        $statToday = (clone $statQuery)->whereDate('paid_at', now()->toDateString())->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
         $statThisMonth = (clone $statQuery)->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
-        $statTotal     = (clone $statQuery)->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
+        $statTotal = (clone $statQuery)->sum(\DB::raw('amount + COALESCE(unique_code, 0)'));
 
         $payments = Payment::with(['user', 'zakatTransaction'])
             ->where('transaction_type', 'zakat')
             ->where(function ($query) {
-                $query->where('customer_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('customer_email', 'like', '%' . $this->search . '%')
-                    ->orWhere('external_id', 'like', '%' . $this->search . '%');
+                $query->where('customer_name', 'like', '%'.$this->search.'%')
+                    ->orWhere('customer_email', 'like', '%'.$this->search.'%')
+                    ->orWhere('external_id', 'like', '%'.$this->search.'%');
             })
             ->when($this->statusFilter, function ($query) {
                 $query->where('status', $this->statusFilter);
@@ -346,10 +367,10 @@ class ZakatList extends Component
         $distributions = ZakatDistribution::latest()->paginate($this->perPage, ['*'], 'distributionPage');
 
         return view('livewire.admin.zakat-list', [
-            'payments'      => $payments,
-            'statToday'     => $statToday,
+            'payments' => $payments,
+            'statToday' => $statToday,
             'statThisMonth' => $statThisMonth,
-            'statTotal'     => $statTotal,
+            'statTotal' => $statTotal,
             'distributions' => $distributions,
         ]);
     }

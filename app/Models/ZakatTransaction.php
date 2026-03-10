@@ -22,6 +22,7 @@ class ZakatTransaction extends Model
         'donor_name',
         'donor_phone',
         'donor_email',
+        'fundraiser_id',
         'payment_method',
         'status',
         'payment_expiry',
@@ -45,6 +46,16 @@ class ZakatTransaction extends Model
     public function payment(): HasOne
     {
         return $this->hasOne(Payment::class, 'external_id', 'transaction_id');
+    }
+
+    public function fundraiser(): BelongsTo
+    {
+        return $this->belongsTo(Fundraiser::class);
+    }
+
+    public function fundraiserCommission()
+    {
+        return $this->morphOne(FundraiserCommission::class, 'commissionable');
     }
 
     public function getZakatTypeLabelAttribute(): string
