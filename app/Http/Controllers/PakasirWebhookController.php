@@ -19,11 +19,13 @@ use Illuminate\Support\Facades\Log;
 class PakasirWebhookController extends Controller
 {
     protected $waService;
+
     protected $metaService;
+
     protected $pakasirService;
 
     public function __construct(
-        WhatsAppNotificationService $waService, 
+        WhatsAppNotificationService $waService,
         MetaConversionService $metaService,
         PakasirService $pakasirService
     ) {
@@ -36,22 +38,24 @@ class PakasirWebhookController extends Controller
     {
         $payload = json_decode($request->getContent(), true);
         $data = $payload ?: $request->all();
-        
+
         $orderId = $data['order_id'] ?? null;
         $amount = $data['amount'] ?? null;
         $status = $data['status'] ?? null;
-        
-        Log::info('Pakasir Webhook Received: ' . $orderId . ' - Status: ' . $status, ['payload' => $data]);
 
-        if (!$orderId || !$amount) {
+        Log::info('Pakasir Webhook Received: '.$orderId.' - Status: '.$status, ['payload' => $data]);
+
+        if (! $orderId || ! $amount) {
             Log::warning('Pakasir Webhook: Invalid payload', ['data' => $data]);
+
             return response()->json(['message' => 'Invalid payload'], 400);
         }
 
         $payment = Payment::where('external_id', $orderId)->first();
 
-        if (!$payment) {
-            Log::error('Pakasir Webhook: Payment not found for external_id: ' . $orderId);
+        if (! $payment) {
+            Log::error('Pakasir Webhook: Payment not found for external_id: '.$orderId);
+
             return response()->json(['message' => 'Payment not found'], 404);
         }
 
@@ -66,8 +70,8 @@ class PakasirWebhookController extends Controller
         $trxStatus = null;
         $transactionData = $data;
 
-        if (!$detail || !isset($detail['transaction'])) {
-            Log::warning('Pakasir Webhook: Verification failed via API for ' . $orderId . '. Proceeding with webhook status.');
+        if (! $detail || ! isset($detail['transaction'])) {
+            Log::warning('Pakasir Webhook: Verification failed via API for '.$orderId.'. Proceeding with webhook status.');
             $trxStatus = $status;
         } else {
             $trxStatus = $detail['transaction']['status'];
@@ -78,7 +82,7 @@ class PakasirWebhookController extends Controller
             try {
                 $this->handleSuccess($payment, $transactionData);
             } catch (\Exception $e) {
-                Log::error('Pakasir Webhook: Error handling success for ' . $orderId . ': ' . $e->getMessage());
+                Log::error('Pakasir Webhook: Error handling success for '.$orderId.': '.$e->getMessage());
                 // Still return success to prevent webhook retries from Pakasir
             }
         }
@@ -106,7 +110,7 @@ class PakasirWebhookController extends Controller
             $donation = Donation::where('transaction_id', $payment->external_id)->first();
             if ($donation) {
                 $donation->update(['status' => 'success']);
-                
+
                 if ($donation->fundraiserCommission) {
                     $donation->fundraiserCommission->update(['status' => 'success']);
                 }
@@ -132,7 +136,7 @@ class PakasirWebhookController extends Controller
             $deposit = QurbanSavingsDeposit::where('transaction_id', $payment->external_id)->first();
             if ($deposit) {
                 $deposit->update(['status' => 'paid']);
-                
+
                 if ($deposit->fundraiserCommission) {
                     $deposit->fundraiserCommission->update(['status' => 'success']);
                 }
@@ -150,6 +154,10 @@ class PakasirWebhookController extends Controller
             $zakatTrx = ZakatTransaction::where('transaction_id', $payment->external_id)->first();
             if ($zakatTrx) {
                 $zakatTrx->update(['status' => 'success']);
+
+                if ($zakatTrx->fundraiserCommission) {
+                    $zakatTrx->fundraiserCommission->update(['status' => 'success']);
+                }
             }
         }
 

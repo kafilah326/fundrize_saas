@@ -91,6 +91,12 @@
                     class="py-2.5 px-4 rounded-xl border border-gray-300 text-sm text-gray-600 hover:bg-gray-50 transition-colors flex items-center gap-2">
                     <i class="fa-solid fa-rotate-left"></i> Reset
                 </button>
+                <div class="flex-1 flex justify-end">
+                    <button wire:click="openExportModal"
+                        class="bg-green-600 hover:bg-green-700 text-white font-medium py-2.5 px-4 rounded-xl inline-flex items-center transition-all shadow-sm shadow-green-600/20 text-sm whitespace-nowrap">
+                        <i class="fa-solid fa-file-excel mr-2"></i> Export
+                    </button>
+                </div>
             </div>
 
             @if (session()->has('success') && $activeTab === 'transactions')
@@ -667,4 +673,95 @@
         </div>
     </div>
 
-    {{-- Distribution Create/Edit Modal --}}
+    <!-- Export Modal -->
+    <div x-data="{ show: $wire.entangle('isExportModalOpen').live }" x-show="show" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="show = false">
+                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+            </div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div
+                class="inline-block align-bottom bg-white rounded-xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100">
+                <div class="bg-white px-6 pt-6 pb-4">
+                    <div class="flex items-start gap-4">
+                        <div class="flex-shrink-0 w-10 h-10 rounded-full bg-green-50 flex items-center justify-center">
+                            <i class="fa-solid fa-file-excel text-green-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h3 class="text-lg font-semibold text-gray-900">Export Data Zakat</h3>
+                            <p class="text-sm text-gray-500 mt-1 mb-5">
+                                Pilih rentang tanggal dan jenis zakat untuk mengekspor data transaksi ke file Excel.
+                            </p>
+
+                            <div class="space-y-4">
+                                {{-- Pilih Jenis Zakat --}}
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                        Jenis Zakat
+                                    </label>
+                                    <select wire:model="exportZakatType"
+                                        class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-green-500 focus:ring focus:ring-green-500/20 py-2.5 px-3 text-sm">
+                                        <option value="">— Semua Jenis Zakat —</option>
+                                        <option value="fitrah">Zakat Fitrah</option>
+                                        <option value="maal">Zakat Mal</option>
+                                    </select>
+                                    @if ($exportZakatType)
+                                        <p class="text-xs text-green-600 mt-1 flex items-center gap-1">
+                                            <i class="fa-solid fa-circle-check"></i>
+                                            Hanya transaksi zakat jenis ini yang akan diexport
+                                        </p>
+                                    @else
+                                        <p class="text-xs text-gray-400 mt-1 flex items-center gap-1">
+                                            <i class="fa-solid fa-circle-info"></i>
+                                            Semua jenis zakat akan diexport
+                                        </p>
+                                    @endif
+                                </div>
+
+                                {{-- Tanggal Mulai --}}
+                                <div>
+                                    <label for="startDate" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Tanggal Mulai
+                                    </label>
+                                    <input wire:model="startDate" type="date" id="startDate"
+                                        class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-green-500 focus:ring focus:ring-green-500/20 py-2.5 px-3 text-sm">
+                                    @error('startDate')
+                                        <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                {{-- Tanggal Selesai --}}
+                                <div>
+                                    <label for="endDate" class="block text-sm font-medium text-gray-700 mb-1">
+                                        Tanggal Selesai
+                                    </label>
+                                    <input wire:model="endDate" type="date" id="endDate"
+                                        class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-green-500 focus:ring focus:ring-green-500/20 py-2.5 px-3 text-sm">
+                                    @error('endDate')
+                                        <span class="text-red-500 text-xs mt-1">{{ $message }}</span>
+                                    @enderror
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3 rounded-b-xl border-t border-gray-100">
+                    <button wire:click="exportData" type="button"
+                        class="inline-flex items-center justify-center rounded-xl border border-transparent shadow-sm px-5 py-2.5 bg-green-600 text-sm font-medium text-white hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all">
+                        <i class="fa-solid fa-file-excel mr-2"></i> Export Excel
+                    </button>
+                    <button wire:click="closeExportModal" type="button"
+                        class="inline-flex items-center justify-center rounded-xl border border-gray-300 shadow-sm px-5 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-all">
+                        Batal
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

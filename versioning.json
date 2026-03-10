@@ -1,6 +1,6 @@
 {
-  "version": "1.28.0",
+  "version": "1.29.0",
   "aiDecision": "MINOR",
-  "aiReason": "Penambahan fungsionalitas baru untuk mendukung tipe transaksi zakat dalam riwayat komisi tanpa merusak fitur yang sudah ada.",
-  "updatedAt": "2026-03-10T21:56:51.604Z"
+  "aiReason": "Penambahan fitur baru berupa fungsionalitas export data ke format CSV yang bersifat backward compatible, serta penambahan logika bisnis baru untuk menangani status komisi fundraiser pada transaksi zakat.",
+  "updatedAt": "2026-03-10T22:08:04.018Z"
 }

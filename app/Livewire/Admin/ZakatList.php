@@ -61,6 +61,15 @@ class ZakatList extends Component
 
     public $distributionDate;
 
+    // Export Modal
+    public $isExportModalOpen = false;
+
+    public $startDate;
+
+    public $endDate;
+
+    public $exportZakatType = '';
+
     // Detail Modal
     public $isOpen = false;
 
@@ -341,6 +350,116 @@ class ZakatList extends Component
             'distributionDate',
         ]);
         $this->resetValidation();
+    }
+
+    public function openExportModal()
+    {
+        $this->startDate = now()->startOfMonth()->format('Y-m-d');
+        $this->endDate = now()->format('Y-m-d');
+        // Carry over active filter
+        $this->exportZakatType = $this->zakatTypeFilter;
+        $this->isExportModalOpen = true;
+    }
+
+    public function closeExportModal()
+    {
+        $this->isExportModalOpen = false;
+    }
+
+    public function exportData()
+    {
+        $this->validate([
+            'startDate' => 'required|date',
+            'endDate' => 'required|date|after_or_equal:startDate',
+        ]);
+
+        $query = Payment::with(['user', 'zakatTransaction'])
+            ->where('status', 'paid')
+            ->where('transaction_type', 'zakat')
+            ->whereBetween('paid_at', [
+                $this->startDate . ' 00:00:00',
+                $this->endDate . ' 23:59:59',
+            ])
+            ->when($this->exportZakatType, function ($q) {
+                $q->whereHas('zakatTransaction', function ($q2) {
+                    $q2->where('zakat_type', $this->exportZakatType);
+                });
+            })
+            ->latest('paid_at');
+
+        $payments = $query->get();
+
+        // Build filename
+        $typeLabel = $this->exportZakatType ? ucfirst($this->exportZakatType) : 'Semua';
+        $filename = 'Zakat_' . $typeLabel . '_' . $this->startDate . '_sd_' . $this->endDate . '.csv';
+
+        $headers = [
+            'Content-type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=$filename",
+            'Pragma' => 'no-cache',
+            'Cache-Control' => 'must-revalidate, post-check=0, pre-check=0',
+            'Expires' => '0',
+        ];
+
+        $callback = function () use ($payments) {
+            $file = fopen('php://output', 'w');
+
+            // CSV Header
+            fputcsv($file, [
+                'ID Transaksi',
+                'Tanggal Bayar',
+                'Muzakki',
+                'Email',
+                'Telepon',
+                'Jenis Zakat',
+                'Detail Zakat',
+                'Metode Bayar',
+                'Nominal',
+                'Kode Unik',
+                'Total Bayar',
+                'Status',
+            ], ';');
+
+            foreach ($payments as $payment) {
+                $zakatType = '-';
+                $zakatDetail = '-';
+
+                if ($payment->zakatTransaction) {
+                    $zakatType = $payment->zakatTransaction->zakat_type_label;
+                    if ($payment->zakatTransaction->zakat_type === 'fitrah') {
+                        $zakatDetail = $payment->zakatTransaction->jumlah_jiwa . ' jiwa';
+                    } elseif ($payment->zakatTransaction->zakat_type === 'maal') {
+                        $totalHarta = number_format($payment->zakatTransaction->total_harta ?? 0, 0, ',', '.');
+                        $nisab = number_format($payment->zakatTransaction->nisab_at_time ?? 0, 0, ',', '.');
+                        $zakatDetail = "Harta: Rp {$totalHarta} | Nisab: Rp {$nisab}";
+                    }
+                }
+
+                // Format numbers with comma as decimal separator
+                $amount = number_format($payment->amount, 0, ',', '');
+                $uniqueCode = number_format($payment->unique_code ?? 0, 0, ',', '');
+                $totalAmount = number_format($payment->amount + ($payment->unique_code ?? 0), 0, ',', '');
+
+                fputcsv($file, [
+                    $payment->external_id,
+                    $payment->paid_at,
+                    $payment->customer_name ?? 'Hamba Allah',
+                    $payment->customer_email,
+                    $payment->customer_phone,
+                    $zakatType,
+                    $zakatDetail,
+                    $payment->payment_method,
+                    $amount,
+                    $uniqueCode,
+                    $totalAmount,
+                    $payment->status,
+                ], ';');
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 
     #[Layout('layouts.admin')]
