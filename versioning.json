@@ -1,6 +1,6 @@
 {
-  "version": "1.26.0",
+  "version": "1.27.0",
   "aiDecision": "MINOR",
-  "aiReason": "Perubahan ini memperkenalkan fitur baru yaitu sistem komisi (ujroh) bagi fundraiser yang kini mencakup transaksi zakat, penambahan skema database baru (fundraiser_id), serta perbaikan logika internal pada manajemen penyaluran zakat tanpa merusak fungsi yang sudah ada.",
-  "updatedAt": "2026-03-10T21:31:47.101Z"
+  "aiReason": "Penambahan fitur baru berupa rincian akumulasi dana berdasarkan jenis zakat (Fitrah dan Maal) serta penambahan fungsi baru pada komponen Livewire yang bersifat backward compatible.",
+  "updatedAt": "2026-03-10T21:46:10.331Z"
 }

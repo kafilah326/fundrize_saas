@@ -309,6 +309,18 @@ class ZakatList extends Component
         $this->confirmingDistributionDeletion = true;
     }
 
+    public function closeDistributionModal()
+    {
+        $this->showDistributionModal = false;
+        $this->resetDistributionForm();
+    }
+
+    public function closeDeleteModal()
+    {
+        $this->confirmingDistributionDeletion = false;
+        $this->resetDistributionForm();
+    }
+
     public function deleteDistribution()
     {
         ZakatDistribution::findOrFail($this->distributionId)->delete();

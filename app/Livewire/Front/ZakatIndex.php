@@ -60,6 +60,10 @@ class ZakatIndex extends Component
 
     public $totalDistributed = 0;
 
+    public $totalFitrah = 0;
+
+    public $totalMaal = 0;
+
     public $zakatDistributions;
 
     public function mount()
@@ -84,6 +88,14 @@ class ZakatIndex extends Component
         $this->totalTransactions = (clone $baseQuery)->count();
         $this->zakatDistributions = ZakatDistribution::latest()->limit(12)->get();
         $this->totalDistributed = ZakatDistribution::sum('amount');
+
+        $this->totalFitrah = (clone $baseQuery)->whereHas('zakatTransaction', function ($q) {
+            $q->where('zakat_type', 'fitrah');
+        })->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
+
+        $this->totalMaal = (clone $baseQuery)->whereHas('zakatTransaction', function ($q) {
+            $q->where('zakat_type', 'maal');
+        })->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
     }
 
     public function setTab(string $tab): void
