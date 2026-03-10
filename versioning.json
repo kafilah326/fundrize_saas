@@ -1,6 +1,6 @@
 {
-  "version": "1.27.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur baru berupa rincian akumulasi dana berdasarkan jenis zakat (Fitrah dan Maal) serta penambahan fungsi baru pada komponen Livewire yang bersifat backward compatible.",
-  "updatedAt": "2026-03-10T21:46:10.331Z"
+  "version": "1.27.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini merupakan penyesuaian logika internal pada kueri data untuk menyaring hasil yang ditampilkan (refinement) tanpa mengubah struktur API atau menambahkan fitur fungsional yang besar.",
+  "updatedAt": "2026-03-10T21:48:30.743Z"
 }

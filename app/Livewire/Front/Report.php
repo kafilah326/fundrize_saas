@@ -27,7 +27,9 @@ class Report extends Component
     {
         // Set default period to current month/year
         $this->period = now()->format('F Y');
-        $this->akadTypes = AkadType::where('is_active', true)->get();
+        $this->akadTypes = AkadType::where('is_active', true)
+            ->whereNotIn('slug', ['zakat', 'qurban'])
+            ->get();
     }
 
     public function setFilter($filter)
