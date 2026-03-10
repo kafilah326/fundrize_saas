@@ -2,19 +2,26 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\AppSetting;
+use Livewire\WithFileUploads;
 use App\Models\AdminNotification;
 use App\Models\Payment;
 use App\Models\ZakatTransaction;
+use App\Models\ZakatDistribution;
+
 use App\Services\WhatsAppNotificationService;
 use App\Services\MetaConversionService;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 
 class ZakatList extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $search = '';
     public $perPage = 10;
@@ -29,6 +36,19 @@ class ZakatList extends Component
     // Settings
     public $zakat_fitrah_price;
     public $zakat_gold_price_per_gram;
+    public $zakatBannerImage;
+    public $existingZakatBanner;
+
+    // Distribution CRUD
+    public $showDistributionModal = false;
+    public $confirmingDistributionDeletion = false;
+    public $distributionId;
+    public $distributionTitle;
+    public $distributionAmount;
+    public $distributionDescription;
+    public $distributionDate;
+
+
 
     // Detail Modal
     public $isOpen = false;
@@ -45,8 +65,9 @@ class ZakatList extends Component
 
     public function mount()
     {
-        $this->zakat_fitrah_price = \App\Models\AppSetting::get('zakat_fitrah_price', 45000);
-        $this->zakat_gold_price_per_gram = \App\Models\AppSetting::get('zakat_gold_price_per_gram', 1500000);
+        $this->zakat_fitrah_price = AppSetting::get('zakat_fitrah_price', 45000);
+        $this->zakat_gold_price_per_gram = AppSetting::get('zakat_gold_price_per_gram', 1500000);
+        $this->existingZakatBanner = AppSetting::get('zakat_banner_image');
     }
 
     public function resetFilters()
@@ -59,14 +80,59 @@ class ZakatList extends Component
         $this->activeTab = $tab;
     }
 
+    public function deleteZakatBanner()
+    {
+        if (!$this->existingZakatBanner) return;
+
+        Storage::disk('public')->delete($this->existingZakatBanner);
+        AppSetting::where('key', 'zakat_banner_image')->delete();
+        \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_banner_image');
+
+        $this->existingZakatBanner = null;
+        $this->zakatBannerImage = null;
+
+        session()->flash('success', 'Banner zakat berhasil dihapus.');
+    }
+
     public function saveZakat()
     {
         $this->validate([
             'zakat_fitrah_price'        => 'required|numeric|min:0',
             'zakat_gold_price_per_gram' => 'required|numeric|min:0',
+            'zakatBannerImage'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
-        \App\Models\AppSetting::updateOrCreate(
+        if ($this->zakatBannerImage) {
+            Storage::disk('public')->makeDirectory('zakat');
+            $manager = new ImageManager(new GdDriver());
+            $image = $manager->read($this->zakatBannerImage->getRealPath());
+            $processed = $image->cover(1200, 630)->toJpeg(85);
+
+            $filename = 'zakat-banner-' . time() . '.jpg';
+            $path = 'zakat/' . $filename;
+
+            if ($this->existingZakatBanner) {
+                Storage::disk('public')->delete($this->existingZakatBanner);
+            }
+
+            Storage::disk('public')->put($path, (string) $processed);
+            AppSetting::updateOrCreate(
+                ['key' => 'zakat_banner_image'],
+                [
+                    'value'       => $path,
+                    'group'       => 'zakat',
+                    'type'        => 'text',
+                    'label'       => 'Banner Halaman Zakat',
+                    'description' => 'Gambar banner yang ditampilkan di halaman depan zakat',
+                ]
+            );
+            \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_banner_image');
+
+            $this->zakatBannerImage = null;
+            $this->existingZakatBanner = $path;
+        }
+
+        AppSetting::updateOrCreate(
             ['key' => 'zakat_fitrah_price'],
             [
                 'value'       => $this->zakat_fitrah_price,
@@ -78,7 +144,7 @@ class ZakatList extends Component
         );
         \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_fitrah_price');
 
-        \App\Models\AppSetting::updateOrCreate(
+        AppSetting::updateOrCreate(
             ['key' => 'zakat_gold_price_per_gram'],
             [
                 'value'       => $this->zakat_gold_price_per_gram,
@@ -170,6 +236,80 @@ class ZakatList extends Component
         $this->closeModal();
     }
 
+
+    public function createDistribution()
+    {
+        $this->resetDistributionForm();
+        $this->showDistributionModal = true;
+    }
+
+    public function editDistribution($id)
+    {
+        $this->resetDistributionForm();
+        $distribution = ZakatDistribution::findOrFail($id);
+        
+        $this->distributionId = $distribution->id;
+        $this->distributionTitle = $distribution->title;
+        $this->distributionAmount = $distribution->amount;
+        $this->distributionDescription = $distribution->description;
+        $this->distributionDate = $distribution->date->format('Y-m-d');
+        
+        $this->showDistributionModal = true;
+    }
+
+    public function storeDistribution()
+    {
+        $this->validate([
+            'distributionTitle'       => 'required|string|max:255',
+            'distributionAmount'      => 'required|numeric|min:1',
+            'distributionDescription' => 'required',
+            'distributionDate'        => 'required|date',
+        ]);
+
+        ZakatDistribution::updateOrCreate(
+            ['id' => $this->distributionId],
+            [
+                'title'       => $this->distributionTitle,
+                'amount'      => $this->distributionAmount,
+                'description' => $this->distributionDescription,
+                'date'        => $this->distributionDate,
+            ]
+        );
+
+        session()->flash('success', $this->distributionId ? 'Penyaluran zakat berhasil diperbarui.' : 'Penyaluran zakat berhasil ditambahkan.');
+        
+        $this->showDistributionModal = false;
+        $this->resetDistributionForm();
+    }
+
+    public function confirmDeleteDistribution($id)
+    {
+        $this->distributionId = $id;
+        $this->confirmingDistributionDeletion = true;
+    }
+
+    public function deleteDistribution()
+    {
+        ZakatDistribution::findOrFail($this->distributionId)->delete();
+        
+        session()->flash('success', 'Penyaluran zakat berhasil dihapus.');
+        
+        $this->confirmingDistributionDeletion = false;
+        $this->resetDistributionForm();
+    }
+
+    public function resetDistributionForm()
+    {
+        $this->reset([
+            'distributionId',
+            'distributionTitle',
+            'distributionAmount',
+            'distributionDescription',
+            'distributionDate',
+        ]);
+        $this->resetValidation();
+    }
+
     #[Layout('layouts.admin')]
     public function render()
     {
@@ -203,11 +343,14 @@ class ZakatList extends Component
             ->latest()
             ->paginate($this->perPage);
 
+        $distributions = ZakatDistribution::latest()->paginate($this->perPage, ['*'], 'distributionPage');
+
         return view('livewire.admin.zakat-list', [
             'payments'      => $payments,
             'statToday'     => $statToday,
             'statThisMonth' => $statThisMonth,
             'statTotal'     => $statTotal,
+            'distributions' => $distributions,
         ]);
     }
 }

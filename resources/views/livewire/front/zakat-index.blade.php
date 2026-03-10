@@ -28,17 +28,24 @@
     </x-page-header>
 
     <main class="pb-32">
+        @if (isset($zakatBannerPath) && $zakatBannerPath)
+            <div class="w-full">
+                <img src="{{ Storage::url($zakatBannerPath) }}" alt="Banner Zakat" class="w-full object-cover"
+                    loading="lazy">
+            </div>
+        @endif
+
         {{-- Tabs --}}
         <section class="bg-white px-4 py-4">
             <div class="flex bg-gray-100 rounded-xl p-1">
                 <button wire:click="setTab('fitrah')"
-                    class="flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all
-                           {{ $activeTab === 'fitrah' ? 'bg-white text-dark shadow-sm' : 'text-gray-600' }}">
+                    class="flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all"
+                    :class="$wire.activeTab === 'fitrah' ? 'bg-white text-dark shadow-sm' : 'text-gray-600'">
                     Zakat Fitrah
                 </button>
                 <button wire:click="setTab('maal')"
-                    class="flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all
-                           {{ $activeTab === 'maal' ? 'bg-white text-dark shadow-sm' : 'text-gray-600' }}">
+                    class="flex-1 py-2.5 px-4 rounded-lg text-sm font-semibold transition-all"
+                    :class="$wire.activeTab === 'maal' ? 'bg-white text-dark shadow-sm' : 'text-gray-600'">
                     Zakat Mal
                 </button>
             </div>
@@ -299,7 +306,7 @@
                         </p>
                         <p class="text-[10px] text-gray-500 mt-1">
                             Artinya: "Aku niat mengeluarkan zakat fitrah untuk diriku dan seluruh orang yang nafkahnya
-                            menjadi tanggunganku, fardu karena Allah Ta’âlâ.”
+                            menjadi tanggunganku, fardu karena Allah Ta'âlâ."
                         </p>
                     </div>
 
@@ -333,6 +340,59 @@
                 </div>
             </div>
         </section>
+
+        {{-- Perolehan Zakat (styled like distribution-section in program-detail) --}}
+        <section class="bg-white px-4 py-4 mt-4" x-data="{ expanded: false }">
+            <h3 class="text-base font-bold text-dark mb-3">Perolehan Zakat</h3>
+
+            <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                <span class="text-sm text-gray-600">Dana Terkumpul</span>
+                <span class="text-sm font-bold text-dark">Rp {{ number_format($totalCollected, 0, ',', '.') }}</span>
+            </div>
+
+            <div x-show="expanded" x-collapse>
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span class="text-sm text-gray-600">Dana Tersalurkan</span>
+                    <span class="text-sm font-bold text-dark">Rp
+                        {{ number_format($totalDistributed, 0, ',', '.') }}</span>
+                </div>
+
+                <div class="flex items-center justify-between py-2 border-b border-gray-100">
+                    <span class="text-sm text-gray-600">Dana Sisa</span>
+                    <span class="text-sm font-bold text-primary">Rp
+                        {{ number_format($totalCollected - $totalDistributed, 0, ',', '.') }}</span>
+                </div>
+
+                @if ($zakatDistributions && $zakatDistributions->isNotEmpty())
+                    <div class="space-y-3 mt-3">
+                        @foreach ($zakatDistributions as $dist)
+                            <div class="p-3 bg-gray-50 rounded-lg">
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-xs font-bold text-dark">{{ $dist->title }}</span>
+                                    <span
+                                        class="text-xs text-gray-500">{{ $dist->distribution_date->translatedFormat('d M Y') }}</span>
+                                </div>
+                                @if ($dist->description)
+                                    <div class="text-xs text-gray-600 rich-text-content mb-2">
+                                        {!! $dist->description !!}
+                                    </div>
+                                @endif
+                                <div class="text-xs font-bold text-primary">
+                                    Disalurkan: Rp {{ number_format($dist->amount, 0, ',', '.') }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+
+            <button @click="expanded = !expanded"
+                class="text-primary font-semibold text-sm w-full py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors mt-2 flex items-center justify-center gap-1">
+                <span x-text="expanded ? 'Tutup' : 'Selengkapnya'"></span>
+                <i class="fa-solid text-xs" :class="expanded ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+            </button>
+        </section>
+
     </main>
 
     {{-- Fixed Bottom CTA --}}

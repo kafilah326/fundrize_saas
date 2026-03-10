@@ -12,6 +12,10 @@
             class="px-6 py-3 text-sm font-bold border-b-2 transition-all {{ $activeTab === 'settings' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
             <i class="fa-solid fa-gears mr-2"></i> Pengaturan
         </button>
+        <button wire:click="setTab('laporan')"
+            class="px-6 py-3 text-sm font-bold border-b-2 transition-all {{ $activeTab === 'laporan' ? 'border-primary text-primary' : 'border-transparent text-gray-500 hover:text-gray-700' }}">
+            <i class="fa-solid fa-hand-holding-heart mr-2"></i> Laporan Penyaluran
+        </button>
     </div>
 
     @if ($activeTab === 'transactions')
@@ -295,6 +299,53 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Banner Upload Section --}}
+                    <div class="bg-blue-50/50 rounded-2xl border border-blue-100 p-6">
+                        <div class="flex items-center mb-6">
+                            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-image text-lg"></i>
+                            </span>
+                            <h3 class="text-lg font-bold text-blue-900">Banner Halaman Zakat</h3>
+                        </div>
+
+                        <div class="space-y-6">
+                            @if($existingZakatBanner)
+                                <div class="relative w-full max-w-2xl rounded-2xl overflow-hidden border-4 border-white shadow-lg group">
+                                    <img src="{{ Storage::url($existingZakatBanner) }}" class="w-full h-auto object-cover" alt="Banner Zakat">
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <button type="button" wire:click="deleteZakatBanner" wire:confirm="Hapus banner ini?" class="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors">
+                                            <i class="fa-solid fa-trash-can text-xl"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div x-data="{ preview: null }" class="space-y-4">
+                                <label class="block">
+                                    <span class="text-sm font-bold text-gray-700 block mb-2">Unggah Banner Baru</span>
+                                    <div class="flex items-center justify-center w-full">
+                                        <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-blue-300 rounded-2xl cursor-pointer bg-blue-50/30 hover:bg-blue-50 transition-colors relative overflow-hidden">
+                                            <template x-if="!preview">
+                                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-400 mb-3"></i>
+                                                    <p class="mb-2 text-sm text-blue-600 font-semibold">Klik untuk unggah banner</p>
+                                                    <p class="text-xs text-blue-400 font-medium">PNG, JPG (Rekomendasi: 1200x400px)</p>
+                                                </div>
+                                            </template>
+                                            <template x-if="preview">
+                                                <img :src="preview" class="absolute inset-0 w-full h-full object-cover">
+                                            </template>
+                                            <input type="file" wire:model="zakatBannerImage" class="hidden" accept="image/*" @change="const file = $event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => { preview = e.target.result }; reader.readAsDataURL(file); }">
+                                        </label>
+                                    </div>
+                                </label>
+                                @error('zakatBannerImage') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                <div wire:loading wire:target="zakatBannerImage" class="text-xs text-blue-600 font-bold animate-pulse">
+                                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> Sedang mengunggah...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-8 flex justify-end">
@@ -304,6 +355,76 @@
                     </button>
                 </div>
             </form>
+        </div>
+    @elseif($activeTab === 'laporan')
+        {{-- Distribution Tab --}}
+        <div class="bg-white rounded-2xl shadow-soft border border-gray-100 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50/50">
+                <div>
+                    <h3 class="text-lg font-bold text-gray-900">Laporan Penyaluran Zakat</h3>
+                    <p class="text-xs text-gray-500">Kelola data penyaluran dana zakat kepada mustahik</p>
+                </div>
+                <button wire:click="openDistributionModal"
+                    class="bg-primary hover:bg-primary-hover text-white px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center gap-2">
+                    <i class="fa-solid fa-plus"></i> Tambah Penyaluran
+                </button>
+            </div>
+
+            @if (session()->has('success') && $activeTab === 'laporan')
+                <div class="mx-4 mt-4 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 text-green-700">
+                    <i class="fa-solid fa-circle-check text-xl"></i>
+                    <p class="text-sm">{{ session('success') }}</p>
+                </div>
+            @endif
+
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-100">
+                    <thead class="bg-gray-50/80">
+                        <tr>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Judul Laporan</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Tanggal</th>
+                            <th class="px-6 py-4 text-left text-xs font-semibold text-gray-500 uppercase">Nominal</th>
+                            <th class="px-6 py-4 text-right text-xs font-semibold text-gray-500 uppercase">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-100">
+                        @forelse($distributions as $dist)
+                            <tr class="hover:bg-orange-50/30 transition-colors">
+                                <td class="px-6 py-4">
+                                    <p class="text-sm font-bold text-gray-900">{{ $dist->title }}</p>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                                    {{ $dist->distribution_date->translatedFormat('d M Y') }}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <p class="text-sm font-bold text-primary">Rp {{ number_format($dist->amount, 0, ',', '.') }}</p>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <button wire:click="editDistribution({{ $dist->id }})" class="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors" title="Edit">
+                                            <i class="fa-solid fa-pen-to-square"></i>
+                                        </button>
+                                        <button wire:click="confirmDeleteDistribution({{ $dist->id }})" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors" title="Hapus">
+                                            <i class="fa-solid fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-6 py-12 text-center text-gray-500 italic">
+                                    Belum ada data penyaluran.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            @if($distributions->hasPages())
+                <div class="p-4 border-t border-gray-100">
+                    {{ $distributions->links() }}
+                </div>
+            @endif
         </div>
     @endif
 
@@ -410,4 +531,89 @@
             </div>
         </div>
     </div>
-</div>
+
+    {{-- Distribution Create/Edit Modal --}}
+    <div x-data="{ show: $wire.entangle('isDistributionModalOpen') }" x-show="show" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display:none;">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="show = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-gray-100 relative">
+                <form wire:submit.prevent="saveDistribution">
+                    <div class="p-6">
+                        <div class="flex justify-between items-center mb-5">
+                            <h3 class="text-xl font-bold text-gray-900">{{ $distributionId ? 'Edit' : 'Tambah' }} Penyaluran Zakat</h3>
+                            <button type="button" wire:click="closeDistributionModal" class="text-gray-400 hover:text-gray-600">
+                                <i class="fa-solid fa-xmark text-xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-1">Judul Laporan</label>
+                                <input wire:model="distributionTitle" type="text" class="block w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-sm" placeholder="Contoh: Penyaluran Zakat Fitrah 1445H">
+                                @error('distributionTitle') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tanggal Penyaluran</label>
+                                    <input wire:model="distributionDate" type="date" class="block w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-sm">
+                                    @error('distributionDate') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nominal Disalurkan (Rp)</label>
+                                    <input wire:model="distributionAmount" type="number" class="block w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-sm" placeholder="1000000">
+                                    @error('distributionAmount') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-sm font-semibold text-gray-700 mb-2">Deskripsi / Laporan Detail</label>
+                                <div wire:ignore>
+                                    <div x-data="quillEditor($wire.entangle('distributionDescription').live)">
+                                        <div x-ref="quillEditor" class="min-h-[200px]"></div>
+                                    </div>
+                                </div>
+                                @error('distributionDescription') <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 flex justify-end gap-3 border-t border-gray-100">
+                        <button type="button" wire:click="closeDistributionModal" class="bg-white border border-gray-300 text-gray-700 font-semibold py-2 px-5 rounded-xl hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button type="submit" class="bg-primary hover:bg-primary-hover text-white font-semibold py-2 px-5 rounded-xl flex items-center gap-2 transition-colors">
+                            <i class="fa-solid fa-save"></i> Simpan Penyaluran
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {{-- Delete Confirmation Modal --}}
+    <div x-data="{ show: $wire.entangle('isDeleteModalOpen') }" x-show="show" x-cloak class="fixed inset-0 z-50 overflow-y-auto" style="display:none;">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm" @click="show = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-gray-100 relative">
+                <div class="p-6 text-center">
+                    <div class="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-trash-can text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Hapus Laporan?</h3>
+                    <p class="text-gray-500 mb-6">Apakah Anda yakin ingin menghapus laporan penyaluran ini? Tindakan ini tidak dapat dibatalkan.</p>
+                    <div class="flex justify-center gap-3">
+                        <button type="button" wire:click="closeDeleteModal" class="bg-white border border-gray-300 text-gray-700 font-semibold py-2.5 px-6 rounded-xl hover:bg-gray-50 transition-colors">
+                            Batal
+                        </button>
+                        <button type="button" wire:click="deleteDistribution" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors">
+                            Ya, Hapus Laporan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Distribution Create/Edit Modal --}}
