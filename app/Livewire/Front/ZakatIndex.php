@@ -161,14 +161,21 @@ class ZakatIndex extends Component
         $this->redirect(route('payment.method'));
     }
 
-    #[Layout('layouts.front')]
-    #[Title('Tunaikan Zakat')]
     public function render()
     {
-        return view('livewire.front.zakat-index', [
-            'metaImage' => $this->zakatBannerPath 
-                ? Storage::disk('public')->url($this->zakatBannerPath) 
-                : null,
-        ]);
+        $finalImage = $this->zakatBannerPath 
+            ? Storage::disk('public')->url($this->zakatBannerPath) 
+            : null;
+
+        if ($finalImage && !str_starts_with($finalImage, 'http')) {
+            $finalImage = url($finalImage);
+        }
+
+        return view('livewire.front.zakat-index')
+            ->layout('layouts.front', [
+                'title' => 'Tunaikan Zakat',
+                'metaImage' => $finalImage,
+                'metaDescription' => 'Hitung dan bayar zakat Anda dalam satu langkah bersama kami.',
+            ]);
     }
 }
