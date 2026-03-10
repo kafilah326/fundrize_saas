@@ -295,6 +295,53 @@
                             </div>
                         </div>
                     </div>
+                    {{-- Banner Upload Section --}}
+                    <div class="bg-blue-50/50 rounded-2xl border border-blue-100 p-6">
+                        <div class="flex items-center mb-6">
+                            <span class="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-3">
+                                <i class="fa-solid fa-image text-lg"></i>
+                            </span>
+                            <h3 class="text-lg font-bold text-blue-900">Banner Halaman Zakat</h3>
+                        </div>
+
+                        <div class="space-y-6">
+                            @if($existingZakatBanner)
+                                <div class="relative w-full max-w-2xl rounded-2xl overflow-hidden border-4 border-white shadow-lg group">
+                                    <img src="{{ Storage::url($existingZakatBanner) }}" class="w-full h-auto object-cover" alt="Banner Zakat">
+                                    <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <button type="button" wire:click="deleteZakatBanner" wire:confirm="Hapus banner ini?" class="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors">
+                                            <i class="fa-solid fa-trash-can text-xl"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            @endif
+
+                            <div x-data="{ preview: null }" class="space-y-4">
+                                <label class="block">
+                                    <span class="text-sm font-bold text-gray-700 block mb-2">Unggah Banner Baru</span>
+                                    <div class="flex items-center justify-center w-full">
+                                        <label class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-blue-300 rounded-2xl cursor-pointer bg-blue-50/30 hover:bg-blue-50 transition-colors relative overflow-hidden">
+                                            <template x-if="!preview">
+                                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-blue-400 mb-3"></i>
+                                                    <p class="mb-2 text-sm text-blue-600 font-semibold">Klik untuk unggah banner</p>
+                                                    <p class="text-xs text-blue-400 font-medium">PNG, JPG (Rekomendasi: 1200x400px)</p>
+                                                </div>
+                                            </template>
+                                            <template x-if="preview">
+                                                <img :src="preview" class="absolute inset-0 w-full h-full object-cover">
+                                            </template>
+                                            <input type="file" wire:model="zakatBannerImage" class="hidden" accept="image/*" @change="const file = $event.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (e) => { preview = e.target.result }; reader.readAsDataURL(file); }">
+                                        </label>
+                                    </div>
+                                </label>
+                                @error('zakatBannerImage') <span class="text-red-500 text-xs">{{ $message }}</span> @enderror
+                                <div wire:loading wire:target="zakatBannerImage" class="text-xs text-blue-600 font-bold animate-pulse">
+                                    <i class="fa-solid fa-spinner fa-spin mr-1"></i> Sedang mengunggah...
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-8 flex justify-end">

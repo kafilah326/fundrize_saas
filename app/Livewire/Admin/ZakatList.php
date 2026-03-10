@@ -2,6 +2,8 @@
 
 namespace App\Livewire\Admin;
 
+use App\Models\AppSetting;
+use Livewire\WithFileUploads;
 use App\Models\AdminNotification;
 use App\Models\Payment;
 use App\Models\ZakatTransaction;
@@ -11,10 +13,13 @@ use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver as GdDriver;
 
 class ZakatList extends Component
 {
-    use WithPagination;
+    use WithPagination, WithFileUploads;
 
     public $search = '';
     public $perPage = 10;
@@ -29,6 +34,9 @@ class ZakatList extends Component
     // Settings
     public $zakat_fitrah_price;
     public $zakat_gold_price_per_gram;
+    public $zakatBannerImage;
+    public $existingZakatBanner;
+
 
     // Detail Modal
     public $isOpen = false;
@@ -45,8 +53,9 @@ class ZakatList extends Component
 
     public function mount()
     {
-        $this->zakat_fitrah_price = \App\Models\AppSetting::get('zakat_fitrah_price', 45000);
-        $this->zakat_gold_price_per_gram = \App\Models\AppSetting::get('zakat_gold_price_per_gram', 1500000);
+        $this->zakat_fitrah_price = AppSetting::get('zakat_fitrah_price', 45000);
+        $this->zakat_gold_price_per_gram = AppSetting::get('zakat_gold_price_per_gram', 1500000);
+        $this->existingZakatBanner = AppSetting::get('zakat_banner_image');
     }
 
     public function resetFilters()
@@ -59,14 +68,59 @@ class ZakatList extends Component
         $this->activeTab = $tab;
     }
 
+    public function deleteZakatBanner()
+    {
+        if (!$this->existingZakatBanner) return;
+
+        Storage::disk('public')->delete($this->existingZakatBanner);
+        AppSetting::where('key', 'zakat_banner_image')->delete();
+        \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_banner_image');
+
+        $this->existingZakatBanner = null;
+        $this->zakatBannerImage = null;
+
+        session()->flash('success', 'Banner zakat berhasil dihapus.');
+    }
+
     public function saveZakat()
     {
         $this->validate([
             'zakat_fitrah_price'        => 'required|numeric|min:0',
             'zakat_gold_price_per_gram' => 'required|numeric|min:0',
+            'zakatBannerImage'          => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
         ]);
 
-        \App\Models\AppSetting::updateOrCreate(
+        if ($this->zakatBannerImage) {
+            Storage::disk('public')->makeDirectory('zakat');
+            $manager = new ImageManager(new GdDriver());
+            $image = $manager->read($this->zakatBannerImage->getRealPath());
+            $processed = $image->cover(1200, 630)->toJpeg(85);
+
+            $filename = 'zakat-banner-' . time() . '.jpg';
+            $path = 'zakat/' . $filename;
+
+            if ($this->existingZakatBanner) {
+                Storage::disk('public')->delete($this->existingZakatBanner);
+            }
+
+            Storage::disk('public')->put($path, (string) $processed);
+            AppSetting::updateOrCreate(
+                ['key' => 'zakat_banner_image'],
+                [
+                    'value'       => $path,
+                    'group'       => 'zakat',
+                    'type'        => 'text',
+                    'label'       => 'Banner Halaman Zakat',
+                    'description' => 'Gambar banner yang ditampilkan di halaman depan zakat',
+                ]
+            );
+            \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_banner_image');
+
+            $this->zakatBannerImage = null;
+            $this->existingZakatBanner = $path;
+        }
+
+        AppSetting::updateOrCreate(
             ['key' => 'zakat_fitrah_price'],
             [
                 'value'       => $this->zakat_fitrah_price,
@@ -78,7 +132,7 @@ class ZakatList extends Component
         );
         \Illuminate\Support\Facades\Cache::forget('app_setting_zakat_fitrah_price');
 
-        \App\Models\AppSetting::updateOrCreate(
+        AppSetting::updateOrCreate(
             ['key' => 'zakat_gold_price_per_gram'],
             [
                 'value'       => $this->zakat_gold_price_per_gram,
