@@ -6,6 +6,9 @@ use App\Models\AppSetting;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Illuminate\Support\Facades\Storage;
+use App\Models\ZakatDistribution;
+use Illuminate\Support\Facades\DB;
 
 class ZakatIndex extends Component
 {
@@ -38,6 +41,12 @@ class ZakatIndex extends Component
     public $calculatedZakat = 0;
     public $totalHarta = 0;
     public $zakatStatus = 'belum'; // 'belum' or 'wajib'
+    public $zakatBannerPath;
+    public $totalCollected = 0;
+    public $totalThisMonth = 0;
+    public $totalTransactions = 0;
+    public $totalDistributed = 0;
+    public $zakatDistributions;
 
     public function mount()
     {
@@ -53,6 +62,14 @@ class ZakatIndex extends Component
         }
 
         $this->calculate();
+        $this->zakatBannerPath = AppSetting::get('zakat_banner_image');
+
+        $baseQuery = \App\Models\Payment::where('transaction_type', 'zakat')->where('status', 'paid');
+        $this->totalCollected   = (clone $baseQuery)->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
+        $this->totalThisMonth   = (clone $baseQuery)->whereMonth('paid_at', now()->month)->whereYear('paid_at', now()->year)->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
+        $this->totalTransactions = (clone $baseQuery)->count();
+        $this->zakatDistributions = ZakatDistribution::latest()->limit(12)->get();
+        $this->totalDistributed  = ZakatDistribution::sum('amount');
     }
 
     public function setTab(string $tab): void
@@ -148,6 +165,10 @@ class ZakatIndex extends Component
     #[Title('Tunaikan Zakat')]
     public function render()
     {
-        return view('livewire.front.zakat-index');
+        return view('livewire.front.zakat-index', [
+            'metaImage' => $this->zakatBannerPath 
+                ? Storage::disk('public')->url($this->zakatBannerPath) 
+                : null,
+        ]);
     }
 }

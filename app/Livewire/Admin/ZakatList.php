@@ -7,6 +7,8 @@ use Livewire\WithFileUploads;
 use App\Models\AdminNotification;
 use App\Models\Payment;
 use App\Models\ZakatTransaction;
+use App\Models\ZakatDistribution;
+
 use App\Services\WhatsAppNotificationService;
 use App\Services\MetaConversionService;
 use Livewire\Attributes\Layout;
@@ -36,6 +38,16 @@ class ZakatList extends Component
     public $zakat_gold_price_per_gram;
     public $zakatBannerImage;
     public $existingZakatBanner;
+
+    // Distribution CRUD
+    public $showDistributionModal = false;
+    public $confirmingDistributionDeletion = false;
+    public $distributionId;
+    public $distributionTitle;
+    public $distributionAmount;
+    public $distributionDescription;
+    public $distributionDate;
+
 
 
     // Detail Modal
@@ -224,6 +236,80 @@ class ZakatList extends Component
         $this->closeModal();
     }
 
+
+    public function createDistribution()
+    {
+        $this->resetDistributionForm();
+        $this->showDistributionModal = true;
+    }
+
+    public function editDistribution($id)
+    {
+        $this->resetDistributionForm();
+        $distribution = ZakatDistribution::findOrFail($id);
+        
+        $this->distributionId = $distribution->id;
+        $this->distributionTitle = $distribution->title;
+        $this->distributionAmount = $distribution->amount;
+        $this->distributionDescription = $distribution->description;
+        $this->distributionDate = $distribution->date->format('Y-m-d');
+        
+        $this->showDistributionModal = true;
+    }
+
+    public function storeDistribution()
+    {
+        $this->validate([
+            'distributionTitle'       => 'required|string|max:255',
+            'distributionAmount'      => 'required|numeric|min:1',
+            'distributionDescription' => 'required',
+            'distributionDate'        => 'required|date',
+        ]);
+
+        ZakatDistribution::updateOrCreate(
+            ['id' => $this->distributionId],
+            [
+                'title'       => $this->distributionTitle,
+                'amount'      => $this->distributionAmount,
+                'description' => $this->distributionDescription,
+                'date'        => $this->distributionDate,
+            ]
+        );
+
+        session()->flash('success', $this->distributionId ? 'Penyaluran zakat berhasil diperbarui.' : 'Penyaluran zakat berhasil ditambahkan.');
+        
+        $this->showDistributionModal = false;
+        $this->resetDistributionForm();
+    }
+
+    public function confirmDeleteDistribution($id)
+    {
+        $this->distributionId = $id;
+        $this->confirmingDistributionDeletion = true;
+    }
+
+    public function deleteDistribution()
+    {
+        ZakatDistribution::findOrFail($this->distributionId)->delete();
+        
+        session()->flash('success', 'Penyaluran zakat berhasil dihapus.');
+        
+        $this->confirmingDistributionDeletion = false;
+        $this->resetDistributionForm();
+    }
+
+    public function resetDistributionForm()
+    {
+        $this->reset([
+            'distributionId',
+            'distributionTitle',
+            'distributionAmount',
+            'distributionDescription',
+            'distributionDate',
+        ]);
+        $this->resetValidation();
+    }
+
     #[Layout('layouts.admin')]
     public function render()
     {
@@ -257,11 +343,14 @@ class ZakatList extends Component
             ->latest()
             ->paginate($this->perPage);
 
+        $distributions = ZakatDistribution::latest()->paginate($this->perPage, ['*'], 'distributionPage');
+
         return view('livewire.admin.zakat-list', [
             'payments'      => $payments,
             'statToday'     => $statToday,
             'statThisMonth' => $statThisMonth,
             'statTotal'     => $statTotal,
+            'distributions' => $distributions,
         ]);
     }
 }
