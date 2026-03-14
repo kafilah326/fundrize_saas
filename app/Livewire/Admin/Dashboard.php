@@ -13,10 +13,20 @@ class Dashboard extends Component
 {
     public function render()
     {
-        // Stats
+        // Stats (Total Dana)
         $totalDonations = Payment::where('status', 'paid')->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
-        $activePrograms = Program::where('is_active', true)->count();
-        $totalDonors = User::where('role', 'user')->count();
+        
+        $totalDanaProgram = Payment::where('status', 'paid')
+            ->where('transaction_type', 'program')
+            ->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
+            
+        $totalDanaZakat = Payment::where('status', 'paid')
+            ->where('transaction_type', 'zakat')
+            ->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
+            
+        $totalDanaQurban = Payment::where('status', 'paid')
+            ->whereIn('transaction_type', ['qurban_langsung', 'qurban_tabungan'])
+            ->sum(DB::raw('amount + COALESCE(unique_code, 0)'));
 
         // Bar Chart Data (Transaction Totals from 1st of current month to today)
         $startOfMonth = Carbon::now()->startOfMonth();
@@ -64,8 +74,9 @@ class Dashboard extends Component
 
         return view('livewire.admin.dashboard', [
             'totalDonations' => $totalDonations,
-            'activePrograms' => $activePrograms,
-            'totalDonors' => $totalDonors,
+            'totalDanaProgram' => $totalDanaProgram,
+            'totalDanaZakat' => $totalDanaZakat,
+            'totalDanaQurban' => $totalDanaQurban,
             'chartData' => $chartData,
             'todayTransactions' => $todayTransactions,
         ])->layout('layouts.admin');
