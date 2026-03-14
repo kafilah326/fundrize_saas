@@ -20,68 +20,78 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Total Donations -->
+    <div class="space-y-6">
+        <!-- Total Overall (Full Width) -->
         <div
             class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Total Donasi Terkumpul</p>
-                    <h3 class="text-2xl font-bold text-gray-800 group-hover:text-primary transition-colors">
+                    <p class="text-sm font-medium text-gray-500 mb-1">Total Dana Terkumpul (Keseluruhan)</p>
+                    <h3 class="text-3xl font-bold text-gray-800 group-hover:text-primary transition-colors">
                         Rp {{ number_format($totalDonations, 0, ',', '.') }}
                     </h3>
                 </div>
                 <div
-                    class="h-12 w-12 rounded-xl bg-green-50 text-green-500 flex items-center justify-center text-xl group-hover:bg-green-500 group-hover:text-white transition-all duration-300">
-                    <i class="fa-solid fa-money-bill-wave"></i>
+                    class="h-16 w-16 rounded-2xl bg-primary/10 text-primary flex items-center justify-center text-2xl group-hover:bg-primary group-hover:text-white transition-all duration-300">
+                    <i class="fa-solid fa-vault"></i>
                 </div>
             </div>
             <div class="mt-4 flex items-center text-xs text-gray-400">
-                <i class="fa-solid fa-arrow-up text-green-500 mr-1"></i>
-                <span class="text-green-500 font-medium mr-1">Updated</span>
-                <span>Just now</span>
+                <i class="fa-solid fa-clock-rotate-left text-primary mr-1"></i>
+                <span>Akumulasi dari Program, Zakat, dan Qurban</span>
             </div>
         </div>
 
-        <!-- Active Programs -->
-        <div
-            class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Program Aktif</p>
-                    <h3 class="text-2xl font-bold text-gray-800 group-hover:text-blue-500 transition-colors">
-                        {{ $activePrograms }} <span class="text-sm font-normal text-gray-400">Kampanye</span>
-                    </h3>
-                </div>
-                <div
-                    class="h-12 w-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-xl group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
-                    <i class="fa-solid fa-hand-holding-heart"></i>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Total Program -->
+            <div
+                class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 mb-1">Total Dana Program</p>
+                        <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-500 transition-colors">
+                            Rp {{ number_format($totalDanaProgram, 0, ',', '.') }}
+                        </h3>
+                    </div>
+                    <div
+                        class="h-10 w-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center text-lg group-hover:bg-blue-500 group-hover:text-white transition-all duration-300">
+                        <i class="fa-solid fa-hand-holding-heart"></i>
+                    </div>
                 </div>
             </div>
-            <div class="mt-4 flex items-center text-xs text-gray-400">
-                <span class="bg-blue-100 text-blue-600 px-2 py-0.5 rounded-md">Sedang berjalan</span>
-            </div>
-        </div>
 
-        <!-- Total Donors -->
-        <div
-            class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-sm font-medium text-gray-500 mb-1">Total Donatur</p>
-                    <h3 class="text-2xl font-bold text-gray-800 group-hover:text-orange-500 transition-colors">
-                        {{ $totalDonors }} <span class="text-sm font-normal text-gray-400">Orang</span>
-                    </h3>
-                </div>
-                <div
-                    class="h-12 w-12 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-xl group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
-                    <i class="fa-solid fa-users"></i>
+            <!-- Total Zakat -->
+            <div
+                class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 mb-1">Total Dana Zakat</p>
+                        <h3 class="text-xl font-bold text-gray-800 group-hover:text-emerald-500 transition-colors">
+                            Rp {{ number_format($totalDanaZakat, 0, ',', '.') }}
+                        </h3>
+                    </div>
+                    <div
+                        class="h-10 w-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center text-lg group-hover:bg-emerald-500 group-hover:text-white transition-all duration-300">
+                        <i class="fa-solid fa-mosque"></i>
+                    </div>
                 </div>
             </div>
-            <div class="mt-4 flex items-center text-xs text-gray-400">
-                <i class="fa-solid fa-user-plus text-orange-500 mr-1"></i>
-                <span class="text-orange-500 font-medium mr-1">New</span>
-                <span>Users registered</span>
+
+            <!-- Total Qurban -->
+            <div
+                class="bg-white rounded-2xl shadow-soft p-6 border border-gray-100 hover:-translate-y-1 hover:shadow-lg transition-all duration-300 group">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-medium text-gray-500 mb-1">Total Dana Qurban</p>
+                        <h3 class="text-xl font-bold text-gray-800 group-hover:text-orange-500 transition-colors">
+                            Rp {{ number_format($totalDanaQurban, 0, ',', '.') }}
+                        </h3>
+                    </div>
+                    <div
+                        class="h-10 w-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center text-lg group-hover:bg-orange-500 group-hover:text-white transition-all duration-300">
+                        <i class="fa-solid fa-cow"></i>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
