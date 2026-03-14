@@ -10,7 +10,9 @@ use App\Models\QurbanSavingsDeposit;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use App\Models\ZakatTransaction;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class FundraiserDashboard extends Component
@@ -20,6 +22,9 @@ class FundraiserDashboard extends Component
 
     // Stats
     public $totalDonationAmount = 0;
+    public $totalProgramAmount = 0;
+    public $totalZakatAmount = 0;
+    public $totalQurbanAmount = 0;
     public $totalDonationCount = 0;
     public $availableBalance = 0;
     public $totalVisits = 0;
@@ -69,28 +74,38 @@ class FundraiserDashboard extends Component
             $q->where('fundraiser_id', $fundraiserId);
         })->where('status', 'paid')->count();
 
-        $this->totalDonationCount = $donationsCount + $qurbanOrdersCount + $qurbanDepositsCount;
-
         $donationsAmount = Donation::where('fundraiser_id', $fundraiserId)->where('donations.status', 'success')
             ->join('payments', 'donations.transaction_id', '=', 'payments.external_id')
-            ->sum(\Illuminate\Support\Facades\DB::raw('donations.amount + COALESCE(payments.unique_code, 0)'));
+            ->sum(DB::raw('donations.amount + COALESCE(payments.unique_code, 0)'));
 
         $qurbanOrdersAmount = QurbanOrder::where('fundraiser_id', $fundraiserId)->where('qurban_orders.status', 'paid')
             ->join('payments', 'qurban_orders.transaction_id', '=', 'payments.external_id')
-            ->sum(\Illuminate\Support\Facades\DB::raw('qurban_orders.amount + COALESCE(payments.unique_code, 0)'));
+            ->sum(DB::raw('qurban_orders.amount + COALESCE(payments.unique_code, 0)'));
 
         $qurbanDepositsAmount = QurbanSavingsDeposit::whereHas('qurbanSaving', function($q) use ($fundraiserId) {
             $q->where('fundraiser_id', $fundraiserId);
         })->where('qurban_savings_deposits.status', 'paid')
         ->join('payments', 'qurban_savings_deposits.transaction_id', '=', 'payments.external_id')
-        ->sum(\Illuminate\Support\Facades\DB::raw('qurban_savings_deposits.amount + COALESCE(payments.unique_code, 0)'));
+        ->sum(DB::raw('qurban_savings_deposits.amount + COALESCE(payments.unique_code, 0)'));
 
-        $this->totalDonationAmount = $donationsAmount + $qurbanOrdersAmount + $qurbanDepositsAmount;
+        $this->totalProgramAmount = $donationsAmount;
+        $this->totalQurbanAmount = $qurbanOrdersAmount + $qurbanDepositsAmount;
 
-        // 2. Available Balance (Ujroh)
+        // 2. Zakat Amount
+        $this->totalZakatAmount = ZakatTransaction::where('fundraiser_id', $fundraiserId)->where('zakat_transactions.status', 'success')
+            ->join('payments', 'zakat_transactions.transaction_id', '=', 'payments.external_id')
+            ->sum(DB::raw('zakat_transactions.amount + COALESCE(payments.unique_code, 0)'));
+
+        $this->totalDonationAmount = $this->totalProgramAmount + $this->totalZakatAmount + $this->totalQurbanAmount;
+
+        // 3. Total Transaction Count (Donation + Zakat + Qurban Orders + Qurban Deposits that are PAID)
+        $zakatCount = ZakatTransaction::where('fundraiser_id', $fundraiserId)->where('status', 'success')->count();
+        $this->totalDonationCount = $donationsCount + $zakatCount + $qurbanOrdersCount + $qurbanDepositsCount;
+
+        // 4. Available Balance (Ujroh)
         $this->availableBalance = $this->fundraiser->available_balance;
         
-        // 3. Total Visits (Clicks)
+        // 5. Total Visits (Clicks)
         $this->totalVisits = $this->fundraiser->visits()->count();
     }
 
