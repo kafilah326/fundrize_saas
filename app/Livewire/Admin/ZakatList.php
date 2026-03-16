@@ -287,7 +287,7 @@ class ZakatList extends Component
         $this->showDistributionModal = true;
     }
 
-    public function storeDistribution()
+    public function saveDistribution()
     {
         $this->validate([
             'distributionTitle' => 'required|string|max:255',

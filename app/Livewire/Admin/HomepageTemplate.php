@@ -16,6 +16,7 @@ class HomepageTemplate extends Component
      */
     public array $availableTemplates = [
         'default' => 'Default (Standard)',
+        'v2' => 'Version 2 (Baru)',
     ];
 
     public function mount(): void

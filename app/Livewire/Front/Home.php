@@ -59,19 +59,12 @@ class Home extends Component
             $logo = url($logo);
         }
 
-        $templateSlug = AppSetting::get('home_template', 'default');
-        $viewName = 'livewire.front.home-' . $templateSlug;
-
-        // Fallback to default if template view file does not exist
-        if (!View::exists($viewName)) {
-            $viewName = 'livewire.front.home-default';
-        }
-
-        return view($viewName)->layout('layouts.front', [
+        return view('livewire.front.home')->layout('layouts.front', [
             'title'           => $this->foundation->name,
             'metaDescription' => \Illuminate\Support\Str::limit(strip_tags($this->foundation->about ?? ''), 160),
             'metaKeywords'    => 'donasi, yayasan, sedekah, zakat, infaq, qurban, galang dana, crowdfunding, ' . $this->foundation->name,
             'metaImage'       => $logo ?: null,
         ]);
     }
+
 }

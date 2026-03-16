@@ -1,9 +1,10 @@
 {
-  "active_plan": "D:\\fundrize\\.sisyphus\\plans\\zakat-banner.md",
-  "started_at": "2026-03-10T12:31:55.655Z",
+  "active_plan": "D:/fundrize/.sisyphus/plans/seo-og-image-logo-fallback.md",
+  "started_at": "2026-03-15T23:53:49.216Z",
   "session_ids": [
-    "ses_328718438fferhXlZi2NLeudE5"
+    "ses_30c577904ffeYix76HxMQJb5hv"
   ],
-  "plan_name": "zakat-banner",
-  "worktree_path": "D:\\fundrize-zakat-banner"
+  "plan_name": "seo-og-image-logo-fallback",
+  "agent": "atlas",
+  "worktree_path": "D:/fundrize-seo-og"
 }

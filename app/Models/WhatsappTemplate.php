@@ -51,6 +51,7 @@ class WhatsappTemplate extends Model
             'donasi' => 'Donasi Program',
             'qurban' => 'Qurban',
             'tabungan_qurban' => 'Tabungan Qurban',
+            'zakat' => 'Zakat',
             default => ucfirst($this->type),
         };
     }

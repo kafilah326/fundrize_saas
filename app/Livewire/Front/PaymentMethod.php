@@ -253,6 +253,7 @@ class PaymentMethod extends Component
                 'slaughter_method' => $checkout['slaughter_method'],
                 'delivery_method' => $checkout['delivery_method'],
                 'amount' => $this->amount,
+                'total' => $finalTotal,
                 'payment_method' => $this->selectedMethod,
                 'status' => 'pending',
             ]);
@@ -318,6 +319,7 @@ class PaymentMethod extends Component
                 'qurban_saving_id' => $saving->id,
                 'transaction_id' => $trxId,
                 'amount' => $this->amount,
+                'total' => $finalTotal,
                 'payment_method' => $this->selectedMethod,
                 'status' => 'pending',
             ]);

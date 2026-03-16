@@ -34,8 +34,8 @@ class WhatsappTemplate extends Component
     protected $rules = [
         'name' => 'nullable|string|max:255',
         'content' => 'required|string',
-        'type' => 'required|in:donasi,qurban,tabungan_qurban',
-        'event' => 'required|in:payment_created',
+        'type' => 'required|in:donasi,qurban,tabungan_qurban,zakat',
+        'event' => 'required|in:payment_created,payment_success,payment_expired',
         'is_active' => 'boolean',
     ];
 
@@ -216,7 +216,7 @@ class WhatsappTemplate extends Component
         ];
 
         $eventData = [];
-        if ($event === 'payment_created') {
+        if ($event === 'payment_created' || $event === 'payment_success' || $event === 'payment_expired') {
             $eventData = [
                 'batas_waktu' => '20 Feb 2026 23:59',
                 'metode_bayar' => 'Bank Transfer (BSI)',
@@ -245,8 +245,15 @@ class WhatsappTemplate extends Component
                 'sisa_tabungan' => 'Rp 3.000.000',
                 'tipe_transaksi' => 'Tabungan Qurban',
             ];
+        } elseif ($type === 'zakat') {
+            $typeData = [
+                'jenis_zakat'  => 'Zakat Fitrah',
+                'detail_zakat' => '3 Jiwa',
+                'jumlah_jiwa'  => '3',
+                'total_harta'  => '-',
+                'tipe_transaksi' => 'Zakat',
+            ];
         }
-
         return array_merge($common, $eventData, $typeData);
     }
 
@@ -267,7 +274,7 @@ class WhatsappTemplate extends Component
         $params[] = ['key' => 'link_pembayaran', 'label' => '{{link_pembayaran}}', 'desc' => 'Link status pembayaran'];
 
         // Event-specific parameters
-        if ($this->event === 'payment_created') {
+        if ($this->event === 'payment_created' || $this->event === 'payment_success' || $this->event === 'payment_expired') {
             $params[] = ['key' => 'batas_waktu', 'label' => '{{batas_waktu}}', 'desc' => 'Batas waktu pembayaran'];
             $params[] = ['key' => 'metode_bayar', 'label' => '{{metode_bayar}}', 'desc' => 'Metode pembayaran'];
             $params[] = ['key' => 'info_bank', 'label' => '{{info_bank}}', 'desc' => 'Info rekening bank (nama, norek, atas nama)'];
@@ -288,8 +295,13 @@ class WhatsappTemplate extends Component
             $params[] = ['key' => 'saldo_tabungan', 'label' => '{{saldo_tabungan}}', 'desc' => 'Saldo tabungan saat ini'];
             $params[] = ['key' => 'sisa_tabungan', 'label' => '{{sisa_tabungan}}', 'desc' => 'Sisa kekurangan tabungan'];
             $params[] = ['key' => 'tipe_transaksi', 'label' => '{{tipe_transaksi}}', 'desc' => 'Label tipe transaksi'];
+        } elseif ($this->type === 'zakat') {
+            $params[] = ['key' => 'jenis_zakat',   'label' => '{{jenis_zakat}}',   'desc' => 'Jenis Zakat (Fitrah/Mal)'];
+            $params[] = ['key' => 'detail_zakat',  'label' => '{{detail_zakat}}',  'desc' => 'Detail Zakat (ringkasan)'];
+            $params[] = ['key' => 'jumlah_jiwa',   'label' => '{{jumlah_jiwa}}',   'desc' => 'Jumlah Jiwa (Fitrah)'];
+            $params[] = ['key' => 'total_harta',   'label' => '{{total_harta}}',   'desc' => 'Total Harta (Mal)'];
+            $params[] = ['key' => 'tipe_transaksi', 'label' => '{{tipe_transaksi}}', 'desc' => 'Label tipe transaksi'];
         }
-
         return $params;
     }
 }

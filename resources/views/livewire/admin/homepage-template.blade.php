@@ -37,16 +37,16 @@
                 </div>
             </div>
 
-            <div class="mt-8 p-6 bg-blue-50 border border-blue-100 rounded-2xl">
-                <h3 class="text-md font-bold text-blue-900 mb-3 flex items-center">
-                    <i class="fa-solid fa-circle-info mr-2"></i> Cara Menambah Template Baru
-                </h3>
-                <ol class="list-decimal list-inside space-y-2 text-sm text-blue-800">
-                    <li>Buat file view baru: <code>resources/views/livewire/front/home-{slug}.blade.php</code>.</li>
-                    <li>Tambahkan entri di <code>$availableTemplates</code> pada <code>HomepageTemplate.php</code>.</li>
-                    <li>Jalankan perintah <code>php artisan view:clear</code>.</li>
-                </ol>
-            </div>
+
+
+
+
+
+
+
+
+
+
         </div>
     </div>
 </div>
