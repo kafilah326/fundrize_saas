@@ -8,13 +8,8 @@
     // OG Image: fallback ke logo yayasan (DB), lalu ke default-og.jpg
     if (isset($metaImage) && $metaImage) {
         $ogImage = $metaImage;
-    } elseif ($foundation && $foundation->logo) {
-        $logoPath = $foundation->logo;
-        $ogImage = str_starts_with($logoPath, 'http')
-            ? $logoPath
-            : url(\Illuminate\Support\Facades\Storage::url($logoPath));
     } else {
-        $ogImage = asset('images/default-og.jpg');
+        $ogImage = $foundation->logo;
     }
     if (!str_starts_with($ogImage, 'http')) {
         $ogImage = url($ogImage);
