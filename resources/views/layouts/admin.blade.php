@@ -518,7 +518,13 @@
                         class="fa-solid fa-gear w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.settings*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
                     Settings
                 </a>
-
+                <a href="{{ route('admin.homepage-template') }}"
+                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
+                   @if (request()->routeIs('admin.homepage-template*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    <i
+                        class="fa-solid fa-layer-group w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.homepage-template*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
+                    Template Halaman Utama
+                </a>
                 <a href="{{ route('admin.meta-setting') }}"
                     class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
                    @if (request()->routeIs('admin.meta-setting*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
