@@ -1,5 +1,6 @@
 <?php
 
+use App\Livewire\Admin\HomepageTemplate;
 use App\Http\Controllers\XenditWebhookController;
 use App\Http\Controllers\PakasirWebhookController;
 use App\Livewire\Auth\ForgotPassword;
@@ -128,6 +129,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/fundraisers', \App\Livewire\Admin\FundraiserList::class)->name('fundraisers');
     Route::get('/profile', \App\Livewire\Admin\Profile::class)->name('profile');
     Route::get('/settings', \App\Livewire\Admin\Settings::class)->name('settings');
+    Route::get('/homepage-template', HomepageTemplate::class)->name('homepage-template');
     Route::get('/whatsapp', \App\Livewire\Admin\WhatsappSetting::class)->name('whatsapp');
     Route::get('/meta-setting', \App\Livewire\Admin\MetaSetting::class)->name('meta-setting');
     Route::get('/maintenance-fee', \App\Livewire\Admin\MaintenanceFee::class)->name('maintenance-fee');
