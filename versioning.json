@@ -1,6 +1,6 @@
 {
-  "version": "1.30.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Perubahan ini mencakup penambahan fitur baru (Home Template Switcher), penambahan kolom pada skema database (kolom 'total' di tabel kurban), dan pengembangan logika notifikasi WhatsApp yang semuanya bersifat backward compatible.",
-  "updatedAt": "2026-03-16T04:45:17.125Z"
+  "version": "1.30.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini bersifat perbaikan (bug fix) pada skrip migrasi untuk mencegah error saat proses deployment/migrasi ulang, tanpa mengubah fungsionalitas fitur atau API yang ada.",
+  "updatedAt": "2026-03-16T04:51:54.921Z"
 }
