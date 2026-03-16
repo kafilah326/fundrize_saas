@@ -30,7 +30,17 @@ class HomepageTemplate extends Component
             'selectedTemplate' => ['required', 'string', 'in:' . implode(',', array_keys($this->availableTemplates))],
         ]);
 
-        AppSetting::set('home_template', $this->selectedTemplate);
+        AppSetting::updateOrCreate(
+            ['key' => 'home_template'],
+            [
+                'value' => $this->selectedTemplate,
+                'type' => 'text',
+                'group' => 'appearance',
+                'label' => 'Template Halaman Utama',
+                'description' => 'Pilih template tampilan halaman utama yang aktif.'
+            ]
+        );
+        \Illuminate\Support\Facades\Cache::forget('app_setting_home_template');
 
         session()->flash('success', 'Template halaman utama berhasil disimpan.');
     }
