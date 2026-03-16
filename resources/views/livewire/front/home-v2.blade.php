@@ -97,7 +97,7 @@
         <h3 class="text-navy-900 font-bold text-lg mb-4">Pilih Akad</h3>
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
             @foreach($akads as $akad)
-            <a href="{{ route('program.akad', $akad->slug) }}" class="bg-white border-2 border-slate-200 hover:border-teal-500 rounded-xl p-4 transition flex flex-col items-center space-y-2 min-h-[110px]">
+            <a href="{{ route('program.index', ['akad' => $akad->slug]) }}" class="bg-white border-2 border-slate-200 hover:border-teal-500 rounded-xl p-4 transition flex flex-col items-center space-y-2 min-h-[110px]">
                 <div class="w-12 h-12 bg-gradient-to-br from-teal-500 to-teal-600 rounded-full flex items-center justify-center">
                     @if($akad->icon)
                         <i class="{{ $akad->icon }} text-white text-xl"></i>
@@ -119,7 +119,7 @@
         <div class="flex overflow-x-auto space-x-4 pb-2 -mx-4 px-4 carousel-container">
             @foreach($featuredPrograms as $program)
             <div class="bg-white rounded-xl shadow-sm overflow-hidden min-w-[280px] sm:min-w-[320px] border border-slate-100">
-                <a href="{{ route('program.show', $program->slug) }}" class="block">
+            <a href="{{ route('program.detail', $program->slug) }}" class="block">
                     <div class="h-40 overflow-hidden relative">
                         <img class="w-full h-full object-cover" src="{{ Storage::url($program->image) }}" alt="{{ $program->title }}">
                         @if($program->category)
@@ -128,7 +128,7 @@
                     </div>
                 </a>
                 <div class="p-4">
-                    <a href="{{ route('program.show', $program->slug) }}">
+                    <a href="{{ route('program.detail', $program->slug) }}">
                         <h4 class="text-navy-900 font-bold text-base mb-2 line-clamp-2 hover:text-teal-600 transition-colors">{{ $program->title }}</h4>
                     </a>
                     
@@ -159,7 +159,7 @@
                         </div>
                     </div>
                     
-                    <a href="{{ route('program.show', $program->slug) }}" class="block w-full text-center bg-teal-50 hover:bg-teal-500 text-teal-700 hover:text-white font-semibold py-2.5 rounded-lg text-sm transition-colors border border-teal-100 hover:border-transparent">
+                    <a href="{{ route('program.detail', $program->slug) }}" class="block w-full text-center bg-teal-50 hover:bg-teal-500 text-teal-700 hover:text-white font-semibold py-2.5 rounded-lg text-sm transition-colors border border-teal-100 hover:border-transparent">
                         Donasi Sekarang
                     </a>
                 </div>
@@ -175,7 +175,7 @@
                 Semua Program
             </a>
             @foreach($categories as $category)
-            <a href="{{ route('program.category', $category->slug) }}" class="bg-white border border-slate-200 text-slate-600 hover:border-teal-500 hover:text-teal-600 font-semibold px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
+            <a href="{{ route('program.index', ['category' => $category->slug]) }}" class="bg-white border border-slate-200 text-slate-600 hover:border-teal-500 hover:text-teal-600 font-semibold px-4 py-2 rounded-full text-sm whitespace-nowrap transition-colors">
                 {{ $category->name }}
             </a>
             @endforeach
@@ -192,7 +192,7 @@
         <div class="space-y-3">
             @foreach($otherPrograms as $program)
             <div class="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden flex hover:shadow-md transition-shadow">
-                <a href="{{ route('program.show', $program->slug) }}" class="w-28 h-28 flex-shrink-0 overflow-hidden relative">
+                <a href="{{ route('program.detail', $program->slug) }}" class="w-28 h-28 flex-shrink-0 overflow-hidden relative">
                     <img class="w-full h-full object-cover" src="{{ Storage::url($program->image) }}" alt="{{ $program->title }}">
                 </a>
                 <div class="flex-1 p-3 flex flex-col justify-between">
@@ -200,7 +200,7 @@
                         @if($program->category)
                         <span class="inline-block text-teal-600 text-[10px] font-bold uppercase tracking-wider mb-1">{{ $program->category->name }}</span>
                         @endif
-                        <a href="{{ route('program.show', $program->slug) }}">
+                        <a href="{{ route('program.detail', $program->slug) }}">
                             <h4 class="text-navy-900 font-bold text-sm mb-1 line-clamp-2 hover:text-teal-600 transition-colors leading-snug">{{ $program->title }}</h4>
                         </a>
                     </div>
