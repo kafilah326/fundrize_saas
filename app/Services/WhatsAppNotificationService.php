@@ -112,6 +112,7 @@ class WhatsAppNotificationService
             'program' => 'donasi',
             'qurban_langsung' => 'qurban',
             'qurban_tabungan' => 'tabungan_qurban',
+            'zakat' => 'zakat',
             default => 'donasi',
         };
     }
@@ -204,6 +205,24 @@ class WhatsAppNotificationService
                 $variables['saldo_tabungan'] = '-';
                 $variables['sisa_tabungan'] = '-';
             }
+        } elseif ($payment->transaction_type === 'zakat') {
+            $zakatType = $checkout['zakat_type'] ?? 'maal';
+            $jenisZakat = $zakatType === 'fitrah' ? 'Zakat Fitrah' : 'Zakat Mal';
+
+            if ($zakatType === 'fitrah') {
+                $jumlahJiwa = $checkout['jumlah_jiwa'] ?? 1;
+                $detailZakat = $jumlahJiwa . ' Jiwa';
+            } else {
+                $totalHarta = $checkout['total_harta'] ?? 0;
+                $detailZakat = 'Harta Rp ' . number_format($totalHarta, 0, ',', '.');
+            }
+
+            $variables['jenis_zakat']  = $jenisZakat;
+            $variables['detail_zakat'] = $detailZakat;
+            $variables['jumlah_jiwa']  = $zakatType === 'fitrah' ? ($checkout['jumlah_jiwa'] ?? '-') : '-';
+            $variables['total_harta']  = $zakatType === 'maal'
+                ? 'Rp ' . number_format($checkout['total_harta'] ?? 0, 0, ',', '.')
+                : '-';
         }
 
         return $variables;
@@ -347,9 +366,11 @@ class WhatsAppNotificationService
         $trxId = $payment->external_id;
         $link = route('home');
 
+        $typeLabel = strtolower($this->getTransactionLabel($payment));
+
         return "Assalamu'alaikum, Bapak/Ibu {$name}.\n\n".
                "Mohon maaf, transaksi Anda dengan nomor {$trxId} telah kedaluwarsa (expired).\n\n".
-               "Jika Anda masih ingin melanjutkan donasi/qurban, silakan buat transaksi baru melalui link berikut:\n{$link}\n\n".
+               "Jika Anda masih ingin melanjutkan {$typeLabel}, silakan buat transaksi baru melalui link berikut:\n{$link}\n\n".
                "Terima kasih.\n{$this->foundationName}";
     }
 
@@ -363,6 +384,7 @@ class WhatsAppNotificationService
             'program' => 'Donasi Program',
             'qurban_langsung' => 'Qurban Langsung',
             'qurban_tabungan' => 'Tabungan Qurban',
+            'zakat' => 'Zakat',
             default => 'Donasi',
         };
     }
@@ -381,8 +403,15 @@ class WhatsAppNotificationService
             $qurbanName = $payment->checkout_data['qurban_name'] ?? '-';
 
             return "- Tabungan Atas Nama: {$qurbanName}\n";
+        } elseif ($payment->transaction_type === 'zakat') {
+            $checkout  = $payment->checkout_data;
+            $zakatType = $checkout['zakat_type'] ?? 'maal';
+            if ($zakatType === 'fitrah') {
+                $jiwa = $checkout['jumlah_jiwa'] ?? 1;
+                return "- Detail: Zakat Fitrah — {$jiwa} Jiwa\n";
+            }
+            return "- Detail: Zakat Mal\n";
         }
-
         return '';
     }
 }

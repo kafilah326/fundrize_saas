@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ProgramSeeder::class,
             DonationSeeder::class,
             QurbanSeeder::class,
+            WhatsappTemplateSeeder::class,
         ]);
     }
 }

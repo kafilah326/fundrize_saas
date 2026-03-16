@@ -3,10 +3,12 @@
 namespace App\Livewire\Front;
 
 use App\Models\AkadType;
+use App\Models\AppSetting;
 use App\Models\Banner;
 use App\Models\Category;
 use App\Models\FoundationSetting;
 use App\Models\Program;
+use Illuminate\Support\Facades\View;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -64,4 +66,5 @@ class Home extends Component
             'metaImage'       => $logo ?: null,
         ]);
     }
+
 }

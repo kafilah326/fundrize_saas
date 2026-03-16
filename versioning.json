@@ -1,6 +1,6 @@
 {
-  "version": "1.29.0",
+  "version": "1.30.0",
   "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur baru berupa fungsionalitas export data ke format CSV yang bersifat backward compatible, serta penambahan logika bisnis baru untuk menangani status komisi fundraiser pada transaksi zakat.",
-  "updatedAt": "2026-03-10T22:08:04.018Z"
+  "aiReason": "Perubahan ini mencakup penambahan fitur baru (Home Template Switcher), penambahan kolom pada skema database (kolom 'total' di tabel kurban), dan pengembangan logika notifikasi WhatsApp yang semuanya bersifat backward compatible.",
+  "updatedAt": "2026-03-16T04:45:17.125Z"
 }

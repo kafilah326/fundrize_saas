@@ -62,6 +62,14 @@ class AppSettingSeeder extends Seeder
                 'label' => 'Xendit Webhook Token',
                 'description' => 'Verification token for Xendit webhooks',
             ],
+            [
+                'key' => 'home_template',
+                'value'       => 'default',
+                'group'       => 'appearance',
+                'type'        => 'text',
+                'label'       => 'Template Halaman Utama',
+                'description' => 'Pilih template tampilan halaman utama yang aktif. Slug harus sesuai dengan nama file home-{slug}.blade.php',
+            ],
         ];
 
         foreach ($settings as $setting) {

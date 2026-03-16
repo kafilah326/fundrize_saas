@@ -9,6 +9,7 @@
                 'donasi' => ['label' => 'Donasi Program', 'icon' => 'fa-hand-holding-heart', 'color' => 'blue'],
                 'qurban' => ['label' => 'Qurban', 'icon' => 'fa-cow', 'color' => 'green'],
                 'tabungan_qurban' => ['label' => 'Tabungan Qurban', 'icon' => 'fa-piggy-bank', 'color' => 'purple'],
+                'zakat' => ['label' => 'Zakat', 'icon' => 'fa-star-and-crescent', 'color' => 'amber'],
             ];
             $events = ['payment_created', 'payment_success', 'payment_expired'];
         @endphp
@@ -61,6 +62,7 @@
                 <option value="donasi">Donasi Program</option>
                 <option value="qurban">Qurban</option>
                 <option value="tabungan_qurban">Tabungan Qurban</option>
+                <option value="zakat">Zakat</option>
             </select>
 
             <select wire:model.live="filterEvent"
@@ -140,7 +142,9 @@
                                             ? 'bg-blue-100 text-blue-800'
                                             : ($template->type === 'qurban'
                                                 ? 'bg-green-100 text-green-800'
-                                                : 'bg-purple-100 text-purple-800') }}">
+                                                : ($template->type === 'zakat'
+                                                    ? 'bg-amber-100 text-amber-800'
+                                                    : 'bg-purple-100 text-purple-800')) }}">
                                         {{ $template->type_label }}
                                     </span>
                                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium max-w-max
@@ -260,6 +264,7 @@
                                             <option value="donasi">Donasi Program</option>
                                             <option value="qurban">Qurban</option>
                                             <option value="tabungan_qurban">Tabungan Qurban</option>
+                                            <option value="zakat">Zakat</option>
                                         </select>
                                         @error('type')
                                             <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
@@ -272,8 +277,8 @@
                                         <select wire:model.live="event"
                                             class="w-full rounded-xl border-gray-200 bg-gray-50/50 shadow-sm focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 transition-all px-4 py-2.5">
                                             <option value="payment_created">Pembayaran Dibuat</option>
-                                            <option value="payment_success" disabled>Pembayaran Berhasil (Segera Hadir)</option>
-                                            <option value="payment_expired" disabled>Pembayaran Expired (Segera Hadir)</option>
+                                            <option value="payment_success">Pembayaran Berhasil</option>
+                                            <option value="payment_expired">Pembayaran Expired</option>
                                         </select>
                                         @error('event')
                                             <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>

@@ -5,8 +5,12 @@
     $defaultDescription =
         $foundationAbout ?: 'Platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.';
 
-    // OG Image: ensure always absolute URL, fallback to default-og.jpg
-    $ogImage = isset($metaImage) && $metaImage ? $metaImage : asset('images/default-og.jpg');
+    // OG Image: fallback ke logo yayasan (DB), lalu ke default-og.jpg
+    if (isset($metaImage) && $metaImage) {
+        $ogImage = $metaImage;
+    } else {
+        $ogImage = $foundation->logo;
+    }
     if (!str_starts_with($ogImage, 'http')) {
         $ogImage = url($ogImage);
     }

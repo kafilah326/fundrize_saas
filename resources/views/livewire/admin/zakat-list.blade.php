@@ -569,7 +569,7 @@
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
             <div
                 class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full border border-gray-100 relative">
-                <form wire:submit.prevent="storeDistribution">
+                <form wire:submit.prevent="saveDistribution">
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-5">
                             <h3 class="text-xl font-bold text-gray-900">{{ $distributionId ? 'Edit' : 'Tambah' }}
