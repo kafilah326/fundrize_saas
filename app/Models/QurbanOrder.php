@@ -23,6 +23,7 @@ class QurbanOrder extends Model
         'slaughter_method',
         'delivery_method',
         'amount',
+        'total',
         'payment_method',
         'status',
         'created_at',
@@ -30,6 +31,7 @@ class QurbanOrder extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'total' => 'decimal:2',
     ];
 
     public function user(): BelongsTo
