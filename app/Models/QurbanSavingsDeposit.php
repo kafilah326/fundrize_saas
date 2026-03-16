@@ -11,6 +11,7 @@ class QurbanSavingsDeposit extends Model
         'qurban_saving_id',
         'transaction_id',
         'amount',
+        'total',
         'payment_method',
         'status',
         'created_at',
@@ -18,6 +19,7 @@ class QurbanSavingsDeposit extends Model
 
     protected $casts = [
         'amount' => 'decimal:2',
+        'total' => 'decimal:2',
     ];
 
     public function qurbanSaving(): BelongsTo
