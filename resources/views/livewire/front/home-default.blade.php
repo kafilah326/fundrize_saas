@@ -1,3 +1,22 @@
+{{--
+  HOME TEMPLATE: default
+  ========================
+  DATA CONTRACT — All home templates receive these Livewire public properties:
+    $foundation      → FoundationSetting model (name, tagline, logo, favicon, about, vision, mission, address, phone, email, social_media, focus_areas)
+    $banners         → Collection<Banner> — active banners for 'home' placement, ordered by priority asc
+    $featuredPrograms→ Collection<Program> — up to 5 active + featured programs (latest first)
+    $otherPrograms   → Collection<Program> — up to 5 latest active programs
+    $categories      → Collection<Category> — all active categories
+    $akads           → Collection<AkadType> — all active akad types
+
+  NAMING CONVENTION: home-{slug}.blade.php
+  ROOT ELEMENT: Must keep identical root <div> wrapper as other templates (Livewire/Alpine morphing requirement)
+
+  To add a new template:
+    1. Create resources/views/livewire/front/home-{newslug}.blade.php
+    2. Add <option value="{{ newslug }}">Label</option> to admin/homepage-template.blade.php dropdown
+--}}
+
 <div>
     <header id="header" class="bg-white shadow-sm sticky top-0 z-50">
         <div class="px-4 py-3 flex items-center justify-between">
