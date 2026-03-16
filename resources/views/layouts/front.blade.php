@@ -39,9 +39,6 @@
     <meta property="og:description" content="{{ $metaDescription ?? $defaultDescription }}">
     <meta property="og:image" content="{{ $ogImage }}">
     <meta property="og:image:secure_url" content="{{ $ogImage }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="{{ $ogImageType }}">
     <meta property="og:image:alt" content="{{ $title ?? $foundationName }}">
     <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="{{ $foundationName }}">
@@ -50,10 +47,6 @@
     <meta name="twitter:title" content="{{ $title ?? $foundationName }}">
     <meta name="twitter:description" content="{{ $metaDescription ?? $defaultDescription }}">
     <meta name="twitter:image" content="{{ $ogImage }}">
-    <meta name="twitter:image:alt" content="{{ $title ?? $foundationName }}">
-
-    <meta itemprop="image" content="{{ $ogImage }}">
-    <link rel="image_src" href="{{ $ogImage }}">
     @stack('meta')
 
     @php
