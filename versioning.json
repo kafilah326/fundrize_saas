@@ -1,6 +1,6 @@
 {
-  "version": "1.30.1",
-  "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini bersifat perbaikan (bug fix) pada skrip migrasi untuk mencegah error saat proses deployment/migrasi ulang, tanpa mengubah fungsionalitas fitur atau API yang ada.",
-  "updatedAt": "2026-03-16T04:51:54.921Z"
+  "version": "1.31.0",
+  "aiDecision": "MINOR",
+  "aiReason": "Penambahan fungsionalitas baru untuk mendeteksi tipe file gambar secara dinamis serta pembaruan logika fallback yang bersifat backward compatible.",
+  "updatedAt": "2026-03-16T04:56:02.304Z"
 }
