@@ -1,6 +1,6 @@
 {
-  "version": "1.31.1",
+  "version": "1.31.2",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini hanya menambahkan satu baris meta tag untuk optimasi metadata (SEO/Social Media) dan tidak mengubah fungsi utama atau memecah kompatibilitas kode yang ada.",
-  "updatedAt": "2026-03-16T05:01:40.937Z"
+  "aiReason": "Perubahan hanya bersifat pembersihan (cleanup) pada bagian metadata HTML tanpa mengubah fungsionalitas fitur atau struktur API yang ada.",
+  "updatedAt": "2026-03-16T05:06:00.800Z"
 }
