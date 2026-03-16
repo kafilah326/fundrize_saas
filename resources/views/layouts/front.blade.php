@@ -43,7 +43,7 @@
     <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="{{ $foundationName }}">
 
-    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ $title ?? $foundationName }}">
     <meta name="twitter:description" content="{{ $metaDescription ?? $defaultDescription }}">
     <meta name="twitter:image" content="{{ $ogImage }}">

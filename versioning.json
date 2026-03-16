@@ -1,6 +1,6 @@
 {
-  "version": "1.31.2",
+  "version": "1.31.3",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan hanya bersifat pembersihan (cleanup) pada bagian metadata HTML tanpa mengubah fungsionalitas fitur atau struktur API yang ada.",
-  "updatedAt": "2026-03-16T05:06:00.800Z"
+  "aiReason": "Perubahan hanya bersifat kosmetik pada metadata link preview (Twitter Card) tanpa mempengaruhi fungsionalitas sistem maupun struktur API.",
+  "updatedAt": "2026-03-16T05:10:25.152Z"
 }
