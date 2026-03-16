@@ -5,15 +5,20 @@
     $defaultDescription =
         $foundationAbout ?: 'Platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.';
 
-    // OG Image: fallback ke logo yayasan (DB), lalu ke default-og.jpg
-    if (isset($metaImage) && $metaImage) {
-        $ogImage = $metaImage;
-    } else {
-        $ogImage = $foundation->logo;
-    }
+    // OG Image fallback logic
+    $ogImage = $metaImage ?? ($foundation->logo ?? asset('images/default-og.jpg'));
     if (!str_starts_with($ogImage, 'http')) {
         $ogImage = url($ogImage);
     }
+
+    // Dynamic OG Image Type
+    $extension = strtolower(pathinfo(parse_url($ogImage, PHP_URL_PATH), PATHINFO_EXTENSION));
+    $ogImageType = match ($extension) {
+        'png' => 'image/png',
+        'webp' => 'image/webp',
+        'gif' => 'image/gif',
+        default => 'image/jpeg',
+    };
 @endphp
 <!DOCTYPE html>
 <html lang="id" prefix="og: http://ogp.me/ns#">
@@ -35,7 +40,7 @@
     <meta property="og:image" content="{{ $ogImage }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:type" content="{{ $ogImageType }}">
     <meta property="og:image:alt" content="{{ $title ?? $foundationName }}">
     <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="{{ $foundationName }}">
