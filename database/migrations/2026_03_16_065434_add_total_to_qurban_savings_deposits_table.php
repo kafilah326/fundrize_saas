@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('qurban_savings_deposits', function (Blueprint $table) {
-            $table->decimal('total', 15, 2)->nullable()->after('amount');
-        });
+        if (!Schema::hasColumn('qurban_savings_deposits', 'total')) {
+            Schema::table('qurban_savings_deposits', function (Blueprint $table) {
+                $table->decimal('total', 15, 2)->nullable()->after('amount');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('qurban_savings_deposits', function (Blueprint $table) {
-            $table->dropColumn('total');
-        });
+        if (Schema::hasColumn('qurban_savings_deposits', 'total')) {
+            Schema::table('qurban_savings_deposits', function (Blueprint $table) {
+                $table->dropColumn('total');
+            });
+        }
     }
 };
