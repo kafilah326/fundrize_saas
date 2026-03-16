@@ -5,8 +5,8 @@
     $defaultDescription =
         $foundationAbout ?: 'Platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.';
 
-    // OG Image fallback logic
-    $ogImage = $metaImage ?? ($foundation->logo ?? asset('images/default-og.jpg'));
+    // OG Image fallback logic (Option B: use favicon as fallback for square-ish ratio)
+    $ogImage = $metaImage ?? ($foundation->favicon ?? asset('images/default-og.jpg'));
     if (!str_starts_with($ogImage, 'http')) {
         $ogImage = url($ogImage);
     }
