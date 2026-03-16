@@ -1,6 +1,6 @@
 {
-  "version": "1.31.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fungsionalitas baru untuk mendeteksi tipe file gambar secara dinamis serta pembaruan logika fallback yang bersifat backward compatible.",
-  "updatedAt": "2026-03-16T04:56:02.304Z"
+  "version": "1.31.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini hanya menambahkan satu baris meta tag untuk optimasi metadata (SEO/Social Media) dan tidak mengubah fungsi utama atau memecah kompatibilitas kode yang ada.",
+  "updatedAt": "2026-03-16T05:01:40.937Z"
 }
