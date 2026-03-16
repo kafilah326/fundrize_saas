@@ -1,6 +1,6 @@
 {
-  "version": "1.31.3",
+  "version": "1.31.4",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan hanya bersifat kosmetik pada metadata link preview (Twitter Card) tanpa mempengaruhi fungsionalitas sistem maupun struktur API.",
-  "updatedAt": "2026-03-16T05:10:25.152Z"
+  "aiReason": "Perubahan ini hanya melakukan penyesuaian kecil pada logika internal pemilihan gambar metadata (fallback mechanism) untuk meningkatkan tampilan visual tanpa mengubah fungsionalitas utama atau memecah kompatibilitas API.",
+  "updatedAt": "2026-03-16T05:24:33.020Z"
 }
