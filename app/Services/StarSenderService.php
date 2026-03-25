@@ -4,10 +4,11 @@ namespace App\Services;
 
 use App\Models\AppSetting;
 use App\Models\WhatsappMessageLog;
+use App\Services\Contracts\WhatsAppProviderInterface;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
-class StarSenderService
+class StarSenderService implements WhatsAppProviderInterface
 {
     /**
      * Normalize phone number to start with 62
@@ -290,7 +291,9 @@ class StarSenderService
         $log->event_type = $eventType;
         $log->payment_id = $paymentId;
 
-        if (! $this->isEnabled()) {
+        $hasKey = $this->getDeviceApiKey() || $this->getAccountApiKey();
+
+        if (! $this->isEnabled() && !($eventType === 'test' && $hasKey)) {
             $log->status = 'failed';
             $log->response_data = ['error' => 'WhatsApp disabled or API Key missing'];
             $log->save();

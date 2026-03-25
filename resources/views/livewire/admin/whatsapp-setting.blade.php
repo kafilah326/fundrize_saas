@@ -10,7 +10,7 @@
         </div>
         
         <div class="flex items-center gap-2">
-            @if($isConnected)
+            @if(($waProvider === 'fonnte' && !empty($fonnteToken)) || ($waProvider === 'starsender' && $isConnected))
             <div class="flex items-center bg-white border border-gray-200 rounded-xl px-4 py-2 shadow-sm">
             <div class="flex items-center mr-4">
                 <span class="relative flex h-3 w-3 mr-2">
@@ -52,7 +52,45 @@
         
         <!-- Left Column: Device Connection Status -->
         <div class="lg:col-span-1 space-y-6">
-            
+
+            <!-- Provider Selection -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-soft p-6">
+                <h3 class="font-bold text-gray-900 flex items-center mb-4">
+                    <i class="fa-solid fa-server text-primary mr-2"></i>
+                    Provider WhatsApp
+                </h3>
+                
+                <div class="mb-2">
+                    <select wire:model.live="waProvider" class="w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-sm bg-gray-50 focus:bg-white transition-colors cursor-pointer">
+                        <option value="starsender">StarSender</option>
+                        <option value="fonnte">Fonnte</option>
+                    </select>
+                </div>
+            </div>
+
+            @if($waProvider === 'fonnte')
+            <!-- Fonnte Token Setting -->
+            <div class="bg-white rounded-2xl border border-gray-100 shadow-soft p-6">
+                <h3 class="font-bold text-gray-900 flex items-center mb-4">
+                    <i class="fa-solid fa-key text-primary mr-2"></i>
+                    Konfigurasi Fonnte
+                </h3>
+                
+                <form wire:submit.prevent="saveFonnteToken">
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-gray-500 mb-1">API Token Fonnte</label>
+                        <input wire:model="fonnteToken" type="text" placeholder="Masukkan Token Fonnte..." class="w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-4 text-sm bg-gray-50 focus:bg-white transition-colors">
+                        @error('fonnteToken') <span class="text-xs text-red-500">{{ $message }}</span> @enderror
+                        <p class="text-xs text-gray-400 mt-2">Dapatkan token di dashboard <a href="https://fonnte.com" target="_blank" class="text-primary hover:underline">Fonnte</a>.</p>
+                    </div>
+                    <button type="submit" class="w-full bg-primary hover:bg-primary-hover text-white text-sm font-bold py-2.5 rounded-xl transition-all shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5">
+                        Simpan Token
+                    </button>
+                </form>
+            </div>
+            @endif
+
+            @if($waProvider === 'starsender')
             <!-- Connection Card -->
             <div class="bg-white rounded-2xl border border-gray-100 shadow-soft overflow-hidden">
                 <div class="p-6 border-b border-gray-50 bg-gray-50/50">
@@ -177,9 +215,10 @@
                     @endif
                 </div>
             </div>
+            @endif
 
-            <!-- Test Message Card (Only when connected) -->
-            @if($isConnected)
+            <!-- Test Message Card (Only when configured) -->
+            @if(($waProvider === 'fonnte' && !empty($fonnteToken)) || ($waProvider === 'starsender' && $isConnected))
             <div class="bg-white rounded-2xl border border-gray-100 shadow-soft p-6">
                 <h3 class="font-bold text-gray-900 flex items-center mb-4">
                     <i class="fa-solid fa-paper-plane text-primary mr-2"></i>

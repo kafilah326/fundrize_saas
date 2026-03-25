@@ -1,6 +1,6 @@
 {
-  "version": "1.29.0",
+  "version": "1.1.0",
   "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur baru berupa fungsionalitas export data ke format CSV yang bersifat backward compatible, serta penambahan logika bisnis baru untuk menangani status komisi fundraiser pada transaksi zakat.",
-  "updatedAt": "2026-03-10T22:08:04.018Z"
+  "aiReason": "Penambahan fitur baru berupa dukungan provider WhatsApp (Fonnte) dan sistem pemilihan provider yang bersifat *backward compatible* tanpa merusak fungsi StarSender yang sudah ada sebelumnya.",
+  "updatedAt": "2026-03-25T05:20:48.680Z"
 }

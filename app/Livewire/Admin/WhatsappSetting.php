@@ -29,6 +29,9 @@ class WhatsappSetting extends Component
     public $deviceConnectedAt;
     public $starsender_enabled;
 
+    public $waProvider;
+    public $fonnteToken;
+
     // Test message fields
     public $testPhone;
     public $testMessage;
@@ -46,6 +49,8 @@ class WhatsappSetting extends Component
         $this->deviceId = AppSetting::get('starsender_device_id');
         $this->deviceConnectedAt = AppSetting::get('starsender_device_connected_at');
         $this->starsender_enabled = (bool) AppSetting::get('starsender_enabled');
+        $this->waProvider = AppSetting::get('wa_provider', 'starsender');
+        $this->fonnteToken = AppSetting::get('fonnte_token');
         
         if ($this->deviceId) {
             $this->checkDeviceStatus();
@@ -227,6 +232,21 @@ class WhatsappSetting extends Component
         session()->flash('success', 'Status notifikasi WhatsApp berhasil diperbarui.');
     }
 
+    public function updatedWaProvider($value)
+    {
+        AppSetting::set('wa_provider', $value);
+        session()->flash('success', 'Provider WhatsApp berhasil diubah ke ' . ucfirst($value) . '.');
+    }
+
+    public function saveFonnteToken()
+    {
+        $this->validate([
+            'fonnteToken' => 'required|string',
+        ]);
+        AppSetting::set('fonnte_token', $this->fonnteToken);
+        session()->flash('success', 'Token Fonnte berhasil disimpan.');
+    }
+
     public function sendTestMessage()
     {
         $this->validate([
@@ -234,7 +254,10 @@ class WhatsappSetting extends Component
             'testMessage' => 'required|string|max:500',
         ]);
 
-        $result = $this->starSender->sendMessage($this->testPhone, $this->testMessage, 'test');
+        $provider = AppSetting::get('wa_provider', 'starsender');
+        $sender = $provider === 'fonnte' ? app(\App\Services\FonnteService::class) : $this->starSender;
+
+        $result = $sender->sendMessage($this->testPhone, $this->testMessage, 'test');
 
         if ($result['status']) {
             session()->flash('success', 'Pesan tes berhasil dikirim.');

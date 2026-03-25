@@ -11,13 +11,18 @@ use Illuminate\Support\Facades\Log;
 
 class WhatsAppNotificationService
 {
-    protected $starSender;
+    protected $sender;
 
     protected $foundationName;
 
-    public function __construct(StarSenderService $starSender)
+    public function __construct()
     {
-        $this->starSender = $starSender;
+        $provider = \App\Models\AppSetting::get('wa_provider', 'starsender');
+        if ($provider === 'fonnte') {
+            $this->sender = app(\App\Services\FonnteService::class);
+        } else {
+            $this->sender = app(\App\Services\StarSenderService::class);
+        }
         $this->foundationName = FoundationSetting::value('name') ?? 'Yayasan Peduli';
     }
 
@@ -81,7 +86,7 @@ class WhatsAppNotificationService
         }
 
         // Check if enabled in settings
-        if (! $this->starSender->isEnabled()) {
+        if (! $this->sender->isEnabled()) {
             return false;
         }
 
@@ -90,7 +95,7 @@ class WhatsAppNotificationService
 
     private function send($phone, $message, $eventType, $paymentId)
     {
-        $result = $this->starSender->sendMessage($phone, $message, $eventType, $paymentId);
+        $result = $this->sender->sendMessage($phone, $message, $eventType, $paymentId);
 
         if (! $result['status']) {
             Log::warning("WA Notify Failed to {$phone}: ".($result['message'] ?? 'Unknown error'));
