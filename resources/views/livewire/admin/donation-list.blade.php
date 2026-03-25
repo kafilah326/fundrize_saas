@@ -133,6 +133,11 @@
                             </select>
                         </div>
 
+                        <button wire:click="openManualDonationModal"
+                            class="bg-primary hover:bg-primary-hover text-white font-medium py-2 px-4 rounded-xl inline-flex items-center transition-all shadow-sm shadow-primary/20 text-sm whitespace-nowrap">
+                            <i class="fa-solid fa-plus mr-2"></i> Input Manual
+                        </button>
+                        
                         <button wire:click="openExportModal"
                             class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-xl inline-flex items-center transition-all shadow-sm shadow-green-600/20 text-sm whitespace-nowrap">
                             <i class="fa-solid fa-file-excel mr-2"></i> Export
@@ -778,6 +783,133 @@
                         @endif
                     </div>
                 @endif
+            </div>
+        </div>
+    </div>
+
+    <!-- Manual Donation Modal -->
+    <div x-data="{ show: $wire.entangle('isManualDonationModalOpen').live }" x-show="show" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="show = false">
+                <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm opacity-100"></div>
+            </div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full border border-gray-100">
+                <form wire:submit.prevent="saveManualDonation">
+                    <div class="bg-white px-6 pt-6 pb-4 sm:p-8">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="text-xl font-bold text-gray-900">Input Donasi Manual</h3>
+                            <button type="button" wire:click="closeManualDonationModal" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                <i class="fa-solid fa-xmark text-xl"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="bg-primary/5 p-4 rounded-xl text-primary text-sm font-medium flex items-start gap-3 mb-6">
+                            <i class="fa-solid fa-circle-info mt-0.5"></i>
+                            <p>Gunakan form ini untuk mencatat donasi yang dibayar di luar sistem (tunai, transfer manual tidak menggunakan gateway). Data akan otomatis mengubah statistik program & donatur.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <!-- Program -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Program Donasi <span class="text-red-500">*</span>
+                                </label>
+                                <select wire:model="manualProgramId" required class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm">
+                                    <option value="">— Pilih Program —</option>
+                                    @foreach ($programs as $program)
+                                        <option value="{{ $program->id }}">{{ $program->title }}</option>
+                                    @endforeach
+                                </select>
+                                @error('manualProgramId') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Tanggal -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Tanggal Donasi <span class="text-red-500">*</span>
+                                </label>
+                                <input wire:model="manualDonationDate" type="date" required class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm">
+                                @error('manualDonationDate') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Nominal -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Nominal (Rp) <span class="text-red-500">*</span>
+                                </label>
+                                <div class="relative">
+                                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                        <span class="text-gray-500 sm:text-sm">Rp</span>
+                                    </div>
+                                    <input wire:model="manualAmount" type="number" min="1000" step="1" required placeholder="100000" class="block w-full pl-9 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm">
+                                </div>
+                                <p class="text-[10px] text-gray-400 mt-1">Hanya angka, contoh: 100000</p>
+                                @error('manualAmount') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Nama Donatur -->
+                            <div class="md:col-span-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Nama Donatur <span class="text-red-500">*</span>
+                                </label>
+                                <input wire:model="manualDonorName" type="text" required placeholder="Nama Lengkap" class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm">
+                                @error('manualDonorName') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+                            
+                            <!-- Checkbox Hamba Allah -->
+                            <div class="md:col-span-2 mb-2">
+                                <label class="flex items-center cursor-pointer">
+                                    <input wire:model="manualIsAnonymous" type="checkbox" class="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2">
+                                    <span class="ml-2 text-sm text-gray-600">Sembunyikan nama (Hamba Allah)</span>
+                                </label>
+                            </div>
+
+                            <!-- No Wa & Email -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    No WhatsApp <span class="text-gray-400 font-normal">(Optional)</span>
+                                </label>
+                                <input wire:model="manualDonorPhone" type="text" placeholder="08..." class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm">
+                                @error('manualDonorPhone') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Email <span class="text-gray-400 font-normal">(Optional)</span>
+                                </label>
+                                <input wire:model="manualDonorEmail" type="email" placeholder="email@example.com" class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm">
+                                @error('manualDonorEmail') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Catatan / Doa -->
+                            <div class="md:col-span-2 mt-2">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    Titipan Doa / Catatan <span class="text-gray-400 font-normal">(Optional)</span>
+                                </label>
+                                <textarea wire:model="manualNote" rows="2" placeholder="Tulis doa atau catatan transaksi..." class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm"></textarea>
+                                @error('manualNote') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse gap-3 rounded-b-xl border-t border-gray-100">
+                        <button type="submit" wire:target="saveManualDonation" wire:loading.attr="disabled"
+                            class="inline-flex items-center justify-center rounded-xl border border-transparent shadow-sm px-5 py-2.5 bg-primary text-sm font-bold text-white hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-all disabled:opacity-50">
+                            <span wire:loading.remove wire:target="saveManualDonation">Simpan Donasi</span>
+                            <span wire:loading wire:target="saveManualDonation"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Menyimpan...</span>
+                        </button>
+                        <button wire:click="closeManualDonationModal" type="button"
+                            class="inline-flex items-center justify-center rounded-xl border border-gray-300 shadow-sm px-5 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-all">
+                            Batal
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
