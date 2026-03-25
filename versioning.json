@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur baru berupa dukungan provider WhatsApp (Fonnte) dan sistem pemilihan provider yang bersifat *backward compatible* tanpa merusak fungsi StarSender yang sudah ada sebelumnya.",
-  "updatedAt": "2026-03-25T05:20:48.680Z"
+  "aiReason": "Penambahan fitur baru (input donasi manual) yang bersifat 'backward compatible' dan tidak merusak fungsionalitas yang sudah ada sebelumnya.",
+  "updatedAt": "2026-03-25T06:20:17.249Z"
 }

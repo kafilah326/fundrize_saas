@@ -63,6 +63,17 @@ class DonationList extends Component
         'dateTo' => ['except' => ''],
     ];
 
+    // Manual Donation Modal
+    public $isManualDonationModalOpen = false;
+    public $manualProgramId = '';
+    public $manualDonorName = '';
+    public $manualDonorPhone = '';
+    public $manualDonorEmail = '';
+    public $manualAmount = '';
+    public $manualIsAnonymous = false;
+    public $manualNote = '';
+    public $manualDonationDate = '';
+
     public function resetFilters()
     {
         $this->reset(['search', 'statusFilter', 'programFilter', 'dateFrom', 'dateTo']);
@@ -377,6 +388,90 @@ class DonationList extends Component
     public function closeExportModal()
     {
         $this->isExportModalOpen = false;
+    }
+
+    public function openManualDonationModal()
+    {
+        $this->reset([
+            'manualProgramId', 'manualDonorName', 'manualAmount', 
+            'manualDonorPhone', 'manualDonorEmail', 'manualIsAnonymous', 'manualNote'
+        ]);
+        $this->manualDonationDate = now()->format('Y-m-d');
+        $this->isManualDonationModalOpen = true;
+    }
+
+    public function closeManualDonationModal()
+    {
+        $this->isManualDonationModalOpen = false;
+    }
+
+    public function saveManualDonation()
+    {
+        $this->validate([
+            'manualProgramId' => 'required|exists:programs,id',
+            'manualDonorName' => 'required|string|max:255',
+            'manualAmount' => 'required|numeric|min:1',
+            'manualDonationDate' => 'required|date',
+            'manualDonorPhone' => 'nullable|string|max:30',
+            'manualDonorEmail' => 'nullable|email|max:255',
+            'manualIsAnonymous' => 'boolean',
+            'manualNote' => 'nullable|string|max:1000',
+        ]);
+
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () {
+                $externalId = 'MAN-' . time() . '-' . rand(100, 999);
+                $date = \Carbon\Carbon::parse($this->manualDonationDate)->format('Y-m-d H:i:s');
+
+                $payment = new \App\Models\Payment([
+                    'external_id' => $externalId,
+                    'transaction_type' => 'program',
+                    'program_id' => $this->manualProgramId,
+                    'customer_name' => $this->manualDonorName,
+                    'customer_email' => $this->manualDonorEmail,
+                    'customer_phone' => $this->manualDonorPhone,
+                    'payment_type' => 'manual',
+                    'amount' => $this->manualAmount,
+                    'total' => $this->manualAmount,
+                    'admin_fee' => 0,
+                    'payment_method' => 'MANUAL',
+                    'status' => 'paid',
+                    'paid_at' => $date,
+                ]);
+                $payment->created_at = $date;
+                $payment->updated_at = $date;
+                $payment->save();
+
+                $donation = new \App\Models\Donation([
+                    'transaction_id' => $externalId,
+                    'program_id' => $this->manualProgramId,
+                    'amount' => $this->manualAmount,
+                    'total' => $this->manualAmount,
+                    'admin_fee' => 0,
+                    'donor_name' => $this->manualDonorName,
+                    'donor_phone' => $this->manualDonorPhone,
+                    'donor_email' => $this->manualDonorEmail,
+                    'is_anonymous' => (bool) $this->manualIsAnonymous,
+                    'doa' => $this->manualNote,
+                    'payment_method' => 'MANUAL',
+                    'status' => 'success',
+                ]);
+                $donation->created_at = $date;
+                $donation->updated_at = $date;
+                $donation->save();
+
+                $program = \App\Models\Program::find($this->manualProgramId);
+                if ($program) {
+                    $program->increment('collected_amount', $this->manualAmount);
+                    $program->increment('donor_count');
+                }
+            });
+
+            $this->closeManualDonationModal();
+            $this->dispatch('alert', type: 'success', message: 'Donasi manual berhasil ditambahkan!');
+        } catch (\Throwable $e) {
+            $this->dispatch('alert', type: 'error', message: 'Gagal menyimpan donasi manual: ' . $e->getMessage());
+        }
     }
 
     public function exportData()
