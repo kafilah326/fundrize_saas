@@ -164,20 +164,24 @@
                 @endforeach
 
                 <!-- Explicit Zakat Link -->
-                <a href="{{ route('zakat.index') }}" wire:navigate class="flex flex-col items-center gap-2">
-                    <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
-                        <i class="fa-solid fa-scale-balanced text-primary text-xl"></i>
-                    </div>
-                    <span class="text-xs font-medium text-dark">Zakat</span>
-                </a>
+                @if ($akads->contains(fn($a) => strtolower($a->name) === 'zakat'))
+                    <a href="{{ route('zakat.index') }}" wire:navigate class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                            <i class="fa-solid fa-scale-balanced text-primary text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-dark">Zakat</span>
+                    </a>
+                @endif
 
                 <!-- Explicit Qurban Link -->
-                <a href="{{ route('qurban.index') }}" wire:navigate class="flex flex-col items-center gap-2">
-                    <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
-                        <i class="fa-solid fa-cow text-primary text-xl"></i>
-                    </div>
-                    <span class="text-xs font-medium text-dark">Qurban</span>
-                </a>
+                @if ($akads->contains(fn($a) => strtolower($a->name) === 'qurban'))
+                    <a href="{{ route('qurban.index') }}" wire:navigate class="flex flex-col items-center gap-2">
+                        <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                            <i class="fa-solid fa-cow text-primary text-xl"></i>
+                        </div>
+                        <span class="text-xs font-medium text-dark">Qurban</span>
+                    </a>
+                @endif
             </div>
         </section>
 

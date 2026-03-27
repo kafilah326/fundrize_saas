@@ -1,6 +1,6 @@
 {
-  "version": "1.2.0",
-  "aiDecision": "MINOR",
-  "aiReason": "Penambahan fitur baru (input donasi manual) yang bersifat 'backward compatible' dan tidak merusak fungsionalitas yang sudah ada sebelumnya.",
-  "updatedAt": "2026-03-25T06:20:17.249Z"
+  "version": "1.2.1",
+  "aiDecision": "PATCH",
+  "aiReason": "Perubahan ini melibatkan perbaikan logika internal untuk menampilkan elemen UI secara kondisional berdasarkan data yang tersedia serta pembaruan aset statis (favicon) tanpa mengubah fungsionalitas utama atau merusak kompatibilitas API.",
+  "updatedAt": "2026-03-27T05:09:03.779Z"
 }
