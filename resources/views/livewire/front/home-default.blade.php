@@ -148,40 +148,142 @@
         @endif
 
         <!-- Akad Section -->
-        <section id="akad-section" class="bg-white px-4 py-5 mt-2">
+        @php
+            // Prioritize Zakat & Qurban at the front
+            $zakatAkad  = $akads->first(fn($a) => strtolower($a->name) === 'zakat');
+            $qurbanAkad = $akads->first(fn($a) => strtolower($a->name) === 'qurban');
+            $otherAkads = $akads->filter(fn($a) => !in_array(strtolower($a->name), ['zakat', 'qurban']));
+
+            // Build ordered list: Zakat → Qurban → others
+            $orderedAkads = collect();
+            if ($zakatAkad)  $orderedAkads->push(['type' => 'zakat',  'data' => $zakatAkad]);
+            if ($qurbanAkad) $orderedAkads->push(['type' => 'qurban', 'data' => $qurbanAkad]);
+            foreach ($otherAkads as $a) {
+                $orderedAkads->push(['type' => 'regular', 'data' => $a]);
+            }
+
+            $visibleAkads = $orderedAkads->take(7); // show max 7, 8th slot = Lainnya button
+            $hasMore      = $orderedAkads->count() > 7;
+            $totalSlots   = min($orderedAkads->count(), 7) + ($orderedAkads->count() > 7 ? 1 : ($orderedAkads->count() < 8 ? 0 : 0));
+        @endphp
+
+        <section id="akad-section" class="bg-white px-4 py-5 mt-2"
+            x-data="{ showAkadModal: false }">
             <h3 class="text-sm font-bold text-dark mb-4">Pilih Akad</h3>
+
+            <!-- 4-column grid, max 2 rows (8 slots) -->
             <div class="grid grid-cols-4 gap-3">
-                @foreach ($akads as $akad)
-                    @if (!in_array(strtolower($akad->name), ['qurban', 'zakat']))
+
+                @foreach ($visibleAkads as $item)
+                    @if ($item['type'] === 'zakat')
+                        <a href="{{ route('zakat.index') }}" wire:navigate
+                            class="flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                                <i class="fa-solid fa-scale-balanced text-primary text-xl"></i>
+                            </div>
+                            <span class="text-xs font-medium text-dark text-center leading-tight">Zakat</span>
+                        </a>
+
+                    @elseif ($item['type'] === 'qurban')
+                        <a href="{{ route('qurban.index') }}" wire:navigate
+                            class="flex flex-col items-center gap-2">
+                            <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                                <i class="fa-solid fa-cow text-primary text-xl"></i>
+                            </div>
+                            <span class="text-xs font-medium text-dark text-center leading-tight">Qurban</span>
+                        </a>
+
+                    @else
+                        @php $akad = $item['data']; @endphp
                         <a href="{{ route('program.index', ['akad' => $akad->slug]) }}" wire:navigate
                             class="flex flex-col items-center gap-2">
                             <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
-                                <i class="fa-solid {{ $akad->icon }} text-primary text-xl"></i>
+                                <i class="fa-solid {{ $akad->icon ?: 'fa-hand-holding-dollar' }} text-primary text-xl"></i>
                             </div>
-                            <span class="text-xs font-medium text-dark">{{ $akad->name }}</span>
+                            <span class="text-xs font-medium text-dark text-center leading-tight">{{ $akad->name }}</span>
                         </a>
                     @endif
                 @endforeach
 
-                <!-- Explicit Zakat Link -->
-                @if ($akads->contains(fn($a) => strtolower($a->name) === 'zakat'))
-                    <a href="{{ route('zakat.index') }}" wire:navigate class="flex flex-col items-center gap-2">
+                {{-- 8th slot: "Lainnya" button to open popup --}}
+                @if ($orderedAkads->count() > 7)
+                    <button type="button" @click="showAkadModal = true"
+                        class="flex flex-col items-center gap-2">
                         <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
-                            <i class="fa-solid fa-scale-balanced text-primary text-xl"></i>
+                            <i class="fa-solid fa-grip text-primary text-xl"></i>
                         </div>
-                        <span class="text-xs font-medium text-dark">Zakat</span>
-                    </a>
+                        <span class="text-xs font-medium text-gray-500 text-center leading-tight">Lainnya</span>
+                    </button>
                 @endif
+            </div>
 
-                <!-- Explicit Qurban Link -->
-                @if ($akads->contains(fn($a) => strtolower($a->name) === 'qurban'))
-                    <a href="{{ route('qurban.index') }}" wire:navigate class="flex flex-col items-center gap-2">
-                        <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
-                            <i class="fa-solid fa-cow text-primary text-xl"></i>
-                        </div>
-                        <span class="text-xs font-medium text-dark">Qurban</span>
-                    </a>
-                @endif
+            <!-- Popup Modal: Semua Tipe Akad -->
+            <div x-show="showAkadModal" x-transition
+                class="fixed inset-0 z-[60] flex items-end justify-center"
+                style="display: none;">
+
+                <!-- Backdrop -->
+                <div class="absolute inset-0 bg-black/50" @click="showAkadModal = false"></div>
+
+                <!-- Sheet -->
+                <div class="relative bg-white w-full max-w-lg rounded-t-3xl px-5 pt-5 pb-8 z-10"
+                    x-transition:enter="transition ease-out duration-300"
+                    x-transition:enter-start="translate-y-full"
+                    x-transition:enter-end="translate-y-0"
+                    x-transition:leave="transition ease-in duration-200"
+                    x-transition:leave-start="translate-y-0"
+                    x-transition:leave-end="translate-y-full">
+
+                    <!-- Handle -->
+                    <div class="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-4"></div>
+
+                    <!-- Header -->
+                    <div class="flex items-center justify-between mb-5">
+                        <h4 class="text-sm font-bold text-dark">Semua Tipe Akad</h4>
+                        <button @click="showAkadModal = false"
+                            class="w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 text-gray-500">
+                            <i class="fa-solid fa-xmark text-sm"></i>
+                        </button>
+                    </div>
+
+                    <!-- All akads grid -->
+                    <div class="grid grid-cols-4 gap-3">
+
+                        {{-- Zakat first --}}
+                        @if ($zakatAkad)
+                            <a href="{{ route('zakat.index') }}" wire:navigate @click="showAkadModal = false"
+                                class="flex flex-col items-center gap-2">
+                                <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                                    <i class="fa-solid fa-scale-balanced text-primary text-xl"></i>
+                                </div>
+                                <span class="text-xs font-medium text-dark text-center leading-tight">Zakat</span>
+                            </a>
+                        @endif
+
+                        {{-- Qurban second --}}
+                        @if ($qurbanAkad)
+                            <a href="{{ route('qurban.index') }}" wire:navigate @click="showAkadModal = false"
+                                class="flex flex-col items-center gap-2">
+                                <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                                    <i class="fa-solid fa-cow text-primary text-xl"></i>
+                                </div>
+                                <span class="text-xs font-medium text-dark text-center leading-tight">Qurban</span>
+                            </a>
+                        @endif
+
+                        {{-- All other akads --}}
+                        @foreach ($otherAkads as $akad)
+                            <a href="{{ route('program.index', ['akad' => $akad->slug]) }}" wire:navigate
+                                @click="showAkadModal = false"
+                                class="flex flex-col items-center gap-2">
+                                <div class="w-14 h-14 bg-orange-50 rounded-2xl flex items-center justify-center">
+                                    <i class="fa-solid {{ $akad->icon ?: 'fa-hand-holding-dollar' }} text-primary text-xl"></i>
+                                </div>
+                                <span class="text-xs font-medium text-dark text-center leading-tight">{{ $akad->name }}</span>
+                            </a>
+                        @endforeach
+                    </div>
+                </div>
             </div>
         </section>
 

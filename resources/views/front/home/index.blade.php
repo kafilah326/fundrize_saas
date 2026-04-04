@@ -337,7 +337,7 @@
             class="flex flex-col items-center gap-2 min-w-[60px]">
             <div
               class="w-12 h-12 bg-gray-100 rounded-xl flex items-center justify-center">
-              <i class="fa-solid fa-ellipsis text-gray-600 text-lg"></i></div>
+              <i class="fa-solid fa-grip text-gray-600 text-lg"></i></div>
             <span class="text-xs font-medium text-gray-600">Lainnya</span>
           </button></div>
       </section>

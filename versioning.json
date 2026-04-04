@@ -1,6 +1,6 @@
 {
-  "version": "1.3.0",
+  "version": "1.4.0",
   "aiDecision": "MINOR",
-  "aiReason": "Perubahan ini memungkinkan akses publik ke halaman checkout (guest checkout) yang sebelumnya terbatas bagi pengguna terautentikasi, memberikan fungsionalitas baru tanpa merusak kode yang ada.",
-  "updatedAt": "2026-04-04T09:28:11.750Z"
+  "aiReason": "Terdapat penambahan fitur baru berupa modal popup untuk kategori akad, perubahan logika pengurutan (prioritas), serta pembaruan besar pada dependensi framework dan library tanpa merusak kompatibilitas fitur yang sudah ada.",
+  "updatedAt": "2026-04-04T13:35:43.271Z"
 }
