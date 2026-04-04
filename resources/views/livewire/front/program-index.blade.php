@@ -134,7 +134,7 @@
                                     <div class="flex items-center justify-between">
                                         <span class="text-xs text-gray-500">{{ $program->progress }}% terkumpul</span>
                                         <button class="text-gray-400"><i
-                                                class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                                class="fa-solid fa-grip-vertical text-xs"></i></button>
                                     </div>
                                 @else
                                     <div class="flex items-center justify-between mt-2">
@@ -142,7 +142,7 @@
                                             <i class="fa-solid fa-infinity"></i> Unlimited
                                         </span>
                                         <button class="text-gray-400"><i
-                                                class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                                class="fa-solid fa-grip-vertical text-xs"></i></button>
                                     </div>
                                 @endif
                             </div>

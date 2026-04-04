@@ -275,7 +275,7 @@
                             </div>
                             <div class="flex items-center justify-between"><span class="text-xs text-gray-500">72%
                                     terkumpul</span><button class="text-gray-400"><i
-                                        class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                        class="fa-solid fa-grip-vertical text-xs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -298,7 +298,7 @@
                             </div>
                             <div class="flex items-center justify-between"><span class="text-xs text-gray-500">65%
                                     terkumpul</span><button class="text-gray-400"><i
-                                        class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                        class="fa-solid fa-grip-vertical text-xs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -321,7 +321,7 @@
                             </div>
                             <div class="flex items-center justify-between"><span class="text-xs text-gray-500">58%
                                     terkumpul</span><button class="text-gray-400"><i
-                                        class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                        class="fa-solid fa-grip-vertical text-xs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -344,7 +344,7 @@
                             </div>
                             <div class="flex items-center justify-between"><span class="text-xs text-gray-500">85%
                                     terkumpul</span><button class="text-gray-400"><i
-                                        class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                        class="fa-solid fa-grip-vertical text-xs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -367,7 +367,7 @@
                             </div>
                             <div class="flex items-center justify-between"><span class="text-xs text-gray-500">48%
                                     terkumpul</span><button class="text-gray-400"><i
-                                        class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                        class="fa-solid fa-grip-vertical text-xs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -390,7 +390,7 @@
                             </div>
                             <div class="flex items-center justify-between"><span class="text-xs text-gray-500">55%
                                     terkumpul</span><button class="text-gray-400"><i
-                                        class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                        class="fa-solid fa-grip-vertical text-xs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -413,7 +413,7 @@
                             </div>
                             <div class="flex items-center justify-between"><span class="text-xs text-gray-500">42%
                                     terkumpul</span><button class="text-gray-400"><i
-                                        class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                        class="fa-solid fa-grip-vertical text-xs"></i></button>
                             </div>
                         </div>
                     </div>
@@ -436,7 +436,7 @@
                             </div>
                             <div class="flex items-center justify-between"><span class="text-xs text-gray-500">78%
                                     terkumpul</span><button class="text-gray-400"><i
-                                        class="fa-solid fa-ellipsis-vertical text-xs"></i></button>
+                                        class="fa-solid fa-grip-vertical text-xs"></i></button>
                             </div>
                         </div>
                     </div>
