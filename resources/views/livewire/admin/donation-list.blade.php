@@ -438,10 +438,19 @@
                                         {{ $payment->created_at->format('d M Y H:i') }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                        <button wire:click="showDetail({{ $payment->id }})"
-                                            class="text-primary hover:text-primary-hover font-medium flex items-center justify-end gap-1 ml-auto">
-                                            Detail <i class="fa-solid fa-chevron-right text-xs"></i>
-                                        </button>
+                                        <div class="flex flex-col items-end justify-center gap-2">
+                                            <button wire:click="showDetail({{ $payment->id }})"
+                                                class="text-primary hover:text-primary-hover font-medium flex items-center gap-1">
+                                                Detail <i class="fa-solid fa-chevron-right text-xs"></i>
+                                            </button>
+                                            
+                                            @if ($payment->payment_type === 'manual')
+                                                <button wire:click="confirmDeleteManual({{ $payment->id }})"
+                                                    class="text-red-400 hover:text-red-600 font-medium flex items-center gap-1 mt-1">
+                                                    <i class="fa-solid fa-trash text-xs"></i> Hapus
+                                                </button>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
@@ -848,7 +857,7 @@
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                         <span class="text-gray-500 sm:text-sm">Rp</span>
                                     </div>
-                                    <input wire:model="manualAmount" type="number" min="1000" step="1" required placeholder="100000" class="block w-full pl-9 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm">
+                                    <input wire:model.live.debounce.300ms="manualAmount" type="number" min="1000" step="1" required placeholder="100000" class="block w-full pl-9 rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm">
                                 </div>
                                 <p class="text-[10px] text-gray-400 mt-1">Hanya angka, contoh: 100000</p>
                                 @error('manualAmount') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
@@ -895,6 +904,97 @@
                                 <textarea wire:model="manualNote" rows="2" placeholder="Tulis doa atau catatan transaksi..." class="block w-full rounded-xl border-gray-200 bg-gray-50 focus:bg-white focus:border-primary focus:ring focus:ring-primary/20 py-2.5 px-3 text-sm"></textarea>
                                 @error('manualNote') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                             </div>
+
+                            <!-- Divider -->
+                            <div class="md:col-span-2 border-t border-gray-100 pt-4 mt-2">
+                                <label class="flex items-center gap-3 cursor-pointer group w-max">
+                                    <input wire:model.live="manualAssignFundraiser" type="checkbox" class="w-5 h-5 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary focus:ring-2">
+                                    <div>
+                                        <span class="text-sm font-semibold text-gray-700">Berikan Hak Fundraiser</span>
+                                        <p class="text-[11px] text-gray-400">Centang jika donasi ini perlu dikaitkan ke fundraiser tertentu</p>
+                                    </div>
+                                </label>
+                            </div>
+
+                            <!-- Fundraiser Search Section (hanya muncul jika checkbox dicentang) -->
+                            @if ($manualAssignFundraiser)
+                            <div class="md:col-span-2 bg-amber-50 border border-amber-100 rounded-xl p-4 space-y-3">
+                                <label class="block text-sm font-medium text-gray-700">
+                                    Cari Fundraiser <span class="text-red-500">*</span>
+                                </label>
+                                
+                                <!-- Search Input -->
+                                <div class="relative">
+                                    <input wire:model.live.debounce.300ms="manualFundraiserSearch"
+                                        type="text"
+                                        placeholder="Ketik nama atau kode referral fundraiser..."
+                                        class="block w-full rounded-xl border-amber-200 bg-white focus:border-amber-400 focus:ring focus:ring-amber-400/20 py-2.5 px-3 text-sm">
+                                </div>
+                                
+                                <!-- Search Results Dropdown -->
+                                @if (count($manualFundraiserResults) > 0)
+                                <div class="border border-amber-200 rounded-xl overflow-hidden bg-white shadow-sm mt-1 max-h-40 overflow-y-auto">
+                                    @foreach ($manualFundraiserResults as $fr)
+                                    <button wire:click="selectFundraiser({{ $fr['id'] }}, '{{ $fr['name'] }}')" type="button" class="w-full text-left px-4 py-2 hover:bg-amber-50 border-b border-gray-100 last:border-0 flex justify-between items-center transition-colors">
+                                        <span class="font-medium text-gray-700">{{ $fr['name'] }}</span>
+                                        <span class="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded">{{ $fr['referral_code'] }}</span>
+                                    </button>
+                                    @endforeach
+                                </div>
+                                @elseif(strlen($manualFundraiserSearch) >= 2)
+                                <p class="text-xs text-gray-500 italic mt-1 px-1">Fundraiser tidak ditemukan.</p>
+                                @endif
+                                
+                                <!-- Selected Fundraiser Display -->
+                                @if ($manualFundraiserId)
+                                <div class="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-3 mt-2">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center">
+                                            <i class="fa-solid fa-user-check text-green-600"></i>
+                                        </div>
+                                        <div>
+                                            <span class="block text-sm font-semibold text-gray-800">{{ $manualFundraiserName }}</span>
+                                            <span class="block text-xs text-green-600">Fundraiser terpilih</span>
+                                        </div>
+                                    </div>
+                                    <button wire:click="clearFundraiserSelection" type="button" class="text-gray-400 hover:text-red-500 transition-colors">
+                                        <i class="fa-solid fa-xmark"></i>
+                                    </button>
+                                </div>
+                                
+                                <!-- Commission Preview -->
+                                @if ($manualCommissionPreview > 0)
+                                <div class="flex items-center gap-2 text-sm text-amber-700 bg-white/50 p-3 rounded-lg border border-amber-100 mt-2">
+                                    <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                                        <i class="fa-solid fa-coins text-amber-600"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-xs text-gray-500 font-medium">Komisi diberikan</p>
+                                        <p class="font-bold">Rp {{ number_format($manualCommissionPreview, 0, ',', '.') }}</p>
+                                    </div>
+                                </div>
+                                <div class="mt-3 p-3 bg-white/80 border border-amber-100 rounded-xl text-xs">
+                                    <p class="font-semibold text-gray-600 mb-2">📊 Ringkasan Alokasi Dana</p>
+                                    <div class="space-y-1">
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">Dana masuk ke program</span>
+                                            <span class="font-bold text-green-700">Rp {{ number_format((float)($manualAmount ?: 0), 0, ',', '.') }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">Ujroh untuk fundraiser</span>
+                                            <span class="font-bold text-amber-600">Rp {{ number_format($manualCommissionPreview, 0, ',', '.') }}</span>
+                                        </div>
+                                    </div>
+                                    <p class="text-[10px] text-gray-400 mt-2 italic">
+                                        ⚠ Ujroh adalah kewajiban internal lembaga, tidak dikurangi dari nominal donasi.
+                                    </p>
+                                </div>
+                                @else
+                                <p class="text-xs text-gray-400 italic mt-2"><i class="fa-solid fa-circle-info mr-1"></i>Sistem tidak memiliki pengaturan komisi aktif untuk program ini.</p>
+                                @endif
+                                @endif
+                            </div>
+                            @endif
                         </div>
 
                     </div>
@@ -910,6 +1010,43 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delete Confirm Modal -->
+    <div x-data="{ show: $wire.entangle('isDeleteConfirmOpen').live }" x-show="show" x-transition:enter="transition ease-out duration-300"
+        x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;">
+
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity" aria-hidden="true" @click="show = false">
+                <div class="absolute inset-0 bg-gray-900/60 backdrop-blur-sm opacity-100"></div>
+            </div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full border border-gray-100">
+                <div class="bg-white px-6 pt-6 pb-4 sm:p-8 text-center border-b border-gray-100">
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-red-100 mb-6">
+                        <i class="fa-solid fa-triangle-exclamation text-3xl text-red-600"></i>
+                    </div>
+                    <h3 class="text-xl leading-6 font-bold text-gray-900 mb-2">Hapus Donasi Manual?</h3>
+                    <p class="text-sm text-gray-500">
+                        Tindakan ini akan menghapus data donasi ini secara permanen. Perolehan Program dan komisi terkait (jika ada) akan otomatis disesuaikan kembali (dikurangi).
+                    </p>
+                </div>
+                <div class="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-3 rounded-b-2xl">
+                    <button wire:click="deleteManualDonation" type="button"
+                        class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-sm px-5 py-2.5 bg-red-600 text-sm font-bold text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all">
+                        Ya, Hapus Data
+                    </button>
+                    <button wire:click="closeDeleteConfirmModal" type="button"
+                        class="w-full inline-flex justify-center rounded-xl border border-gray-300 shadow-sm px-5 py-2.5 bg-white text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-all">
+                        Batal
+                    </button>
+                </div>
             </div>
         </div>
     </div>
