@@ -87,9 +87,9 @@
                             <span class="inline-block bg-primary text-white text-xs font-semibold px-3 py-1 rounded-full mb-2">{{ $banner->badge_text }}</span>
                         @endif
                         <h2 class="text-white font-bold text-xl sm:text-2xl md:text-3xl mb-2">{{ $banner->title }}</h2>
-                        @if($banner->description)
+                        {{-- @if($banner->description)
                             <div class="text-slate-200 text-sm mb-4 max-w-md">{!! $banner->description !!}</div>
-                        @endif
+                        @endif --}}
                         @if($banner->link)
                         <a href="{{ $banner->link }}" class="inline-block bg-primary hover:bg-primary text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition">
                             {{ $banner->button_text ?? 'Lihat Detail' }}
