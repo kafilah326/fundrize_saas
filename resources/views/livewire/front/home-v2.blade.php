@@ -83,7 +83,7 @@
                         @endif
                         <h2 class="text-white font-bold text-xl sm:text-2xl md:text-3xl mb-2">{{ $banner->title }}</h2>
                         @if($banner->description)
-                            <p class="text-slate-200 text-sm mb-4 max-w-md">{{ $banner->description }}</p>
+                            <div class="text-slate-200 text-sm mb-4 max-w-md">{!! $banner->description !!}</div>
                         @endif
                         @if($banner->link)
                         <a href="{{ $banner->link }}" class="inline-block bg-primary hover:bg-primary text-white font-semibold px-6 py-2.5 rounded-lg text-sm transition">
