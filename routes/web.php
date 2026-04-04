@@ -69,6 +69,7 @@ Route::get('/zakat', \App\Livewire\Front\ZakatIndex::class)->name('zakat.index')
 
 // Qurban Routes
 Route::get('/qurban', QurbanIndex::class)->name('qurban.index');
+Route::get('/qurban/checkout', QurbanCheckout::class)->name('qurban.checkout');
 Route::get('/qurban/tabungan', QurbanTabungan::class)->name('qurban.tabungan');
 
 Route::get('/report', Report::class)->name('report.index');
@@ -79,7 +80,6 @@ Route::get('/transaction/{id}/status', \App\Livewire\Front\TransactionStatus::cl
 
 // Protected Routes
 Route::middleware('auth')->group(function () {
-    Route::get('/qurban/checkout', QurbanCheckout::class)->name('qurban.checkout');
     Route::get('/qurban/tabungan/checkout', QurbanTabunganCheckout::class)->name('qurban.tabungan.checkout');
     Route::get('/qurban/history', QurbanHistory::class)->name('qurban.history');
     Route::get('/qurban/history/{id}', QurbanTransactionDetail::class)->name('qurban.transaction.detail');

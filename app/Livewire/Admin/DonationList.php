@@ -74,6 +74,18 @@ class DonationList extends Component
     public $manualNote = '';
     public $manualDonationDate = '';
 
+    // Delete Donation Modal
+    public $isDeleteConfirmOpen = false;
+    public $deleteConfirmId = null;
+
+    // Manual Donation Fundraiser
+    public $manualAssignFundraiser = false;
+    public $manualFundraiserSearch = '';
+    public $manualFundraiserResults = [];
+    public $manualFundraiserId = null;
+    public $manualFundraiserName = '';
+    public $manualCommissionPreview = 0;
+
     public function resetFilters()
     {
         $this->reset(['search', 'statusFilter', 'programFilter', 'dateFrom', 'dateTo']);
@@ -394,7 +406,9 @@ class DonationList extends Component
     {
         $this->reset([
             'manualProgramId', 'manualDonorName', 'manualAmount', 
-            'manualDonorPhone', 'manualDonorEmail', 'manualIsAnonymous', 'manualNote'
+            'manualDonorPhone', 'manualDonorEmail', 'manualIsAnonymous', 'manualNote',
+            'manualAssignFundraiser', 'manualFundraiserSearch', 'manualFundraiserResults',
+            'manualFundraiserId', 'manualFundraiserName', 'manualCommissionPreview'
         ]);
         $this->manualDonationDate = now()->format('Y-m-d');
         $this->isManualDonationModalOpen = true;
@@ -417,6 +431,11 @@ class DonationList extends Component
             'manualIsAnonymous' => 'boolean',
             'manualNote' => 'nullable|string|max:1000',
         ]);
+
+        if ($this->manualAssignFundraiser && !$this->manualFundraiserId) {
+            $this->dispatch('alert', type: 'error', message: 'Silakan pilih fundraiser atau hilangkan centang "Berikan Hak Fundraiser".');
+            return;
+        }
 
         try {
             \Illuminate\Support\Facades\DB::transaction(function () {
@@ -445,6 +464,7 @@ class DonationList extends Component
                 $donation = new \App\Models\Donation([
                     'transaction_id' => $externalId,
                     'program_id' => $this->manualProgramId,
+                    'fundraiser_id' => $this->manualAssignFundraiser ? $this->manualFundraiserId : null,
                     'amount' => $this->manualAmount,
                     'total' => $this->manualAmount,
                     'admin_fee' => 0,
@@ -465,12 +485,149 @@ class DonationList extends Component
                     $program->increment('collected_amount', $this->manualAmount);
                     $program->increment('donor_count');
                 }
+
+                // Ciptakan komisi jika fundraiser dipilih
+                if ($this->manualAssignFundraiser && $this->manualFundraiserId && $this->manualCommissionPreview > 0) {
+                    \App\Models\FundraiserCommission::create([
+                        'fundraiser_id' => $this->manualFundraiserId,
+                        'commissionable_type' => \App\Models\Donation::class,
+                        'commissionable_id' => $donation->id,
+                        'amount' => $this->manualCommissionPreview,
+                        'status' => 'success',
+                    ]);
+                }
             });
 
             $this->closeManualDonationModal();
             $this->dispatch('alert', type: 'success', message: 'Donasi manual berhasil ditambahkan!');
         } catch (\Throwable $e) {
             $this->dispatch('alert', type: 'error', message: 'Gagal menyimpan donasi manual: ' . $e->getMessage());
+        }
+    }
+
+    public function confirmDeleteManual($paymentId)
+    {
+        $this->deleteConfirmId = $paymentId;
+        $this->isDeleteConfirmOpen = true;
+    }
+
+    public function closeDeleteConfirmModal()
+    {
+        $this->isDeleteConfirmOpen = false;
+        $this->deleteConfirmId = null;
+    }
+
+    public function deleteManualDonation()
+    {
+        if (!$this->deleteConfirmId) return;
+
+        try {
+            \Illuminate\Support\Facades\DB::transaction(function () {
+                $payment = Payment::lockForUpdate()->find($this->deleteConfirmId);
+                
+                if (!$payment || $payment->payment_type !== 'manual') {
+                    throw new \Exception("Donasi tidak valid atau bukan donasi manual.");
+                }
+
+                $donation = Donation::where('transaction_id', $payment->external_id)->first();
+                if ($donation) {
+                    // Hapus Fundraiser Commission jika ada
+                    if ($donation->fundraiserCommission) {
+                        $donation->fundraiserCommission->delete();
+                    }
+
+                    // Rollback program stats
+                    $program = Program::find($donation->program_id);
+                    if ($program) {
+                        $program->decrement('collected_amount', $donation->amount);
+                        $program->decrement('donor_count', 1);
+                    }
+
+                    // Hapus Donation
+                    $donation->delete();
+                }
+
+                // Hapus WhatsApp Message Logs (foreign key cascade doesn't always exist on logs)
+                $payment->whatsappMessageLogs()->delete();
+
+                // Hapus Payment
+                $payment->delete();
+            });
+
+            $this->closeDeleteConfirmModal();
+            $this->dispatch('alert', type: 'success', message: 'Donasi manual berhasil dihapus dan perolehan program dikembalikan.');
+        } catch (\Throwable $e) {
+            $this->dispatch('alert', type: 'error', message: 'Gagal menghapus donasi: ' . $e->getMessage());
+        }
+    }
+
+    // --- Fundraiser Search Logic ---
+    public function updatedManualAssignFundraiser()
+    {
+        if ($this->manualAssignFundraiser) {
+            $this->calculateCommissionPreview();
+        }
+    }
+
+    public function updatedManualFundraiserSearch()
+    {
+        if (strlen($this->manualFundraiserSearch) >= 2) {
+            $this->manualFundraiserResults = \App\Models\Fundraiser::where('status', 'approved')
+                ->where(function ($query) {
+                    $query->where('name', 'like', '%' . $this->manualFundraiserSearch . '%')
+                          ->orWhere('referral_code', 'like', '%' . $this->manualFundraiserSearch . '%');
+                })
+                ->limit(5)
+                ->get()
+                ->toArray();
+        } else {
+            $this->manualFundraiserResults = [];
+        }
+    }
+
+    public function selectFundraiser($id, $name)
+    {
+        $this->manualFundraiserId = $id;
+        $this->manualFundraiserName = $name;
+        $this->manualFundraiserSearch = '';
+        $this->manualFundraiserResults = [];
+        $this->calculateCommissionPreview();
+    }
+
+    public function clearFundraiserSelection()
+    {
+        $this->manualFundraiserId = null;
+        $this->manualFundraiserName = '';
+        $this->manualCommissionPreview = 0;
+    }
+
+    public function updatedManualAmount()
+    {
+        $this->calculateCommissionPreview();
+    }
+
+    public function updatedManualProgramId()
+    {
+        $this->calculateCommissionPreview();
+    }
+
+    private function calculateCommissionPreview()
+    {
+        $this->manualCommissionPreview = 0;
+        
+        if (!$this->manualAssignFundraiser || empty($this->manualAmount)) {
+            return;
+        }
+
+        $amount = (float) $this->manualAmount;
+        
+        $type = \App\Models\AppSetting::get('fundraiser_program_commission_type', 'none');
+        $commissionAmountSetting = \App\Models\AppSetting::get('fundraiser_program_commission_amount', 0);
+
+        if ($type === 'percentage') {
+            $this->manualCommissionPreview = ($amount * (float) $commissionAmountSetting) / 100;
+        } elseif ($type === 'fixed') {
+            $this->manualCommissionPreview = min((float) $commissionAmountSetting, $amount);
         }
     }
 
