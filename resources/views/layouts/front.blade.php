@@ -5,20 +5,20 @@
     $defaultDescription =
         $foundationAbout ?: 'Platform penggalangan dana online terpercaya untuk membantu sesama yang membutuhkan.';
 
-    // OG Image: fallback ke logo yayasan (DB), lalu ke default-og.jpg
-    if (isset($metaImage) && $metaImage) {
-        $ogImage = $metaImage;
-    } elseif ($foundation && $foundation->logo) {
-        $logoPath = $foundation->logo;
-        $ogImage = str_starts_with($logoPath, 'http')
-            ? $logoPath
-            : url(\Illuminate\Support\Facades\Storage::url($logoPath));
-    } else {
-        $ogImage = asset('images/default-og.jpg');
-    }
+    // OG Image fallback logic (Option B: use favicon as fallback for square-ish ratio)
+    $ogImage = $metaImage ?? ($foundation->favicon ?? asset('images/default-og.jpg'));
     if (!str_starts_with($ogImage, 'http')) {
         $ogImage = url($ogImage);
     }
+
+    // Dynamic OG Image Type
+    $extension = strtolower(pathinfo(parse_url($ogImage, PHP_URL_PATH), PATHINFO_EXTENSION));
+    $ogImageType = match ($extension) {
+        'png' => 'image/png',
+        'webp' => 'image/webp',
+        'gif' => 'image/gif',
+        default => 'image/jpeg',
+    };
 @endphp
 <!DOCTYPE html>
 <html lang="id" prefix="og: http://ogp.me/ns#">
@@ -38,21 +38,15 @@
     <meta property="og:title" content="{{ $title ?? $foundationName }}">
     <meta property="og:description" content="{{ $metaDescription ?? $defaultDescription }}">
     <meta property="og:image" content="{{ $ogImage }}">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:secure_url" content="{{ $ogImage }}">
     <meta property="og:image:alt" content="{{ $title ?? $foundationName }}">
     <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="{{ $foundationName }}">
 
-    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:card" content="summary">
     <meta name="twitter:title" content="{{ $title ?? $foundationName }}">
     <meta name="twitter:description" content="{{ $metaDescription ?? $defaultDescription }}">
     <meta name="twitter:image" content="{{ $ogImage }}">
-    <meta name="twitter:image:alt" content="{{ $title ?? $foundationName }}">
-
-    <meta itemprop="image" content="{{ $ogImage }}">
-    <link rel="image_src" href="{{ $ogImage }}">
     @stack('meta')
 
     @php
