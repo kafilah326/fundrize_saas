@@ -147,11 +147,11 @@ class Program extends Component
         ];
 
         if ($this->image) {
-            $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
-            $image = $manager->read($this->image->getRealPath());
-            $processed = $image->cover(1200, 630)->toJpeg(85);
+            $manager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
+            $image = $manager->decode($this->image->getRealPath());
+            $processed = $image->cover(1200, 630)->encode(new \Intervention\Image\Encoders\JpegEncoder(quality: 85));
             $filename = 'programs/' . uniqid() . '.jpg';
-            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, $processed);
+            \Illuminate\Support\Facades\Storage::disk('public')->put($filename, (string) $processed);
 
             if ($this->programId) {
                 $oldProgram = \App\Models\Program::find($this->programId);
