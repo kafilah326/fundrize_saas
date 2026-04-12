@@ -429,6 +429,10 @@
                     <span
                         class="bg-dark/5 text-dark border border-dark/20 text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide">Transparan</span>
                 </div>
+                <a href="{{ route('foundation.profile') }}" wire:navigate
+                    class="block w-full text-center bg-primary/5 hover:bg-primary text-primary hover:text-white font-semibold py-2.5 rounded-lg text-sm transition-colors border border-primary/20 hover:border-transparent">
+                    Selengkapnya
+                </a>
             </div>
         </section>
 

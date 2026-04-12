@@ -1,6 +1,6 @@
 {
-  "version": "1.4.1",
+  "version": "1.4.2",
   "aiDecision": "PATCH",
-  "aiReason": "Perubahan ini merupakan pembaruan internal pada cara library memproses gambar (refactor) tanpa menambah fitur baru atau merusak kompatibilitas API yang ada.",
-  "updatedAt": "2026-04-06T07:43:07.982Z"
+  "aiReason": "Default karena error API",
+  "updatedAt": "2026-04-12T11:44:51.931Z"
 }
