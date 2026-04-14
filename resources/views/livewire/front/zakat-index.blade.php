@@ -289,57 +289,59 @@
         </div>
 
         {{-- Collapsible Info --}}
-        <section class="px-4 mt-4 space-y-2" x-data="{ niat: false, nisab: false }">
-            <div class="bg-white rounded-xl">
-                <button @click="niat = !niat" class="w-full flex items-center justify-between p-4">
-                    <span class="text-sm font-semibold text-dark">Lihat niat zakat</span>
-                    <i class="fa-solid fa-chevron-down text-gray-400 text-sm transition-transform duration-200"
-                        :class="{ 'rotate-180': niat }"></i>
-                </button>
-                <div x-show="niat" x-transition x-cloak class="px-4 pb-4 space-y-4">
-                    {{-- Niat Fitrah --}}
-                    <div>
-                        <p class="text-[10px] font-bold text-primary uppercase mb-1">Niat Zakat Fitrah</p>
-                        <p class="text-xs text-gray-600 leading-relaxed">
-                            <em>"Nawaytu an ukhrija zakaata al-fitri 'anni wa an jami'i ma yalzimuniy nafaqatuhum
-                                syar'an fardhan lillahi ta'ala"</em>
-                        </p>
-                        <p class="text-[10px] text-gray-500 mt-1">
-                            Artinya: "Aku niat mengeluarkan zakat fitrah untuk diriku dan seluruh orang yang nafkahnya
-                            menjadi tanggunganku, fardu karena Allah Ta'âlâ."
-                        </p>
-                    </div>
+        @if (config('app.name') !== 'Yasin Peduli')
+            <section class="px-4 mt-4 space-y-2" x-data="{ niat: false, nisab: false }">
+                <div class="bg-white rounded-xl">
+                    <button @click="niat = !niat" class="w-full flex items-center justify-between p-4">
+                        <span class="text-sm font-semibold text-dark">Lihat niat zakat</span>
+                        <i class="fa-solid fa-chevron-down text-gray-400 text-sm transition-transform duration-200"
+                            :class="{ 'rotate-180': niat }"></i>
+                    </button>
+                    <div x-show="niat" x-transition x-cloak class="px-4 pb-4 space-y-4">
+                        {{-- Niat Fitrah --}}
+                        <div>
+                            <p class="text-[10px] font-bold text-primary uppercase mb-1">Niat Zakat Fitrah</p>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                <em>"Nawaytu an ukhrija zakaata al-fitri 'anni wa an jami'i ma yalzimuniy nafaqatuhum
+                                    syar'an fardhan lillahi ta'ala"</em>
+                            </p>
+                            <p class="text-[10px] text-gray-500 mt-1">
+                                Artinya: "Aku niat mengeluarkan zakat fitrah untuk diriku dan seluruh orang yang nafkahnya
+                                menjadi tanggunganku, fardu karena Allah Ta'âlâ."
+                            </p>
+                        </div>
 
-                    <div class="border-t border-gray-100 pt-3">
-                        <p class="text-[10px] font-bold text-primary uppercase mb-1">Niat Zakat Mal</p>
+                        <div class="border-t border-gray-100 pt-3">
+                            <p class="text-[10px] font-bold text-primary uppercase mb-1">Niat Zakat Mal</p>
+                            <p class="text-xs text-gray-600 leading-relaxed">
+                                <em>"Nawaitu an ukhrija zakata maali fardhan lillahi ta'ala"</em>
+                            </p>
+                            <p class="text-[10px] text-gray-500 mt-1">
+                                Artinya: "Saya niat mengeluarkan zakat harta saya, fardhu karena Allah Ta'ala"
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-white rounded-xl">
+                    <button @click="nisab = !nisab" class="w-full flex items-center justify-between p-4">
+                        <span class="text-sm font-semibold text-dark">Tentang nisab &amp; ketentuan</span>
+                        <i class="fa-solid fa-chevron-down text-gray-400 text-sm transition-transform duration-200"
+                            :class="{ 'rotate-180': nisab }"></i>
+                    </button>
+                    <div x-show="nisab" x-transition x-cloak class="px-4 pb-4">
                         <p class="text-xs text-gray-600 leading-relaxed">
-                            <em>"Nawaitu an ukhrija zakata maali fardhan lillahi ta'ala"</em>
-                        </p>
-                        <p class="text-[10px] text-gray-500 mt-1">
-                            Artinya: "Saya niat mengeluarkan zakat harta saya, fardhu karena Allah Ta'ala"
+                            Nisab adalah batas minimum harta yang wajib dikeluarkan zakatnya.
+                            Nisab zakat mal setara with <span class="font-bold text-primary">85 gram emas</span>
+                            (saat ini = <span class="font-bold text-primary">Rp
+                                {{ number_format($nisab, 0, ',', '.') }}</span>).
+                            Zakat wajib dikeluarkan sebesar <span class="font-bold text-primary">2,5%</span> dari total
+                            harta yang mencapai nisab
+                            dan telah dimiliki selama satu tahun hijriah.
                         </p>
                     </div>
                 </div>
-            </div>
-            <div class="bg-white rounded-xl">
-                <button @click="nisab = !nisab" class="w-full flex items-center justify-between p-4">
-                    <span class="text-sm font-semibold text-dark">Tentang nisab &amp; ketentuan</span>
-                    <i class="fa-solid fa-chevron-down text-gray-400 text-sm transition-transform duration-200"
-                        :class="{ 'rotate-180': nisab }"></i>
-                </button>
-                <div x-show="nisab" x-transition x-cloak class="px-4 pb-4">
-                    <p class="text-xs text-gray-600 leading-relaxed">
-                        Nisab adalah batas minimum harta yang wajib dikeluarkan zakatnya.
-                        Nisab zakat mal setara dengan <span class="font-bold text-primary">85 gram emas</span>
-                        (saat ini = <span class="font-bold text-primary">Rp
-                            {{ number_format($nisab, 0, ',', '.') }}</span>).
-                        Zakat wajib dikeluarkan sebesar <span class="font-bold text-primary">2,5%</span> dari total
-                        harta yang mencapai nisab
-                        dan telah dimiliki selama satu tahun hijriah.
-                    </p>
-                </div>
-            </div>
-        </section>
+            </section>
+        @endif
 
         {{-- Perolehan Zakat (styled like distribution-section in program-detail) --}}
         <section class="bg-white px-4 py-4 mt-4" x-data="{ expanded: false }">
