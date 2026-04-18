@@ -102,11 +102,11 @@
 
             <div class="mt-8">
                 <p class="px-4 text-[10px] font-black text-slate-500 uppercase tracking-[0.15em] mb-3">Sistem</p>
-                <a href="#" class="group flex items-center space-x-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-white/5 hover:text-slate-100 transition-all">
-                    <div class="w-6 flex justify-center text-lg text-slate-500 group-hover:text-indigo-400 transition-colors">
-                        <i class="fa-solid fa-sliders"></i>
+                <a href="{{ route('superadmin.settings') }}" class="group flex items-center space-x-3 px-4 py-3 rounded-xl transition-all duration-200 {{ request()->routeIs('superadmin.settings*') ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-600/20' : 'text-slate-400 hover:bg-white/5 hover:text-slate-100' }}">
+                    <div class="w-6 flex justify-center text-lg {{ request()->routeIs('superadmin.settings*') ? 'text-white' : 'text-slate-500 group-hover:text-indigo-400' }} transition-colors">
+                        <i class="fa-solid fa-gears"></i>
                     </div>
-                    <span class="font-semibold text-sm">Global Settings</span>
+                    <span class="font-semibold text-sm">Pengaturan Situs</span>
                 </a>
             </div>
         </div>

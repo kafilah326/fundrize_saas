@@ -44,5 +44,6 @@ Route::middleware('auth:superadmin')->group(function () {
     Route::get('/plans', PlanManager::class)->name('superadmin.plans');
     Route::get('/addons', \App\Livewire\SuperAdmin\AddonManager::class)->name('superadmin.addons');
     Route::get('/transactions', TransactionList::class)->name('superadmin.transactions');
+    Route::get('/settings', \App\Livewire\SuperAdmin\SiteSettings::class)->name('superadmin.settings');
     // Route::get('/domains', DomainManager::class)->name('superadmin.domains');
 });

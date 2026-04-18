@@ -16,18 +16,15 @@
                         class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-2 w-2 bg-primary-500"></span>
                 </span>
-                <span class="text-sm font-semibold text-slate-600">Terbaru: Fitur Fundraiser & Laporan Otomatis</span>
+                <span class="text-sm font-semibold text-slate-600">{{ $settings['hero_badge'] }}</span>
             </div>
 
             <h1 class="text-5xl md:text-7xl font-extrabold tracking-tight text-slate-900 mb-8 leading-[1.1]">
-                Digitalkan Yayasan Anda <br> <span
-                    class="text-transparent bg-clip-text bg-gradient-to-r from-primary-600 to-orange-500">Dalam
-                    Sekejap.</span>
+                {!! $settings['hero_title'] !!}
             </h1>
 
             <p class="text-xl text-slate-600 max-w-2xl mx-auto mb-12 leading-relaxed">
-                Platform all-in-one untuk manajemen donasi, zakat, qurban, dan pemberdayaan fundraiser. Kelola semua
-                operasional lembaga sosial Anda dengan sistem yang transparan dan modern.
+                {{ $settings['hero_subtitle'] }}
             </p>
 
             <div class="flex flex-col sm:row items-center justify-center gap-4">
@@ -36,16 +33,21 @@
                 </a> --}}
                 <a href="#features"
                     class="w-full sm:w-auto bg-white hover:bg-slate-50 text-slate-800 font-bold px-10 py-4 rounded-full border border-slate-200 shadow-sm transition-all hover:border-slate-300">
-                    Lihat Fitur
+                    {{ $settings['hero_cta_text'] }}
                 </a>
             </div>
 
             <div class="mt-20 relative max-w-5xl mx-auto">
                 <div class="absolute inset-0 bg-gradient-to-t from-slate-50 via-transparent to-transparent z-10"></div>
-                <!-- Mockup Image (Placeholder or generated) -->
+                <!-- Mockup Image -->
                 <div class="rounded-2xl border border-slate-200 shadow-2xl overflow-hidden bg-white">
-                    <img src="https://placehold.co/1200x800/f97316/ffffff?text=Dashboard+Yayasan+Modern"
-                        alt="Dashboard Preview" class="w-full h-auto">
+                    @if($settings['hero_image'])
+                        <img src="{{ asset('storage/' . $settings['hero_image']) }}" 
+                            alt="Dashboard Preview" class="w-full h-auto">
+                    @else
+                        <img src="https://placehold.co/1200x800/f97316/ffffff?text=Dashboard+Yayasan+Modern"
+                            alt="Dashboard Preview" class="w-full h-auto">
+                    @endif
                 </div>
             </div>
         </div>
@@ -56,9 +58,8 @@
         <div class="container mx-auto px-6">
             <div class="text-center max-w-3xl mx-auto mb-20">
                 <h2 class="text-primary-600 font-bold tracking-wider uppercase text-sm mb-4">Fitur Unggulan</h2>
-                <h3 class="text-4xl font-extrabold text-slate-900 mb-6">Kenapa Harus Menggunakan Fundrize?</h3>
-                <p class="text-lg text-slate-600">Kami menyediakan semua kebutuhan digitalisasi yang diperlukan oleh
-                    lembaga filantropi modern.</p>
+                <h3 class="text-4xl font-extrabold text-slate-900 mb-6">{{ $settings['features_title'] }}</h3>
+                <p class="text-lg text-slate-600">{{ $settings['features_subtitle'] }}</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -188,21 +189,12 @@
             <h3 class="text-3xl font-extrabold text-center text-slate-900 mb-16">Pertanyaan yang Sering Diajukan</h3>
 
             <div class="space-y-6">
-                <div class="p-6 rounded-2xl bg-slate-50">
-                    <h5 class="font-bold text-lg mb-2">Berapa lama proses aktivasinya?</h5>
-                    <p class="text-slate-600">Setelah pembayaran terkonfirmasi, sistem akan otomatis melakukan pembuatan
-                        subdomain dan dashboard yayasan Anda dalam waktu kurang dari 5 menit.</p>
-                </div>
-                <div class="p-6 rounded-2xl bg-slate-50">
-                    <h5 class="font-bold text-lg mb-2">Apakah saya bisa menggunakan domain sendiri?</h5>
-                    <p class="text-slate-600">Ya, untuk paket "Pro" ke atas, Anda dapat menghubungkan domain kustom
-                        sendiri (misal: donasi.nama-yayasan.org) melalui menu pengaturan admin.</p>
-                </div>
-                <div class="p-6 rounded-2xl bg-slate-50">
-                    <h5 class="font-bold text-lg mb-2">Apakah ada biaya tambahan per transaksi?</h5>
-                    <p class="text-slate-600">Kami hanya menarik "System Fee" kecil sesuai paket yang dipilih (misal 2%
-                        untuk paket Pro) untuk biaya operasional platform.</p>
-                </div>
+                @foreach($settings['faqs'] as $faq)
+                    <div class="p-6 rounded-2xl bg-slate-50">
+                        <h5 class="font-bold text-lg mb-2">{{ $faq['q'] }}</h5>
+                        <p class="text-slate-600">{{ $faq['a'] }}</p>
+                    </div>
+                @endforeach
             </div>
         </div>
     </section>
@@ -215,10 +207,8 @@
                 <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32"></div>
                 <div class="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full -ml-32 -mb-32"></div>
 
-                <h3 class="text-3xl md:text-5xl font-extrabold mb-8 relative z-10">Siap Mendigitalkan Yayasan Anda
-                    Sekarang?</h3>
-                <p class="text-xl text-primary-100 mb-12 max-w-2xl mx-auto relative z-10">Mulai langkah kebaikan Anda
-                    secara digital hari ini dengan Fundrize.</p>
+                <h3 class="text-3xl md:text-5xl font-extrabold mb-8 relative z-10">{{ $settings['cta_title'] }}</h3>
+                <p class="text-xl text-primary-100 mb-12 max-w-2xl mx-auto relative z-10">{{ $settings['cta_subtitle'] }}</p>
                 <a href="#pricing"
                     class="inline-block bg-white text-primary-600 font-extrabold px-12 py-5 rounded-full shadow-lg shadow-black/10 transition-all hover:-translate-y-1 relative z-10">
                     Daftar Sekarang
