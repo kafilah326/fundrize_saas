@@ -270,12 +270,14 @@ class FundraiserList extends Component
         } elseif ($this->activeTab === 'withdrawals') {
             $data = FundraiserWithdrawal::with('fundraiser')
                 ->when($this->search, function ($query) {
-                    $query->whereHas('fundraiser', function($q) {
-                        $q->where('name', 'like', '%' . $this->search . '%');
-                    })
-                    ->orWhere('bank_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('account_name', 'like', '%' . $this->search . '%')
-                    ->orWhere('account_number', 'like', '%' . $this->search . '%');
+                    $query->where(function ($q) {
+                        $q->whereHas('fundraiser', function($sub) {
+                            $sub->where('name', 'like', '%' . $this->search . '%');
+                        })
+                        ->orWhere('bank_name', 'like', '%' . $this->search . '%')
+                        ->orWhere('account_name', 'like', '%' . $this->search . '%')
+                        ->orWhere('account_number', 'like', '%' . $this->search . '%');
+                    });
                 })
                 ->when($this->statusFilter, function ($query) {
                     $query->where('status', $this->statusFilter);
@@ -288,9 +290,11 @@ class FundraiserList extends Component
                     $query->where('status', 'success');
                 }], 'amount')
                 ->when($this->search, function ($query) {
-                    $query->where('name', 'like', '%' . $this->search . '%')
-                        ->orWhere('email', 'like', '%' . $this->search . '%')
-                        ->orWhere('whatsapp', 'like', '%' . $this->search . '%');
+                    $query->where(function ($q) {
+                        $q->where('name', 'like', '%' . $this->search . '%')
+                            ->orWhere('email', 'like', '%' . $this->search . '%')
+                            ->orWhere('whatsapp', 'like', '%' . $this->search . '%');
+                    });
                 })
                 ->when($this->statusFilter, function ($query) {
                     $query->where('status', $this->statusFilter);

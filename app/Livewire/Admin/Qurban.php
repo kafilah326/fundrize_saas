@@ -175,7 +175,8 @@ class Qurban extends Component
 
         $filename = '';
         $callback = null;
-        $feePercentage = env('SYSTEM_FEE_PERCENTAGE', 0);
+        $tenant = app('current_tenant');
+        $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
 
         if ($this->activeTab === 'orders') {
             $ordersQuery = QurbanOrder::with(['payment', 'animal', 'user'])
@@ -254,7 +255,8 @@ class Qurban extends Component
                 ? ucfirst($this->exportAnimalTypeFilter)
                 : 'Semua';
             $filename = 'Qurban_Tabungan_'.$typeLabel.'_'.$this->startDate.'_sd_'.$this->endDate.'.csv';
-            $feePercentage = env('SYSTEM_FEE_PERCENTAGE', 0);
+            $tenant = app('current_tenant');
+            $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
 
             $callback = function () use ($deposits, $feePercentage) {
                 $file = fopen('php://output', 'w');

@@ -12,15 +12,17 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            SuperAdminSeeder::class,
+            PlanSeeder::class,
+            CategorySeeder::class,
+            TenantSeeder::class,
+            SaasTransactionSeeder::class,
+            ProgramSeeder::class,
+            TenantTransactionSeeder::class,
             BankAccountSeeder::class,
             AppSettingSeeder::class,
-            UserSeeder::class,
-            FoundationSeeder::class,
-            CategorySeeder::class,
-            ProgramSeeder::class,
-            DonationSeeder::class,
-            QurbanSeeder::class,
             WhatsappTemplateSeeder::class,
+            QurbanTabunganSettingSeeder::class,
         ]);
     }
 }

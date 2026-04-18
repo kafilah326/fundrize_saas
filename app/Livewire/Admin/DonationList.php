@@ -660,7 +660,8 @@ class DonationList extends Component
             $programLabel = 'Semua_Program';
         }
         $filename = 'Donasi_'.$programLabel.'_'.$this->startDate.'_sd_'.$this->endDate.'.csv';
-        $feePercentage = env('SYSTEM_FEE_PERCENTAGE', 0); // Default 0 if not set
+        $tenant = app('current_tenant');
+        $feePercentage = $tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', env('SYSTEM_FEE_PERCENTAGE', 5));
 
         $headers = [
             'Content-type' => 'text/csv',

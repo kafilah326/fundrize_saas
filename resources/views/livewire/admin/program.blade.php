@@ -246,6 +246,7 @@
                                 </div>
 
                                 <!-- Dynamic Program Toggle -->
+                                @if($canUseDynamic)
                                 <div class="sm:col-span-6 bg-gray-50/50 p-4 rounded-xl border border-gray-100"
                                     x-data="{ isDynamic: @entangle('is_dynamic') }">
                                     <label class="flex items-center cursor-pointer group mb-4">
@@ -293,6 +294,20 @@
                                         </div>
                                     </div>
                                 </div>
+                                @else
+                                <div class="sm:col-span-6 bg-indigo-50/30 p-5 rounded-2xl border border-indigo-100/50 flex items-center justify-between group">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-indigo-600 shadow-sm border border-indigo-50">
+                                            <i class="fa-solid fa-box-archive"></i>
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-slate-800 tracking-tight">Modul Program Paketan</p>
+                                            <p class="text-[10px] font-medium text-slate-400 uppercase tracking-widest">Fitur Eksklusif Paket Premium</p>
+                                        </div>
+                                    </div>
+                                    <a href="#" class="px-3 py-1.5 bg-indigo-600 text-white text-[9px] font-black rounded-lg uppercase tracking-widest hover:bg-indigo-700 transition-all shadow-lg shadow-indigo-600/20">Upgrade Sekarang</a>
+                                </div>
+                                @endif
 
                                 <!-- End Date -->
                                 <div class="sm:col-span-3">

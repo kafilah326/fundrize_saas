@@ -8,13 +8,15 @@ use Livewire\WithPagination;
 use App\Models\FoundationSetting;
 use App\Models\BankAccount;
 use App\Models\AppSetting;
+use App\Models\TenantDomain;
+use App\Services\DomainVerificationService;
 
 class Settings extends Component
 {
     use WithFileUploads;
     use WithPagination;
 
-    public $activeTab = 'foundation'; // foundation, bank, api, appearance
+    public $activeTab = 'foundation'; // foundation, bank, api, appearance, domain
     public $perPage = 5;
 
     // Foundation Fields
@@ -23,24 +25,19 @@ class Settings extends Component
     public $logo, $existingLogo;
     public $favicon, $existingFavicon;
     public $social_facebook, $social_instagram, $social_whatsapp, $social_youtube;
-    // Note: Focus Areas handled as simple text/array logic if needed, simplified for now
 
     // Bank Account Fields
-    // public $bankAccounts; // Removed: Passed directly to view for pagination
     public $bankId;
     public $bank_name, $account_number, $account_holder_name, $is_active = true;
-    public $bank_icon; // temporary file upload
-    public $existingBankIcon; // stored path
+    public $bank_icon;
+    public $existingBankIcon;
     public $isBankModalOpen = false;
 
     // API Fields
-    // StarSender logic moved to separate component
     public $payment_gateway = 'xendit';
-    
     public $xendit_mode = 'test';
     public $xendit_secret_key;
     public $xendit_webhook_token;
-    
     public $pakasir_mode = 'sandbox';
     public $pakasir_slug;
     public $pakasir_api_key;
@@ -49,7 +46,10 @@ class Settings extends Component
     public $theme_color;
     public $default_theme_color = '#FF6B35';
     public $secondary_color;
-    public $default_secondary_color = '#FDF2EB'; // Very light orange/cream
+    public $default_secondary_color = '#FDF2EB';
+
+    // Domain Fields
+    public $customDomain;
 
     protected $rules = [
         'name' => 'required|string',
@@ -108,10 +108,112 @@ class Settings extends Component
     public function render()
     {
         $bankAccounts = BankAccount::orderBy('sort_order')->paginate($this->perPage);
+        $tenantDomains = [];
+        $tenant = app('current_tenant');
+        $canUseCustomDomain = false;
+        
+        if ($tenant) {
+            $tenantDomains = TenantDomain::where('tenant_id', $tenant->id)->get();
+            $canUseCustomDomain = $tenant->canUseCustomDomain();
+        }
         
         return view('livewire.admin.settings', [
-            'bankAccounts' => $bankAccounts
+            'bankAccounts' => $bankAccounts,
+            'tenantDomains' => $tenantDomains,
+            'canUseCustomDomain' => $canUseCustomDomain,
         ])->layout('layouts.admin');
+    }
+
+    // Domain Methods
+    public function addCustomDomain()
+    {
+        $tenant = app('current_tenant');
+        if (!$tenant || !$tenant->canUseCustomDomain()) {
+            session()->flash('error', 'Paket berlangganan Anda tidak mendukung penambahan custom domain.');
+            return;
+        }
+
+        $this->validate([
+            'customDomain' => ['required', 'string', 'regex:/^(?!:\/\/)(?=.{1,255}$)((.{1,63}\.){1,127}(?![0-9]*$)[a-z0-9-]+\.?)$/i']
+        ], [
+            'customDomain.regex' => 'Format domain tidak valid (contoh: donasi.yayasan.com)'
+        ]);
+
+        $domain = strtolower(trim($this->customDomain));
+        
+        // Remove http/https if accidentally pasted
+        $domain = preg_replace('/^https?:\/\//', '', $domain);
+        $domain = rtrim($domain, '/');
+
+        if (TenantDomain::where('domain', $domain)->exists()) {
+            session()->flash('error', 'Domain ini sudah terdaftar dalam sistem.');
+            return;
+        }
+
+        TenantDomain::create([
+            'tenant_id' => $tenant->id,
+            'domain' => $domain,
+            'type' => 'custom',
+            'is_primary' => false,
+            'dns_target' => config('tenancy.base_domain'),
+        ]);
+
+        $this->customDomain = '';
+        session()->flash('success', 'Domain berhasil ditambahkan. Silakan atur konfigurasi DNS dan lakukan verifikasi.');
+    }
+
+    public function verifyDomain($domainId, DomainVerificationService $verifier)
+    {
+        $tenant = app('current_tenant');
+        $domain = TenantDomain::where('id', $domainId)
+            ->where('tenant_id', $tenant->id)
+            ->where('type', 'custom')
+            ->firstOrFail();
+
+        $result = $verifier->verify($domain);
+
+        if ($result['success']) {
+            session()->flash('success', $result['message']);
+        } else {
+            session()->flash('error', $result['message']);
+        }
+    }
+
+    public function removeDomain($domainId)
+    {
+        $tenant = app('current_tenant');
+        $domain = TenantDomain::where('id', $domainId)
+            ->where('tenant_id', $tenant->id)
+            ->where('type', 'custom')
+            ->firstOrFail();
+
+        // If it's primary, need to change primary to subdomain
+        if ($domain->is_primary) {
+            TenantDomain::where('tenant_id', $tenant->id)
+                ->where('type', 'subdomain')
+                ->update(['is_primary' => true]);
+        }
+
+        $domain->delete();
+        session()->flash('success', 'Custom domain berhasil dihapus.');
+    }
+
+    public function setPrimaryDomain($domainId)
+    {
+        $tenant = app('current_tenant');
+        $domain = TenantDomain::where('id', $domainId)
+            ->where('tenant_id', $tenant->id)
+            ->firstOrFail();
+
+        if ($domain->type === 'custom' && !$domain->dns_verified) {
+            session()->flash('error', 'Tidak dapat menjadikan domain yang belum terverifikasi sebagai primary.');
+            return;
+        }
+
+        TenantDomain::where('tenant_id', $tenant->id)->update(['is_primary' => false]);
+        $domain->update(['is_primary' => true]);
+
+        session()->flash('success', "Domain {$domain->domain} sekarang menjadi domain utama.");
     }
 
     // Foundation Methods
@@ -131,7 +233,7 @@ class Settings extends Component
             'tagline' => $this->tagline,
             'about' => $this->about,
             'vision' => $this->vision,
-            'mission' => explode("\n", $this->mission), // Convert newline separated string to array
+            'mission' => explode("\n", $this->mission),
             'address' => $this->address,
             'phone' => $this->phone,
             'email' => $this->email,
@@ -167,15 +269,14 @@ class Settings extends Component
             FoundationSetting::create($data);
         }
         
-        // Update local state to reflect changes
         if (isset($data['logo'])) {
             $this->existingLogo = $data['logo'];
-            $this->logo = null; // Clear the temporary upload
+            $this->logo = null;
         }
         
         if (isset($data['favicon'])) {
             $this->existingFavicon = $data['favicon'];
-            $this->favicon = null; // Clear the temporary upload
+            $this->favicon = null;
         }
 
         session()->flash('success', 'Profil yayasan berhasil diperbarui.');
@@ -268,98 +369,22 @@ class Settings extends Component
         $this->validate([
             'payment_gateway' => 'required|in:xendit,pakasir',
             'xendit_mode' => 'nullable|in:test,live',
-            'xendit_secret_key' => 'nullable|string',
-            'xendit_webhook_token' => 'nullable|string',
-            'pakasir_mode' => 'nullable|in:sandbox,live',
-            'pakasir_slug' => 'nullable|string',
-            'pakasir_api_key' => 'nullable|string',
         ]);
 
-        // Simpan Payment Gateway
-        AppSetting::updateOrCreate(
-            ['key' => 'payment_gateway'],
-            [
-                'value' => $this->payment_gateway,
-                'group' => 'general',
-                'type' => 'text',
-                'label' => 'Payment Gateway',
-                'description' => 'Gateway pembayaran yang aktif (xendit atau pakasir)',
-            ]
-        );
+        AppSetting::updateOrCreate(['key' => 'payment_gateway'], ['value' => $this->payment_gateway, 'group' => 'general', 'type' => 'text', 'label' => 'Payment Gateway']);
+        AppSetting::updateOrCreate(['key' => 'xendit_mode'], ['value' => $this->xendit_mode, 'group' => 'xendit', 'type' => 'text', 'label' => 'Xendit Mode']);
+        AppSetting::updateOrCreate(['key' => 'xendit_secret_key'], ['value' => $this->xendit_secret_key, 'group' => 'xendit', 'type' => 'text', 'label' => 'Xendit Secret Key']);
+        AppSetting::updateOrCreate(['key' => 'xendit_webhook_token'], ['value' => $this->xendit_webhook_token, 'group' => 'xendit', 'type' => 'text', 'label' => 'Xendit Webhook Token']);
+        AppSetting::updateOrCreate(['key' => 'pakasir_mode'], ['value' => $this->pakasir_mode, 'group' => 'pakasir', 'type' => 'text', 'label' => 'Pakasir Mode']);
+        AppSetting::updateOrCreate(['key' => 'pakasir_slug'], ['value' => $this->pakasir_slug, 'group' => 'pakasir', 'type' => 'text', 'label' => 'Pakasir Slug']);
+        AppSetting::updateOrCreate(['key' => 'pakasir_api_key'], ['value' => $this->pakasir_api_key, 'group' => 'pakasir', 'type' => 'text', 'label' => 'Pakasir API Key']);
+
         \Illuminate\Support\Facades\Cache::forget('app_setting_payment_gateway');
-
-        // Simpan mode Xendit
-        AppSetting::updateOrCreate(
-            ['key' => 'xendit_mode'],
-            [
-                'value' => $this->xendit_mode,
-                'group' => 'xendit',
-                'type' => 'text',
-                'label' => 'Xendit Mode',
-                'description' => 'Mode environment Xendit: test (sandbox) atau live (production)',
-            ]
-        );
         \Illuminate\Support\Facades\Cache::forget('app_setting_xendit_mode');
-
-        AppSetting::updateOrCreate(
-            ['key' => 'xendit_secret_key'],
-            [
-                'value' => $this->xendit_secret_key,
-                'group' => 'xendit',
-                'type' => 'text',
-                'label' => 'Xendit Secret Key',
-                'description' => 'API Key dari dashboard Xendit',
-            ]
-        );
         \Illuminate\Support\Facades\Cache::forget('app_setting_xendit_secret_key');
-
-        AppSetting::updateOrCreate(
-            ['key' => 'xendit_webhook_token'],
-            [
-                'value' => $this->xendit_webhook_token,
-                'group' => 'xendit',
-                'type' => 'text',
-                'label' => 'Xendit Webhook Token',
-                'description' => 'Webhook token dari dashboard Xendit',
-            ]
-        );
         \Illuminate\Support\Facades\Cache::forget('app_setting_xendit_webhook_token');
-
-        // Simpan mode Pakasir
-        AppSetting::updateOrCreate(
-            ['key' => 'pakasir_mode'],
-            [
-                'value' => $this->pakasir_mode,
-                'group' => 'pakasir',
-                'type' => 'text',
-                'label' => 'Pakasir Mode',
-                'description' => 'Mode environment Pakasir: sandbox atau live',
-            ]
-        );
         \Illuminate\Support\Facades\Cache::forget('app_setting_pakasir_mode');
-
-        AppSetting::updateOrCreate(
-            ['key' => 'pakasir_slug'],
-            [
-                'value' => $this->pakasir_slug,
-                'group' => 'pakasir',
-                'type' => 'text',
-                'label' => 'Pakasir Slug',
-                'description' => 'Slug project di Pakasir',
-            ]
-        );
         \Illuminate\Support\Facades\Cache::forget('app_setting_pakasir_slug');
-
-        AppSetting::updateOrCreate(
-            ['key' => 'pakasir_api_key'],
-            [
-                'value' => $this->pakasir_api_key,
-                'group' => 'pakasir',
-                'type' => 'text',
-                'label' => 'Pakasir API Key',
-                'description' => 'API Key dari dashboard Pakasir',
-            ]
-        );
         \Illuminate\Support\Facades\Cache::forget('app_setting_pakasir_api_key');
 
         session()->flash('success', 'Pengaturan API berhasil diperbarui.');
@@ -373,30 +398,9 @@ class Settings extends Component
             'secondary_color' => 'required|string',
         ]);
 
-        // Simpan ke database jika ada method set di AppSetting
-        AppSetting::updateOrCreate(
-            ['key' => 'theme_color'],
-            [
-                'value' => $this->theme_color,
-                'group' => 'appearance',
-                'type' => 'text',
-                'label' => 'Theme Primary Color',
-                'description' => 'Warna utama tampilan depan'
-            ]
-        );
-
-        AppSetting::updateOrCreate(
-            ['key' => 'secondary_color'],
-            [
-                'value' => $this->secondary_color,
-                'group' => 'appearance',
-                'type' => 'text',
-                'label' => 'Theme Secondary/Background Color',
-                'description' => 'Warna latar belakang (tint) untuk elemen sekunder'
-            ]
-        );
+        AppSetting::updateOrCreate(['key' => 'theme_color'], ['value' => $this->theme_color, 'group' => 'appearance', 'type' => 'text', 'label' => 'Theme Primary Color']);
+        AppSetting::updateOrCreate(['key' => 'secondary_color'], ['value' => $this->secondary_color, 'group' => 'appearance', 'type' => 'text', 'label' => 'Theme Secondary/Background Color']);
         
-        // Hapus cache agar perubahan langsung terlihat
         \Illuminate\Support\Facades\Cache::forget('app_setting_theme_color');
         \Illuminate\Support\Facades\Cache::forget('app_setting_secondary_color');
 
@@ -408,27 +412,8 @@ class Settings extends Component
         $this->theme_color = $this->default_theme_color;
         $this->secondary_color = $this->default_secondary_color;
         
-        AppSetting::updateOrCreate(
-            ['key' => 'theme_color'],
-            [
-                'value' => $this->default_theme_color,
-                'group' => 'appearance',
-                'type' => 'text',
-                'label' => 'Theme Primary Color',
-                'description' => 'Warna utama tampilan depan'
-            ]
-        );
-
-        AppSetting::updateOrCreate(
-            ['key' => 'secondary_color'],
-            [
-                'value' => $this->default_secondary_color,
-                'group' => 'appearance',
-                'type' => 'text',
-                'label' => 'Theme Secondary/Background Color',
-                'description' => 'Warna latar belakang (tint) untuk elemen sekunder'
-            ]
-        );
+        AppSetting::updateOrCreate(['key' => 'theme_color'], ['value' => $this->default_theme_color, 'group' => 'appearance', 'type' => 'text', 'label' => 'Theme Primary Color']);
+        AppSetting::updateOrCreate(['key' => 'secondary_color'], ['value' => $this->default_secondary_color, 'group' => 'appearance', 'type' => 'text', 'label' => 'Theme Secondary/Background Color']);
         
         \Illuminate\Support\Facades\Cache::forget('app_setting_theme_color');
         \Illuminate\Support\Facades\Cache::forget('app_setting_secondary_color');

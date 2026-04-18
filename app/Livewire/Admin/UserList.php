@@ -48,8 +48,16 @@ class UserList extends Component
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 
+        $tenant = app('current_tenant');
+        $canCreateUser = $tenant ? $tenant->canCreateMore('users') : true;
+        $userQuota = $tenant ? $tenant->getRemainingQuota('users') : 99;
+        $maxUsers = $tenant ? $tenant->getLimit('max_users', 99) : 99;
+
         return view('livewire.admin.user-list', [
-            'users' => $users
+            'users' => $users,
+            'canCreateUser' => $canCreateUser,
+            'userQuota' => $userQuota,
+            'maxUsers' => $maxUsers,
         ])->layout('layouts.admin');
     }
 
@@ -72,6 +80,12 @@ class UserList extends Component
     // Form Methods
     public function createUser()
     {
+        $tenant = app('current_tenant');
+        if ($tenant && !$tenant->canCreateMore('users')) {
+            session()->flash('error', 'Batas pengguna untuk paket ' . $tenant->getPlanName() . ' telah tercapai (Maks: ' . $tenant->getLimit('max_users', 2) . '). Silakan upgrade paket Anda.');
+            return;
+        }
+
         $this->resetForm();
         $this->isFormOpen = true;
     }
@@ -129,6 +143,14 @@ class UserList extends Component
             $user->update($data);
             session()->flash('success', 'Data pengguna berhasil diperbarui.');
         } else {
+            // Enforce max_users limit on new users
+            $tenant = app('current_tenant');
+            if ($tenant && !$tenant->canCreateMore('users')) {
+                session()->flash('error', 'Batas pengguna untuk paket ' . $tenant->getPlanName() . ' telah tercapai.');
+                $this->isFormOpen = false;
+                return;
+            }
+
             $data['email_verified_at'] = now(); // Auto verify admin-created users
             User::create($data);
             session()->flash('success', 'Pengguna baru berhasil ditambahkan.');

@@ -72,13 +72,29 @@ class Program extends Component
             ->orderBy('created_at', 'desc')
             ->paginate($this->perPage);
 
+        $tenant = app('current_tenant');
+        $canUseDynamic = $tenant && $tenant->plan ? $tenant->plan->hasFeature('dynamic_program') : false;
+        $canCreateProgram = $tenant ? $tenant->canCreateMore('programs') : true;
+        $programQuota = $tenant ? $tenant->getRemainingQuota('programs') : 99;
+        $maxPrograms = $tenant ? $tenant->getLimit('max_programs', 99) : 99;
+
         return view('livewire.admin.program', [
-            'programs' => $programs
+            'programs' => $programs,
+            'canUseDynamic' => $canUseDynamic,
+            'canCreateProgram' => $canCreateProgram,
+            'programQuota' => $programQuota,
+            'maxPrograms' => $maxPrograms,
         ])->layout('layouts.admin');
     }
 
     public function create()
     {
+        $tenant = app('current_tenant');
+        if ($tenant && !$tenant->canCreateMore('programs')) {
+            session()->flash('error', 'Batas program untuk paket ' . $tenant->getPlanName() . ' telah tercapai (Maks: ' . $tenant->getLimit('max_programs', 3) . '). Silakan upgrade paket Anda.');
+            return;
+        }
+
         $this->resetInputFields();
         $this->loadRelationOptions();
         $this->openModal();
@@ -132,13 +148,23 @@ class Program extends Component
 
         $this->validate($rules);
 
+        $tenant = app('current_tenant');
+        $canUseDynamic = $tenant && $tenant->plan ? $tenant->plan->hasFeature('dynamic_program') : false;
+
+        // Enforce max_programs limit on new programs only
+        if (!$this->programId && $tenant && !$tenant->canCreateMore('programs')) {
+            session()->flash('error', 'Batas program untuk paket ' . $tenant->getPlanName() . ' telah tercapai.');
+            $this->closeModal();
+            return;
+        }
+
         $data = [
             'title' => $this->title,
             'slug' => $this->slug,
             'description' => $this->description,
-            'is_dynamic' => $this->is_dynamic,
-            'package_price' => $this->is_dynamic ? $this->package_price : null,
-            'package_label' => $this->is_dynamic ? $this->package_label : null,
+            'is_dynamic' => $canUseDynamic ? $this->is_dynamic : false,
+            'package_price' => ($canUseDynamic && $this->is_dynamic) ? $this->package_price : null,
+            'package_label' => ($canUseDynamic && $this->is_dynamic) ? $this->package_label : null,
             'target_amount' => $this->target_amount !== '' ? $this->target_amount : null,
             'end_date' => $this->end_date ?: null,
             'is_active' => $this->is_active,

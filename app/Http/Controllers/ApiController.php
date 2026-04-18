@@ -18,7 +18,8 @@ class ApiController extends Controller
     public function getMaintenanceFees(Request $request)
     {
         $yearParam = $request->query('year', \Carbon\Carbon::now()->year);
-        $feePercentage = (float) env('SYSTEM_FEE_PERCENTAGE', 0);
+        $tenant = app('current_tenant');
+        $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
         $currentMonth = \Carbon\Carbon::now()->month;
         $currentYear = \Carbon\Carbon::now()->year;
 
@@ -128,7 +129,8 @@ class ApiController extends Controller
     {
         $startDate = $request->query('start_date');
         $endDate = $request->query('end_date');
-        $feePercentage = (float) env('SYSTEM_FEE_PERCENTAGE', 2);
+        $tenant = app('current_tenant');
+        $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
 
         // Define limits to prevent memory exhaustion
         $limit = $request->query('limit', 500);

@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('maintenance_fees', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('tenant_id')->constrained()->onDelete('cascade');
             $table->integer('year');
             $table->integer('month');
             $table->decimal('total_amount', 15, 2); // Total collected amount for the month
@@ -22,8 +23,8 @@ return new class extends Migration
             $table->timestamp('paid_at')->nullable();
             $table->timestamps();
 
-            // Ensure only one record per month/year
-            $table->unique(['year', 'month']);
+            // Ensure only one record per month/year per tenant
+            $table->unique(['tenant_id', 'year', 'month']);
         });
     }
 

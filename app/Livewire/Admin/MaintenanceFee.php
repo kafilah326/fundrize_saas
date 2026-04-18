@@ -35,7 +35,8 @@ class MaintenanceFee extends Component
         $this->detailTransactions = $this->getTransactionsForMonth($month);
         // Calculate total fee for the selected month
         $totalCollected = collect($this->detailTransactions)->sum('amount');
-        $feePercentage = (float) env('SYSTEM_FEE_PERCENTAGE', 0);
+        $tenant = app('current_tenant');
+        $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
         $this->selectedMonthFee = ($totalCollected * $feePercentage) / 100;
         
         $this->dispatch('open-modal', name: 'detail-modal');
@@ -47,7 +48,8 @@ class MaintenanceFee extends Component
         $this->detailTransactions = $this->getTransactionsForMonth($month);
         
         $totalCollected = collect($this->detailTransactions)->sum('amount');
-        $feePercentage = (float) env('SYSTEM_FEE_PERCENTAGE', 0);
+        $tenant = app('current_tenant');
+        $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
         $this->selectedMonthFee = ($totalCollected * $feePercentage) / 100;
 
         $this->dispatch('open-modal', name: 'payment-modal');
@@ -61,7 +63,8 @@ class MaintenanceFee extends Component
 
         $transactions = $this->getTransactionsForMonth($this->month);
         $totalCollected = collect($transactions)->sum('amount');
-        $feePercentage = (float) env('SYSTEM_FEE_PERCENTAGE', 0);
+        $tenant = app('current_tenant');
+        $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
         $feeAmount = ($totalCollected * $feePercentage) / 100;
 
         $path = $this->proofOfPayment->store('maintenance-fees', 'public');
@@ -81,10 +84,57 @@ class MaintenanceFee extends Component
         session()->flash('success', 'Pembayaran berhasil dikonfirmasi.');
     }
 
+    public function payOnline($month)
+    {
+        $this->month = $month;
+        $transactions = $this->getTransactionsForMonth($month);
+        $totalCollected = collect($transactions)->sum('amount');
+        $tenant = app('current_tenant');
+        $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
+        $feeAmount = ($totalCollected * $feePercentage) / 100;
+
+        $externalId = 'MNT-' . time() . '-' . $tenant->id . '-' . $this->year . '-' . $month;
+        
+        $duitkuService = app(\App\Services\DuitkuService::class);
+        $response = $duitkuService->createInvoice([
+            'paymentAmount' => (int) $feeAmount,
+            'merchantOrderId' => $externalId,
+            'productDetails' => 'Maintenance Fee ' . Carbon::createFromDate($this->year, $month, 1)->translatedFormat('F Y') . ' - ' . $tenant->name,
+            'customerVaName' => $tenant->name,
+            'email' => $tenant->email,
+            'phoneNumber' => $tenant->phone,
+        ]);
+
+        if ($response['statusCode'] === '00') {
+            \App\Models\SaasTransaction::create([
+                'tenant_id' => $tenant->id,
+                'external_id' => $externalId,
+                'reference' => $response['reference'],
+                'type' => 'maintenance',
+                'amount' => $feeAmount,
+                'status' => 'pending',
+                'metadata' => [
+                    'year' => $this->year,
+                    'month' => $month,
+                ],
+            ]);
+
+            $this->dispatch('open-duitku-pop', [
+                'reference' => $response['reference'],
+                'callbackUrl' => config('duitku.callback_url'),
+                'returnUrl' => route('admin.maintenance-fee') // Return to same page
+            ]);
+        } else {
+            session()->flash('error', 'Duitku Error: ' . $response['statusMessage']);
+        }
+    }
+
     public function getTransactionsForMonth($month)
     {
         $year = $this->year;
         $transactions = [];
+        $tenant = app('current_tenant');
+        $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
 
         // Donations
         $donations = Donation::whereYear('created_at', $year)
@@ -98,7 +148,7 @@ class MaintenanceFee extends Component
                 'title' => 'Donasi: ' . ($donation->program->title ?? 'Program'),
                 'type' => 'Donasi',
                 'amount' => $donation->total, // Using total as base amount
-                'fee' => ($donation->total * env('SYSTEM_FEE_PERCENTAGE', 0)) / 100,
+                'fee' => ($donation->total * $feePercentage) / 100,
                 'date' => $donation->created_at,
             ];
         }
@@ -112,10 +162,10 @@ class MaintenanceFee extends Component
         foreach ($qurbanOrders as $order) {
             $transactions[] = [
                 'id_trx' => $order->transaction_id,
-                'title' => 'Qurban: ' . ($order->qurbanAnimal->name ?? 'Hewan'),
+                'title' => 'Qurban: ' . ($order->animal->name ?? 'Hewan'),
                 'type' => 'Qurban',
                 'amount' => $order->amount,
-                'fee' => ($order->amount * env('SYSTEM_FEE_PERCENTAGE', 0)) / 100,
+                'fee' => ($order->amount * $feePercentage) / 100,
                 'date' => $order->created_at,
             ];
         }
@@ -132,7 +182,7 @@ class MaintenanceFee extends Component
                 'title' => 'Tabungan Qurban',
                 'type' => 'Tabungan',
                 'amount' => $deposit->amount,
-                'fee' => ($deposit->amount * env('SYSTEM_FEE_PERCENTAGE', 0)) / 100,
+                'fee' => ($deposit->amount * $feePercentage) / 100,
                 'date' => $deposit->created_at,
             ];
         }
@@ -149,7 +199,7 @@ class MaintenanceFee extends Component
                 'title' => 'Zakat: ' . ($zakat->zakat_type === 'fitrah' ? 'Fitrah' : 'Mal'),
                 'type' => 'Zakat',
                 'amount' => $zakat->amount,
-                'fee'    => ($zakat->amount * env('SYSTEM_FEE_PERCENTAGE', 0)) / 100,
+                'fee'    => ($zakat->amount * $feePercentage) / 100,
                 'date'   => $zakat->created_at,
             ];
         }
@@ -161,7 +211,8 @@ class MaintenanceFee extends Component
     public function render()
     {
         $months = [];
-        $feePercentage = (float) env('SYSTEM_FEE_PERCENTAGE', 0);
+        $tenant = app('current_tenant');
+        $feePercentage = (float) ($tenant ? $tenant->getSystemFeePercentage() : config('system.system_fee_percentage', 5));
         $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
 
@@ -210,15 +261,18 @@ class MaintenanceFee extends Component
             // Determine if button should be hidden (for current active month)
             $isCurrentMonth = ($this->year == $currentYear && $m == $currentMonth);
             
-            $months[] = [
-                'month_num' => $m,
-                'month_name' => $monthName,
-                'total_collected' => $totalCollected,
-                'fee_maintenance' => $feeMaintenance,
-                'status' => $status,
-                'record' => $record,
-                'is_current_month' => $isCurrentMonth,
-            ];
+            // Only show months that have transactions, have a record, or are the current month
+            if ($totalCollected > 0 || $isCurrentMonth || $record) {
+                $months[] = [
+                    'month_num' => $m,
+                    'month_name' => $monthName,
+                    'total_collected' => $totalCollected,
+                    'fee_maintenance' => $feeMaintenance,
+                    'status' => $status,
+                    'record' => $record,
+                    'is_current_month' => $isCurrentMonth,
+                ];
+            }
         }
 
         // Sort months descending (latest first)

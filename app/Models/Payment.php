@@ -2,14 +2,18 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Payment extends Model
 {
+    use BelongsToTenant;
+
     use HasFactory;
 
     protected $fillable = [
+        'tenant_id',
         'external_id',
         'transaction_type', // program, qurban_langsung, qurban_tabungan, zakat
         'user_id',

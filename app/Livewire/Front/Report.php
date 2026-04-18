@@ -75,8 +75,9 @@ class Report extends Component
         $tersalurkan = ProgramDistribution::whereBetween('documentation_date', [$startOfMonth, $endOfMonth])
             ->sum('amount_distributed');
 
-        // Operational Cost (from config)
-        $systemFeePercentage = config('system.system_fee_percentage') / 100;
+        // Operational Cost (from config or plan)
+        $tenant = app('current_tenant');
+        $systemFeePercentage = ($tenant && $tenant->plan ? $tenant->plan->system_fee_percentage : config('system.system_fee_percentage')) / 100;
         $biayaOperasional = $danaMasuk * $systemFeePercentage;
 
         // Remaining funds

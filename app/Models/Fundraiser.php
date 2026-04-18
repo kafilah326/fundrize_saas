@@ -2,11 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\BelongsToTenant;
 use Illuminate\Database\Eloquent\Model;
 
 class Fundraiser extends Model
 {
+    use BelongsToTenant;
+
     protected $fillable = [
+        'tenant_id',
         'user_id',
         'referral_code',
         'name',
@@ -21,6 +25,11 @@ class Fundraiser extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function donations()
+    {
+        return $this->hasMany(Donation::class);
     }
 
     public function commissions()

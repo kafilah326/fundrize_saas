@@ -9,6 +9,7 @@
     @php
         $foundation = \App\Models\FoundationSetting::first();
         $foundationName = $foundation->name ?? 'Yayasan Peduli';
+        $currentTenant = app('current_tenant');
     @endphp
     <title>@yield('title', 'Admin Panel') - {{ $foundationName }}</title>
 
@@ -72,6 +73,24 @@
 
         ::-webkit-scrollbar-thumb:hover {
             background: #9ca3af;
+        }
+
+        /* Sidebar Specific Scrollbar */
+        #sidebar-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        #sidebar-scroll::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.1);
+        }
+
+        #sidebar-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+        }
+
+        #sidebar-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
         }
 
         /* Smooth transitions */
@@ -393,182 +412,214 @@
             </div>
 
             <!-- Navigation -->
-            <nav class="mt-6 px-3 space-y-1 overflow-y-auto h-[calc(100vh-4rem)]">
+            <nav class="mt-6 px-4 space-y-1 overflow-y-auto h-[calc(100vh-4rem)] pb-10" id="sidebar-scroll">
 
+                <!-- MAIN -->
                 <a href="{{ route('admin.dashboard') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.dashboard')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.dashboard')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-house w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.dashboard')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
+                        class="fa-solid fa-house w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.dashboard')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
                     Dashboard
                 </a>
 
+                <!-- OPERASIONAL & TRANSAKSI -->
                 <div class="pt-6 pb-2">
-                    <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Manajemen</p>
+                    <p class="px-3 text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center">
+                        <span class="w-2 h-2 bg-gray-500 rounded-full mr-2"></span> Transaksi
+                    </p>
+                </div>
+
+                <a href="{{ route('admin.donations') }}"
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.donations*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
+                    <i
+                        class="fa-solid fa-receipt w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.donations*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Donasi Masuk
+                </a>
+
+                <a href="{{ route('admin.zakat') }}"
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.zakat*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
+                    <i
+                        class="fa-solid fa-moon w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.zakat*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Zakat
+                </a>
+
+                @if ($currentTenant && $currentTenant->hasFeature('qurban'))
+                    <a href="{{ route('admin.qurban') }}"
+                        class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.qurban*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
+                        <i
+                            class="fa-solid fa-cow w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.qurban*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                        Qurban
+                    </a>
+                @endif
+
+                <a href="{{ route('admin.maintenance-fee') }}"
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 mt-2
+                   @if (request()->routeIs('admin.maintenance-fee*')) bg-gradient-to-r from-rose-500/20 to-rose-500/5 text-rose-500 shadow-sm border-l-4 border-rose-500 @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
+                    <i
+                        class="fa-solid fa-file-invoice-dollar w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.maintenance-fee*')) text-rose-500 @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Tagihan Sistem
+                </a>
+
+                <!-- KONTEN & KAMPANYE -->
+                <div class="pt-6 pb-2">
+                    <p class="px-3 text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center">
+                        <span class="w-2 h-2 bg-gray-500 rounded-full mr-2"></span> Kampanye
+                    </p>
                 </div>
 
                 <a href="{{ route('admin.programs') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.programs*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.programs*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-hand-holding-heart w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.programs*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
+                        class="fa-solid fa-hand-holding-heart w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.programs*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
                     Program Donasi
                 </a>
 
                 <a href="{{ route('admin.categories') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.categories*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.categories*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-tags w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.categories*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Kategori
+                        class="fa-solid fa-tags w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.categories*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Kategori Program
+                </a>
+
+                @if ($currentTenant && $currentTenant->hasFeature('fundraiser'))
+                    <a href="{{ route('admin.fundraisers') }}"
+                        class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.fundraisers*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
+                        <i
+                            class="fa-solid fa-hand-holding-dollar w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.fundraisers*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                        Fundraiser
+                    </a>
+                @endif
+
+                <a href="{{ route('admin.banners') }}"
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.banners*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
+                    <i
+                        class="fa-solid fa-images w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.banners*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Banner Aplikasi
                 </a>
 
                 <a href="{{ route('admin.akad-types') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.akad-types*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.akad-types*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-handshake w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.akad-types*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
+                        class="fa-solid fa-handshake w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.akad-types*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
                     Tipe Akad
                 </a>
 
-                <a href="{{ route('admin.banners') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.banners*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
-                    <i
-                        class="fa-solid fa-images w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.banners*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Banner
-                </a>
-
                 <a href="{{ route('admin.legal-documents') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.legal-documents*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.legal-documents*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-file-lines w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.legal-documents*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Legalitas
+                        class="fa-solid fa-file-lines w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.legal-documents*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Legalitas Website
                 </a>
 
-                <a href="{{ route('admin.fundraisers') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.fundraisers*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
-                    <i
-                        class="fa-solid fa-hand-holding-dollar w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.fundraisers*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Fundriser
-                </a>
-
+                <!-- KOMUNIKASI -->
                 <div class="pt-6 pb-2">
-                    <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Transaksi</p>
+                    <p class="px-3 text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center">
+                        <span class="w-2 h-2 bg-gray-500 rounded-full mr-2"></span> Komunikasi
+                    </p>
                 </div>
 
-                <a href="{{ route('admin.donations') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.donations*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                @if ($currentTenant && $currentTenant->hasFeature('whatsapp'))
+                    <a href="{{ route('admin.whatsapp') }}"
+                        class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.whatsapp') && !request()->routeIs('admin.whatsapp-template*')) bg-gradient-to-r from-green-500/20 to-green-500/5 text-green-400 shadow-sm border-l-4 border-green-500 @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
+                        <i
+                            class="fa-brands fa-whatsapp w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.whatsapp') && !request()->routeIs('admin.whatsapp-template*')) text-green-400 @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                        Kirim WhatsApp
+                    </a>
+
+                    <a href="{{ route('admin.whatsapp-template') }}"
+                        class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.whatsapp-template*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
+                        <i
+                            class="fa-solid fa-message w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.whatsapp-template*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                        Template WA
+                    </a>
+                @endif
+
+                <a href="{{ route('admin.bank-followup') }}"
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.bank-followup*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-receipt w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.donations*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Donasi Masuk
+                        class="fa-solid fa-clipboard-list w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.bank-followup*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Followup Bank
                 </a>
 
-                <a href="{{ route('admin.qurban') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.qurban*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
-                    <i
-                        class="fa-solid fa-cow w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.qurban*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Qurban
-                </a>
-
-                <a href="{{ route('admin.maintenance-fee') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.maintenance-fee*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
-                    <i
-                        class="fa-solid fa-file-invoice-dollar w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.maintenance-fee*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Maintenance Fee
-                </a>
-
-                <a href="{{ route('admin.zakat') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.zakat*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
-                    <i
-                        class="fa-solid fa-moon w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.zakat*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Zakat
-                </a>
-
+                <!-- PENGATURAN -->
                 <div class="pt-6 pb-2">
-                    <p class="px-4 text-xs font-bold text-gray-500 uppercase tracking-wider">Pengaturan</p>
+                    <p class="px-3 text-xs font-bold text-gray-500 uppercase tracking-widest flex items-center">
+                        <span class="w-2 h-2 bg-gray-500 rounded-full mr-2"></span> Pengaturan
+                    </p>
                 </div>
 
                 <a href="{{ route('admin.users') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.users*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.users*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-users w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.users*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Pengguna
-                </a>
-
-                <a href="{{ route('admin.profile') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.profile*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
-                    <i
-                        class="fa-solid fa-circle-user w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.profile*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Profile
+                        class="fa-solid fa-users-gear w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.users*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Tim Pengelola
                 </a>
 
                 <a href="{{ route('admin.settings') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.settings*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.settings*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-gear w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.settings*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Settings
+                        class="fa-solid fa-building-flag w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.settings*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Pengaturan Web
                 </a>
+
                 <a href="{{ route('admin.homepage-template') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.homepage-template*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 pl-11
+                   @if (request()->routeIs('admin.homepage-template*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-layer-group w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.homepage-template*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Template Halaman Utama
+                        class="fa-solid fa-layer-group w-5 text-center mr-3 text-sm transition-transform group-hover:scale-110 @if (request()->routeIs('admin.homepage-template*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Tema Halaman
                 </a>
+
                 <a href="{{ route('admin.meta-setting') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.meta-setting*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 pl-11
+                   @if (request()->routeIs('admin.meta-setting*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-brands fa-meta w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.meta-setting*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Meta Setting
+                        class="fa-brands fa-meta w-5 text-center mr-3 text-sm transition-transform group-hover:scale-110 @if (request()->routeIs('admin.meta-setting*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Meta SEO
                 </a>
 
-                <a href="{{ route('admin.bank-followup') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.bank-followup*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                <a href="{{ route('admin.subscription') }}"
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.subscription*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-clipboard-list w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.bank-followup*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Bank Followup
+                        class="fa-solid fa-box-open w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.subscription*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Paket Langganan
                 </a>
 
-                <a href="{{ route('admin.whatsapp-template') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.whatsapp-template*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
+                <a href="{{ route('admin.profile') }}"
+                    class="flex items-center px-4 py-3 text-sm font-semibold rounded-xl group transition-all duration-300 
+                   @if (request()->routeIs('admin.profile*')) bg-gradient-to-r from-primary/20 to-primary/5 text-primary shadow-sm border-l-4 border-primary @else text-gray-400 hover:bg-gray-800 hover:text-white hover:translate-x-1 @endif">
                     <i
-                        class="fa-solid fa-message w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.whatsapp-template*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    Template Pesan WA
-                </a>
-
-                <a href="{{ route('admin.whatsapp') }}"
-                    class="flex items-center px-4 py-3 text-sm font-medium rounded-xl group transition-all duration-200 
-                   @if (request()->routeIs('admin.whatsapp') && !request()->routeIs('admin.whatsapp-template*')) bg-primary/10 text-primary border-l-4 border-primary @else text-gray-400 hover:bg-dark-lighter hover:text-white hover:translate-x-1 @endif">
-                    <i
-                        class="fa-brands fa-whatsapp w-6 text-center mr-3 text-lg @if (request()->routeIs('admin.whatsapp') && !request()->routeIs('admin.whatsapp-template*')) text-primary @else text-gray-500 group-hover:text-white transition-colors @endif"></i>
-                    WhatsApp
+                        class="fa-solid fa-circle-user w-6 text-center mr-3 text-lg transition-transform group-hover:scale-110 @if (request()->routeIs('admin.profile*')) text-primary @else text-gray-500 group-hover:text-gray-300 @endif"></i>
+                    Profil Saya
                 </a>
 
                 <!-- Logout -->
-                <div class="mt-10 px-4 pb-6">
+                <div class="mt-12 px-2 pb-8">
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
-                            class="w-full flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-200 text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:translate-x-1 border border-transparent hover:border-red-500/20">
-                            <i class="fa-solid fa-right-from-bracket w-6 text-center mr-3 text-lg"></i>
+                            class="w-full flex items-center px-4 py-3 text-sm font-bold rounded-xl transition-all duration-300 bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white hover:-translate-y-1 shadow-sm border border-red-500/20 hover:shadow-red-500/50">
+                            <i class="fa-solid fa-power-off w-6 text-center mr-2 text-lg"></i>
                             Keluar
                         </button>
                     </form>
                 </div>
-
             </nav>
         </aside>
 

@@ -26,13 +26,18 @@ class ProgramDetail extends Component
             ->latest()
             ->get();
 
-        $this->programFundraisers = \App\Models\Fundraiser::select('fundraisers.id', 'fundraisers.name', 'fundraisers.user_id')
-            ->join('donations', 'fundraisers.id', '=', 'donations.fundraiser_id')
-            ->where('donations.program_id', $this->program->id)
-            ->where('donations.status', 'success')
-            ->selectRaw('COUNT(donations.id) as donor_count')
-            ->selectRaw('SUM(donations.amount) as total_amount')
-            ->groupBy('fundraisers.id', 'fundraisers.name', 'fundraisers.user_id')
+        $this->programFundraisers = \App\Models\Fundraiser::whereHas('donations', function($q) {
+                $q->where('program_id', $this->program->id)
+                  ->where('status', 'success');
+            })
+            ->withCount(['donations as donor_count' => function($q) {
+                $q->where('program_id', $this->program->id)
+                  ->where('status', 'success');
+            }])
+            ->withSum(['donations as total_amount' => function($q) {
+                $q->where('program_id', $this->program->id)
+                  ->where('status', 'success');
+            }], 'amount')
             ->orderByDesc('total_amount')
             ->get();
     }

@@ -1,163 +1,101 @@
-# Fundrising App & Layanan Qurban
+# Fundrize SaaS Platform
 
-**Fundrising App** adalah platform penggalangan dana (donasi reguler) dan layanan pembelian serta tabungan Qurban. Aplikasi ini dibangun dengan teknologi **Laravel 12** dan **Livewire 4**. 
-
-Aplikasi ini sudah terintegrasi dengan berbagai layanan pihak ketiga, antara lain:
-- **Xendit**: Untuk *payment gateway* / pembayaran otomatis.
-- **StarSender**: Untuk notifikasi WhatsApp otomatis.
-- **Web Push (VAPID)**: Untuk notifikasi berbasis *push notification* ke peramban (browser).
-
-Ikuti panduan ini langkah demi langkah agar aplikasi dapat berjalan sempurna di *local development* maupun server produksi Anda.
+**Fundrize** adalah platform SaaS (Software as a Service) multi-tenant yang dirancang untuk yayasan dan organisasi nonprofit dalam mengelola penggalangan dana (donasi) dan layanan Qurban (pembelian & tabungan). Dibangun dengan teknologi **Laravel 12** dan **Livewire 4**.
 
 ---
 
-## 💻 1. Persyaratan Sistem (System Requirements)
+## 🚀 Fitur Utama
 
-Pastikan lingkungan server/komputer lokal Anda memiliki spesifikasi minimum berikut:
+- **Multi-Tenancy**: Isolasi data antar yayasan dengan pengatuan subdomain unik (.fundrize.test).
+- **Core Fundraising**: Manajemen program donasi, kategori, dan laporan donasi.
+- **Qurban Module**: Sistem pembelian qurban dan program tabungan qurban bagi muzzaki.
+- **Add-on System**: Sistem fleksibel untuk menambah fitur atau limit (programs, users, storage) secara mandiri bagi tenant.
+- **Billing & Subscription**: Pembayaran otomatis untuk aktivasi tenant dan add-on.
+- **WhatsApp Integration**: Notifikasi otomatis via StarSender.
+- **Payment Gateway**: Dukungan Duitku untuk pembayaran otomatis.
+- **Web Push Notification**: Notifikasi real-time ke browser pengelola.
+
+---
+
+## 💻 1. Persyaratan Sistem
+
 - **PHP** >= 8.2
 - **Composer** (versi terbaru)
-- **Node.js** & **NPM** (untuk kompilasi *asset* via Vite)
-- **Database**: MySQL, MariaDB, atau PostgreSQL (Disarankan MySQL/MariaDB)
+- **Node.js** & **NPM**
+- **Database**: MySQL/MariaDB
+- **Local Domain Support**: Diperlukan pengaturan file `hosts` untuk simulasi subdomain.
 
 ---
 
-## 📥 2. Instalasi Proyek (Source Code)
+## 🛠️ 2. Panduan Instalasi Lokal
 
-1. Buka terminal (CMD/Powershell/Terminal).
-2. Lakukan *clone repository* Git aplikasi ini:
+### A. Clone & Setup
+1. Clone repository: `git clone <url-repo>` dan masuk ke folder proyek.
+2. Instal dependensi: `composer install` & `npm install`.
+3. Buat file environment: `copy .env.example .env`.
+4. Generate key: `php artisan key:generate`.
+5. Buat tautan storage: `php artisan storage:link`.
+
+### B. Konfigurasi Domain
+Karena menggunakan sistem multi-tenant, Anda perlu mendaftarkan domain utama dan superadmin di file `hosts` komputer Anda:
+1. Buka Notepad sebagai Administrator.
+2. Edit file: `C:\Windows\System32\drivers\etc\hosts` (Windows).
+3. Tambahkan baris berikut:
+   ```text
+   127.0.0.1 fundrize.test
+   127.0.0.1 superadmin.fundrize.test
+   127.0.0.1 demo.fundrize.test
+   ```
+
+### C. Konfigurasi Database
+1. Buat database kosong (misal: `fn_saas`).
+2. Update `.env` dengan kredensial database Anda.
+3. Jalankan migrasi dan seeder awal:
    ```bash
-   git clone <url-repository-anda>
-   cd fundrisingApp
+   php artisan migrate --seed
    ```
-*(Catatan: ganti `<url-repository-anda>` dengan tautan repository Github/Gitlab proyek ini).*
+   *Seeder akan membuat akun SuperAdmin default dan beberapa data paket/plan.*
 
----
-
-## 📦 3. Instalasi Dependensi PHP
-
-Aplikasi ini menggunakan banyak library PHP (termasuk Livewire dan Xendit PHP Client). Unduh semua dependencies dengan perintah:
-
-```bash
-composer install
-```
-
----
-
-## ⚙️ 4. Pengaturan Lingkungan (Environment Setup)
-
-1. Salin file *template environment* menjadi `.env`.
-   - Untuk Mac/Linux: `cp .env.example .env`
-   - Untuk Windows: `copy .env.example .env`
-
-2. Buka file `.env` di teks editor (misal: VS Code) dan sesuaikan konfigurasi berikut:
-
-   **A. Konfigurasi Database**
-   Buat database kosong terlebih dahulu di MySQL (misal: `fundrising_db`). Lalu sesuaikan baris ini:
-   ```env
-   DB_CONNECTION=mysql
-   DB_HOST=127.0.0.1
-   DB_PORT=3306
-   DB_DATABASE=fundrising_db
-   DB_USERNAME=root
-   DB_PASSWORD=secret_password_anda
-   ```
-
-   **B. Konfigurasi Notifikasi (Opsional tapi Direkomendasikan)**
-   Aplikasi menggunakan StarSender untuk WhatsApp. Masukkan API Key StarSender Anda, dan atur `SYSTEM_FEE_PERCENTAGE` jika ada potongan sistem:
-   ```env
-   STARSENDER_API_KEY=api_key_starsender_anda_disini
-   SYSTEM_FEE_PERCENTAGE=2 
-   ```
-
-   **C. Konfigurasi Queue (Sangat Penting)**
-   Karena aplikasi ini mengirimkan notifikasi WA dan email (secara otomatis lewat *background job*), pastikan koneksi *queue* diatur ke database:
-   ```env
-   QUEUE_CONNECTION=database
-   ```
-
-3. Generate Laravel Application Key:
-   ```bash
-   php artisan key:generate
-   ```
-
----
-
-## 🗄️ 5. Migrasi Database dan Data Awal
-
-Jalankan perintah ini untuk membangun seluruh tabel database:
-
-```bash
-php artisan migrate
-```
-*(Catatan: Jika Anda memiliki `DatabaseSeeder` khusus untuk membuat akun admin default atau data kategori awal, jalankan `php artisan migrate --seed`)*.
-
----
-
-## 🔑 6. Pengaturan Layanan Pihak Ketiga Tambahan
-
-Beberapa konfigurasi pengaturan platform disimpan di dalam database (tabel `app_settings`), bukan di `.env`. 
-
-**A. Generate VAPID Keys (Web Push Notification)**
-Jalankan perintah khusus buatan sistem ini untuk membuat kunci notifikasi web (VAPID Keys) yang akan otomatis disave ke database setting:
+### D. Generate Web Push Keys
 ```bash
 php artisan webpush:generate-keys
 ```
 
-**B. Pengaturan Xendit & WhatsApp Lainnya**
-Pengaturan *Secret Key* Xendit dan detail StarSender lainnya akan diatur melalui menu **Admin Panel -> Settings** atau **Admin Panel -> Meta Setting** dengan Web GUI sesudah aplikasi dijalankan, karena sistem menyimpanya di `AppSetting` model.
-
 ---
 
-## 🎨 7. Instalasi Aset Frontend (NPM & Vite)
+## 🚀 3. Menjalankan Aplikasi
 
-Untuk *compile* file CSS dan JS (berbasis Livewire dan Vite):
+Jalankan perintah berikut di terminal terpisah:
 
+**1. Web Server**
 ```bash
-npm install
-npm run build
+php artisan serve --host=fundrize.test --port=80
 ```
-*(Jika sedang berfokus pada pengembangan tampilan/Livewire, gunakan `npm run dev` pada terminal baru agar auto-reload berfungsi).*
+*Akses SuperAdmin di `superadmin.fundrize.test` dan Landing Page di `fundrize.test`.*
 
----
-
-## 📁 8. Publikasi Storage (Storage Link)
-
-Izinkan akses publik untuk direktori unggahan file (foto user, gambar program donasi, bukti tabungan qurban) dengan perintah:
-
-```bash
-php artisan storage:link
-```
-
----
-
-## 🚀 9. Menjalankan Aplikasi
-
-Aplikasi utama menggunakan setidaknya **dua terminal** (proses) agar bisa berjalan secara optimal di lokal, terutama karena adanya *webhook* dan notifikasi antrian.
-
-**Terminal 1: Menjalankan Server Web Utama**
-```bash
-php artisan serve
-```
-Aplikasi kini dapat diakses melalui browser: **http://127.0.0.1:8000**
-
-**Terminal 2: Menjalankan Queue Worker (Background Jobs / Worker)**
-Untuk memastikan WhatsApp (StarSender), Webhooks Xendit, dan sinkronisasi donasi langsung diproses di belakang layar, biarkan terminal ini tetap berjalan:
+**2. Queue Worker** (Untuk notifikasi & callback)
 ```bash
 php artisan queue:work
 ```
 
----
-
-## 🌐 10. Pengaturan Webhook Xendit Lokal (Opsional untuk Testing Development)
-
-Xendit Payment Gateway membutuhkan rute aplikasi *live* atau *public internet* untuk mengirimkan Webhook ketika ada donasi dibayar. 
-
-Jika berjalan di `localhost`, install [Ngrok](https://ngrok.com/) atau layanan semacamnya:
-1. Jalankan ngrok di terminal baru: `ngrok http 8000`
-2. Copy *Forwarding URL* HTTPS milik Ngrok, masukkan ke Dashboard Xendit Anda beserta *Endpoint*:
-   **`<url-ngrok>/webhooks/xendit/invoice`**
-
-*(Endpoint ini ditangani secara khusus oleh `XenditWebhookController`)*.
+**3. Vite Dev Server**
+```bash
+npm run dev
+```
 
 ---
-**Selesai! Aplikasi Fundrising & Qurban Anda telah berhasil diinstal dan siap digunakan secara penuh.**
+
+## ⏰ 4. Scheduler & Maintenance
+Daftarkan scheduler di server Anda (Cron Job) atau jalankan secara manual untuk testing:
+- **Cleanup Add-on**: `php artisan addons:cleanup` (Menonaktifkan add-on bulanan yang habis masa berlakunya).
+- **Simulasi Task**: `php artisan schedule:run`.
+
+---
+
+## 🔗 5. Integrasi Pihak Ketiga
+- **Duitku**: Masukkan Merchant Code dan API Key di `.env`.
+- **StarSender**: Masukkan API Key di `.env`.
+- **Xendit**: Pengaturan ini disimpan di tabel `app_settings` dan dapat diubah melalui **Web Settings** di Admin Panel.
+
+---
+**Selesai! Platform Fundrize SaaS Anda siap digunakan.**

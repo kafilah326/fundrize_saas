@@ -4,8 +4,8 @@
 <div class="space-y-6">
     <div class="bg-white overflow-hidden shadow-soft rounded-2xl border border-gray-100">
         <!-- Modern Tabs -->
-        <div class="border-b border-gray-100">
-            <nav class="flex space-x-1 px-4 pt-2" aria-label="Tabs">
+        <div class="border-b border-gray-100 overflow-x-auto">
+            <nav class="flex space-x-1 px-4 pt-2 min-w-max" aria-label="Tabs">
                 <button wire:click="setTab('foundation')"
                     class="px-6 py-4 text-sm font-medium rounded-t-xl transition-all duration-200 border-b-2 
                     {{ $activeTab === 'foundation' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
@@ -26,17 +26,31 @@
                     {{ $activeTab === 'appearance' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
                     <i class="fa-solid fa-paintbrush mr-2"></i> Tampilan
                 </button>
+                <button wire:click="setTab('domain')"
+                    class="px-6 py-4 text-sm font-medium rounded-t-xl transition-all duration-200 border-b-2 
+                    {{ $activeTab === 'domain' ? 'text-primary border-primary bg-primary/5' : 'text-gray-500 border-transparent hover:text-gray-700 hover:bg-gray-50' }}">
+                    <i class="fa-solid fa-globe mr-2"></i> Domain
+                </button>
             </nav>
         </div>
 
         <div class="p-6 md:p-8">
             @if (session()->has('success'))
-                <div
-                    class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 text-green-700">
+                <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-xl flex items-center gap-3 text-green-700">
                     <i class="fa-solid fa-circle-check text-xl"></i>
                     <div>
                         <h4 class="font-bold text-sm">Berhasil!</h4>
                         <p class="text-xs">{{ session('success') }}</p>
+                    </div>
+                </div>
+            @endif
+
+            @if (session()->has('error'))
+                <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 text-red-700">
+                    <i class="fa-solid fa-triangle-exclamation text-xl"></i>
+                    <div>
+                        <h4 class="font-bold text-sm">Gagal</h4>
+                        <p class="text-xs">{{ session('error') }}</p>
                     </div>
                 </div>
             @endif
@@ -686,6 +700,157 @@
                         </button>
                     </div>
                 </form>
+
+                <!-- Domain Tab -->
+            @elseif($activeTab === 'domain')
+                <div class="space-y-8">
+                    <!-- Subdomain Card -->
+                    <div class="bg-indigo-50/50 rounded-2xl border border-indigo-100 p-6">
+                        <h3 class="text-lg font-bold text-indigo-900 mb-2">Subdomain Sistem</h3>
+                        <p class="text-sm text-indigo-600 mb-4">Setiap yayasan secara otomatis mendapatkan subdomain gratis.</p>
+                        <div class="bg-white p-4 rounded-xl border border-indigo-200 flex items-center justify-between">
+                            @php
+                                $subdomain = collect($tenantDomains)->firstWhere('type', 'subdomain');
+                            @endphp
+                            @if($subdomain)
+                                <div class="flex items-center">
+                                    <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center mr-3">
+                                        <i class="fa-solid fa-link"></i>
+                                    </div>
+                                    <div>
+                                        <a href="http://{{ $subdomain->domain }}" target="_blank" class="font-bold text-slate-800 hover:text-indigo-600">{{ $subdomain->domain }}</a>
+                                        @if($subdomain->is_primary)
+                                            <p class="text-xs text-slate-500"><i class="fa-solid fa-star text-amber-400 mr-1"></i> Domain Utama</p>
+                                        @endif
+                                    </div>
+                                </div>
+                                <span class="bg-emerald-100 text-emerald-700 text-xs font-bold px-3 py-1 rounded-full"><i class="fa-solid fa-check mr-1"></i> Aktif</span>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Custom Domain Section -->
+                    <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden">
+                        <div class="p-6 border-b border-gray-100 bg-gray-50/50">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h3 class="text-lg font-bold text-gray-900">Custom Domain</h3>
+                                    <p class="text-sm text-gray-500">Gunakan nama domain Anda sendiri (contoh: donasi.yayasan.com)</p>
+                                </div>
+                                @if(!$canUseCustomDomain)
+                                    <span class="bg-slate-100 text-slate-600 px-3 py-1 text-xs font-bold rounded-full"><i class="fa-solid fa-lock mr-1"></i> Fitur Premium</span>
+                                @endif
+                            </div>
+                        </div>
+
+                        <div class="p-6">
+                            @if($canUseCustomDomain)
+                                <!-- Add Domain Form -->
+                                <form wire:submit.prevent="addCustomDomain" class="mb-8 p-5 rounded-xl border border-gray-200 bg-white shadow-sm flex flex-col md:flex-row gap-4 items-end">
+                                    <div class="flex-1 w-full">
+                                        <label class="block text-sm font-semibold text-gray-700 mb-2">Tambahkan Domain Baru</label>
+                                        <div class="relative">
+                                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                                <i class="fa-solid fa-globe text-gray-400"></i>
+                                            </div>
+                                            <input wire:model="customDomain" type="text" placeholder="donasi.yayasan.com"
+                                                class="block w-full rounded-xl border-gray-300 focus:border-primary focus:ring focus:ring-primary/20 pl-10 py-2.5 text-base bg-gray-50 focus:bg-white transition-colors">
+                                        </div>
+                                        @error('customDomain') <span class="text-xs text-red-500 mt-1 block">{{ $message }}</span> @enderror
+                                    </div>
+                                    <button type="submit" class="bg-primary hover:bg-primary-hover text-white font-semibold py-2.5 px-6 rounded-xl transition-colors w-full md:w-auto h-[46px]">
+                                        Tambahkan
+                                    </button>
+                                </form>
+
+                                <!-- DNS Instructions -->
+                                <div class="bg-blue-50/50 border border-blue-100 rounded-xl p-5 mb-8">
+                                    <h4 class="text-sm font-bold text-blue-900 mb-3 flex items-center"><i class="fa-solid fa-circle-info mr-2"></i> Cara Mengarahkan Domain (DNS Setup)</h4>
+                                    <p class="text-sm text-blue-800 mb-4">Masuk ke panel pengaturan DNS penyedia domain Anda, lalu tambahkan record berikut:</p>
+                                    
+                                    <div class="space-y-3">
+                                        <div class="bg-white p-3 rounded-lg border border-blue-200 grid grid-cols-1 md:grid-cols-4 gap-2 text-sm text-gray-700 font-mono">
+                                            <div><span class="text-xs text-gray-400 uppercase font-sans font-bold block mb-1">Type</span>CNAME</div>
+                                            <div><span class="text-xs text-gray-400 uppercase font-sans font-bold block mb-1">Name / Host</span>donasi (atau subdomain)</div>
+                                            <div class="md:col-span-2"><span class="text-xs text-gray-400 uppercase font-sans font-bold block mb-1">Target / Value</span>{{ config('tenancy.base_domain') }}</div>
+                                        </div>
+                                        <p class="text-xs text-gray-500 italic ml-1">Untuk menggunakan domain utama (tanpa www), gunakan A Record yang mengarah ke IP: <strong>{{ env('SERVER_IP', 'IP Server') }}</strong></p>
+                                    </div>
+                                </div>
+
+                                <!-- Domain List -->
+                                <h4 class="text-sm font-bold text-gray-900 mb-4">Daftar Custom Domain</h4>
+                                <div class="space-y-3">
+                                    @foreach(collect($tenantDomains)->where('type', 'custom') as $domain)
+                                        <div class="p-4 rounded-xl border {{ $domain->is_primary ? 'border-primary bg-primary/5' : 'border-gray-200 bg-white' }} flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                            <div>
+                                                <div class="flex items-center gap-2 mb-1">
+                                                    <h5 class="font-bold text-gray-900 text-lg">{{ $domain->domain }}</h5>
+                                                    @if($domain->is_primary)
+                                                        <span class="bg-primary/10 text-primary text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">Utama</span>
+                                                    @endif
+                                                </div>
+                                                
+                                                <div class="flex items-center gap-3 text-xs mt-2">
+                                                    @if($domain->dns_verified)
+                                                        <span class="text-emerald-600 font-medium flex items-center bg-emerald-50 px-2 py-1 rounded-md"><i class="fa-solid fa-circle-check mr-1.5"></i> Terverifikasi ({{ $domain->verified_at->format('d/m/Y') }})</span>
+                                                    @else
+                                                        <span class="text-red-500 font-medium flex items-center bg-red-50 px-2 py-1 rounded-md border border-red-100"><i class="fa-solid fa-circle-xmark mr-1.5"></i> DNS Belum Terdeteksi</span>
+                                                    @endif
+                                                    
+                                                    @if($domain->last_checked_at)
+                                                        <span class="text-gray-400">Pengecekan terakhir: {{ $domain->last_checked_at->diffForHumans() }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="flex items-center space-x-2 shrink-0 border-t md:border-t-0 md:border-l border-gray-100 pt-3 md:pt-0 md:pl-4 mt-2 md:mt-0">
+                                                @if(!$domain->dns_verified)
+                                                    <button wire:click="verifyDomain({{ $domain->id }})" wire:loading.attr="disabled" class="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-semibold px-3 py-2 rounded-lg transition-colors flex items-center">
+                                                        <span wire:loading.remove wire:target="verifyDomain({{ $domain->id }})"><i class="fa-solid fa-rotate mr-1.5"></i> Verifikasi</span>
+                                                        <span wire:loading wire:target="verifyDomain({{ $domain->id }})"><i class="fa-solid fa-spinner fa-spin mr-1.5"></i> Mengecek...</span>
+                                                    </button>
+                                                @endif
+                                                
+                                                @if($domain->dns_verified && !$domain->is_primary)
+                                                    <button wire:click="setPrimaryDomain({{ $domain->id }})" class="bg-primary/10 hover:bg-primary/20 text-primary text-xs font-semibold px-3 py-2 rounded-lg transition-colors">
+                                                        Jadikan Utama
+                                                    </button>
+                                                @endif
+                                                
+                                                <button wire:click="removeDomain({{ $domain->id }})" onclick="return confirm('Hapus custom domain ini? Domain tidak akan dapat diakses lagi.') || event.stopImmediatePropagation()" class="text-gray-400 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-colors">
+                                                    <i class="fa-solid fa-trash"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                    
+                                    @if(collect($tenantDomains)->where('type', 'custom')->isEmpty())
+                                        <div class="p-8 text-center bg-gray-50 rounded-xl border border-dashed border-gray-300">
+                                            <div class="w-12 h-12 rounded-full bg-gray-200 text-gray-400 flex items-center justify-center mx-auto mb-3">
+                                                <i class="fa-solid fa-globe text-xl"></i>
+                                            </div>
+                                            <h5 class="text-sm font-bold text-gray-700">Belum ada custom domain</h5>
+                                            <p class="text-xs text-gray-500 mt-1">Tambahkan domain Anda melalui form di atas.</p>
+                                        </div>
+                                    @endif
+                                </div>
+                            @else
+                                <!-- Upgrade CTA -->
+                                <div class="text-center py-12 px-4 border-2 border-dashed border-indigo-200 rounded-2xl bg-indigo-50/30">
+                                    <div class="w-16 h-16 rounded-2xl bg-indigo-100 text-indigo-500 flex items-center justify-center mx-auto mb-4">
+                                        <i class="fa-solid fa-lock text-3xl"></i>
+                                    </div>
+                                    <h4 class="text-xl font-bold text-indigo-950 mb-2">Fitur Terkunci</h4>
+                                    <p class="text-indigo-700/80 mb-6 max-w-sm mx-auto">Paket langganan yayasan Anda saat ini tidak mendukung fitur Custom Domain.</p>
+                                    <a href="#" class="inline-flex items-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-8 rounded-xl shadow-lg shadow-indigo-200 transition-all hover:-translate-y-0.5">
+                                        Hubungi Admin untuk Upgrade Paket
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
             @endif
         </div>
     </div>

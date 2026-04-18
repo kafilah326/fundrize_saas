@@ -13,7 +13,10 @@ class FoundationProfile extends Component
 
     public function mount()
     {
-        $this->foundation = FoundationSetting::firstOrFail();
+        $this->foundation = FoundationSetting::first() ?? new FoundationSetting([
+            'name' => 'Yayasan',
+            'about' => 'Deskripsi yayasan belum diatur.',
+        ]);
     }
 
     public function render()
