@@ -119,9 +119,11 @@
                             @error('foundationName') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
                         <div>
-                            <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Subdomain (URL Akses)</label>
-                            <div class="relative">
-                                <input type="text" wire:model="foundationSlug" placeholder="yayasan-anda" 
+                            <div class="relative" x-data="{ slugify(val) { return val.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '') } }">
+                                <input type="text" 
+                                    wire:model.live.blur="foundationSlug" 
+                                    x-on:input="$el.value = slugify($el.value)"
+                                    placeholder="yayasan-anda" 
                                     class="w-full px-6 py-4 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all pr-40">
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold border-l pl-4 border-slate-100">
                                     .{{ config('tenancy.base_domain') }}
@@ -182,13 +184,6 @@
                             <span>Total Pembayaran Pokok</span>
                             <span>Rp {{ number_format($selectedPlan->price, 0, ',', '.') }}</span>
                         </div>
-                    </div>
-                    
-                    <div class="p-6 rounded-2xl bg-primary-50 border border-primary-100 mb-10 flex gap-4">
-                        <div class="text-primary-600 text-xl"><i class="fas fa-info-circle"></i></div>
-                        <p class="text-sm text-primary-800 leading-relaxed font-medium">
-                            Setelah mengklik tombol di bawah, Anda akan diarahkan ke gerbang pembayaran aman Xendit untuk penyelesaian transaksi. Dashboard akan langsung aktif setelah pembayaran sukses.
-                        </p>
                     </div>
                     
                     <div class="flex justify-between items-center">

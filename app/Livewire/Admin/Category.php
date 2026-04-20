@@ -39,6 +39,11 @@ class Category extends Component
         $this->resetPage();
     }
 
+    public function updatedSlug($value)
+    {
+        $this->slug = Str::slug($value);
+    }
+
     public function updatedName()
     {
         if (!$this->isEditing) {

@@ -182,9 +182,12 @@
                                 <div class="sm:col-span-6">
                                     <label for="slug" class="block text-sm font-semibold text-gray-700 mb-1">Slug
                                         (URL)</label>
-                                    <input wire:model="slug" type="text" id="slug"
-                                        class="bg-gray-100 block w-full rounded-xl border-gray-300 shadow-sm text-gray-500 cursor-not-allowed py-2.5 px-4 text-base"
-                                        readonly>
+                                    <div x-data="{ slugify(val) { return val.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '') } }">
+                                        <input wire:model.live.blur="slug" 
+                                            x-on:input="$el.value = slugify($el.value)"
+                                            type="text" id="slug"
+                                            class="block w-full rounded-xl border-gray-300 shadow-sm focus:border-primary focus:ring focus:ring-primary/20 transition-shadow py-2.5 px-4 text-base bg-gray-50 focus:bg-white transition-colors cursor-text">
+                                    </div>
                                     @error('slug')
                                         <span class="text-red-500 text-xs mt-1 block">{{ $message }}</span>
                                     @enderror

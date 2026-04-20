@@ -1,4 +1,4 @@
-<div class="min-h-screen flex items-center justify-center px-6 py-20 bg-slate-50 relative overflow-hidden">
+<div wire:poll.3s="checkStatus" class="min-h-screen flex items-center justify-center px-6 py-20 bg-slate-50 relative overflow-hidden">
     <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10">
         <div class="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-primary-100/30 rounded-full blur-[120px]"></div>
     </div>
@@ -10,7 +10,12 @@
         
         <h1 class="text-3xl font-extrabold text-slate-900 mb-4">{{ $name }}</h1>
         <p class="text-slate-600 mb-10 leading-relaxed">
-            Selamat! Dashboard digital untuk yayasan Anda sedang disiapkan. Silakan klik tombol di bawah untuk masuk ke dashboard admin Anda.
+            @if($status === 'active')
+                Selamat! Dashboard digital untuk yayasan Anda sudah aktif. Anda akan segera diarahkan ke dashboard Anda.
+            @else
+                Dashboard digital untuk yayasan Anda sedang disiapkan. Kami sedang menunggu konfirmasi pembayaran dari sistem. 
+                <strong>Halaman ini akan otomatis berpindah saat pembayaran terverifikasi.</strong>
+            @endif
         </p>
         
         <div class="bg-slate-50 rounded-2xl p-6 border border-slate-100 mb-10 text-left">

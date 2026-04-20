@@ -65,6 +65,11 @@ class Program extends Component
         $this->slug = Str::slug($this->title);
     }
 
+    public function updatedSlug($value)
+    {
+        $this->slug = Str::slug($value);
+    }
+
     public function render()
     {
         $programs = ProgramModel::with(['categories', 'akads'])

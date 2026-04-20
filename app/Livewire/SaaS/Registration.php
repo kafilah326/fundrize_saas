@@ -50,6 +50,11 @@ class Registration extends Component
         }
     }
 
+    public function updatedFoundationSlug($value)
+    {
+        $this->foundationSlug = Str::slug($value);
+    }
+
     public function nextStep()
     {
         if ($this->step === 1) {
@@ -138,6 +143,13 @@ class Registration extends Component
                             'plan_name' => $this->selectedPlan->name,
                         ],
                     ]);
+
+                    // Flash session data for use in RegistrationSuccess (polling/redirection)
+                    session()->flash('success_message', "Selamat! Yayasan {$this->foundationName} berhasil didaftarkan.");
+                    session()->flash('tenant_id', $tenant->id);
+                    session()->flash('tenant_slug', $tenant->slug);
+                    session()->flash('tenant_domain', $this->foundationSlug . '.' . config('tenancy.base_domain'));
+                    session()->flash('admin_email', $this->adminEmail);
 
                     $this->dispatch('open-duitku-pop', [
                         'reference' => $response['reference'],
