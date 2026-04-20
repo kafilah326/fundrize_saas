@@ -34,9 +34,10 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->validateCsrfTokens(except: [
-            '/webhooks/xendit/invoice',
-            '/webhooks/pakasir/invoice',
-            '/webhooks/duitku/callback',
+            'webhooks/*',
+            'webhooks/xendit/invoice',
+            'webhooks/pakasir/invoice',
+            'webhooks/duitku/callback',
         ]);
 
         // Fix #3: Ketika auth:superadmin gagal, redirect ke login superadmin, bukan 'login' user
