@@ -121,7 +121,7 @@
                         <div>
                             <div class="relative" x-data="{ slugify(val) { return val.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '') } }">
                                 <input type="text" 
-                                    wire:model.live.blur="foundationSlug" 
+                                    wire:model.blur="foundationSlug" 
                                     x-on:input="$el.value = slugify($el.value)"
                                     placeholder="yayasan-anda" 
                                     class="w-full px-6 py-4 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all pr-40">

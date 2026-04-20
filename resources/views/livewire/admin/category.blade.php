@@ -154,7 +154,7 @@
                                     <label for="slug" class="block text-sm font-medium text-gray-700">Slug</label>
                                     <div x-data="{ slugify(val) { return val.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '') } }">
                                         <input type="text" 
-                                            wire:model.live.blur="slug" 
+                                            wire:model.blur="slug" 
                                             x-on:input="$el.value = slugify($el.value)"
                                             id="slug"
                                             class="mt-1 block w-full border border-gray-300 rounded-xl shadow-sm py-2.5 px-4 focus:outline-none focus:ring-primary focus:border-primary text-base bg-gray-50 focus:bg-white transition-colors">

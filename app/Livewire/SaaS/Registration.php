@@ -45,14 +45,10 @@ class Registration extends Component
 
     public function updatedFoundationName($value)
     {
-        if (empty($this->foundationSlug)) {
+        // Only auto-generate if the slug hasn't been manually edited/filled yet
+        if (!$this->foundationSlug) {
             $this->foundationSlug = Str::slug($value);
         }
-    }
-
-    public function updatedFoundationSlug($value)
-    {
-        $this->foundationSlug = Str::slug($value);
     }
 
     public function nextStep()

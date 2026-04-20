@@ -55,7 +55,7 @@ class TenantProvisioningService
             User::create([
                 'name' => 'Admin ' . $tenant->name,
                 'email' => $data['email'],
-                'password' => Hash::make($data['password']),
+                'password' => $data['password'],
                 'role' => 'admin',
                 'tenant_id' => $tenant->id,
             ]);

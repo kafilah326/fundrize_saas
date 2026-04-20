@@ -33,7 +33,7 @@ class Register extends Component
             'email' => $this->email,
             'phone' => $this->phone,
             'role' => 'user',
-            'password' => Hash::make($this->password),
+            'password' => $this->password,
         ]);
 
         Auth::login($user);
