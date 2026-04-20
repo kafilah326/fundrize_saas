@@ -24,6 +24,9 @@ class DuitkuCallbackController extends Controller
         
         Log::info('Duitku Callback Received', $data);
 
+        $merchantOrderId = $data['merchantOrderId'] ?? '';
+        $resultCode = $data['resultCode'] ?? '';
+
         if (!$this->duitkuService->validateCallback($data)) {
             Log::warning('Duitku Callback: Invalid Signature', [
                 'received' => $data['signature'] ?? 'N/A',
@@ -31,9 +34,6 @@ class DuitkuCallbackController extends Controller
             ]);
             return response('Invalid Signature', 400);
         }
-
-        $resultCode = $data['resultCode'] ?? '';
-        $merchantOrderId = $data['merchantOrderId'] ?? '';
         
         $transaction = SaasTransaction::where('external_id', $merchantOrderId)->first();
 
