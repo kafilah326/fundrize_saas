@@ -25,8 +25,11 @@ class DuitkuCallbackController extends Controller
         Log::info('Duitku Callback Received', $data);
 
         if (!$this->duitkuService->validateCallback($data)) {
-            Log::warning('Duitku Callback: Invalid Signature');
-            return response()->json(['message' => 'Invalid Signature'], 400);
+            Log::warning('Duitku Callback: Invalid Signature', [
+                'received' => $data['signature'] ?? 'N/A',
+                'merchantOrderId' => $merchantOrderId
+            ]);
+            return response('Invalid Signature', 400);
         }
 
         $resultCode = $data['resultCode'] ?? '';
@@ -36,7 +39,7 @@ class DuitkuCallbackController extends Controller
 
         if (!$transaction) {
             Log::error('Duitku Callback: Transaction not found ' . $merchantOrderId);
-            return response()->json(['message' => 'Transaction not found'], 404);
+            return response('Transaction not found', 404);
         }
 
         if ($resultCode === '00') {
@@ -48,12 +51,14 @@ class DuitkuCallbackController extends Controller
             ]);
 
             $this->processSuccess($transaction);
+            Log::info('Duitku Callback: Success processed for ' . $merchantOrderId);
         } else {
             // Failed/Expired
             $transaction->update(['status' => 'failed']);
+            Log::info('Duitku Callback: Transaction failed/expired for ' . $merchantOrderId . ' with code ' . $resultCode);
         }
 
-        return response()->json(['message' => 'OK'], 200);
+        return response('OK', 200);
     }
 
     /**
