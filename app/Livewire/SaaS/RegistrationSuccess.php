@@ -39,7 +39,7 @@ class RegistrationSuccess extends Component
             $this->status = $tenant->status;
             
             if ($this->status === 'active') {
-                $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $this->domain;
+                $url = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://" . $this->domain . "/login";
                 return redirect()->to($url);
             }
         }
