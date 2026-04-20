@@ -31,6 +31,7 @@ class Registration extends Component
     public $foundationName;
     public $foundationSlug;
     public $foundationPhone;
+    public $isSlugCustomized = false;
 
     public function mount()
     {
@@ -43,13 +44,8 @@ class Registration extends Component
         $this->selectedPlan = Plan::where('slug', $value)->first() ?? Plan::where('slug', 'trial')->first();
     }
 
-    public function updatedFoundationName($value)
-    {
-        // Only auto-generate if the slug hasn't been manually edited/filled yet
-        if (!$this->foundationSlug) {
-            $this->foundationSlug = Str::slug($value);
-        }
-    }
+    // Removed server-side auto-slug hooks to prevent interference with Alpine.js
+    // Slugging is now handled purely on the client side via Alpine for better UX.
 
     public function nextStep()
     {

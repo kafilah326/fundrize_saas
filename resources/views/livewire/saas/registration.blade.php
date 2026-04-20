@@ -106,23 +106,39 @@
                 </div>
 
             @elseif($step === 3)
-                <!-- Step 3: Foundation Info -->
-                <div class="p-10 md:p-16">
+                <div class="p-10 md:p-16" x-data="{ 
+                    isCustom: false,
+                    slugify(val) { 
+                        return val.toString().toLowerCase()
+                            .replace(/\s+/g, '-') 
+                            .replace(/[^a-z0-9-]/g, '')
+                            .replace(/\-\-+/g, '-')
+                    }
+                }">
                     <h2 class="text-3xl font-extrabold text-slate-900 mb-2">Identitas Yayasan</h2>
                     <p class="text-slate-500 mb-10">Bangun profil digital yayasan Anda sendiri.</p>
                     
                     <div class="space-y-6 max-w-2xl">
                         <div>
                             <label class="block text-sm font-bold text-slate-700 mb-2 uppercase tracking-wide">Nama Yayasan / Lembaga</label>
-                            <input type="text" wire:model.live="foundationName" placeholder="Contoh: Yayasan Peduli Kemanusiaan" 
+                            <input type="text" 
+                                wire:model.live="foundationName" 
+                                x-on:input="if(!isCustom) { 
+                                    let s = slugify($el.value);
+                                    let slugInput = document.getElementById('foundationSlug');
+                                    slugInput.value = s;
+                                    slugInput.dispatchEvent(new Event('input'));
+                                }"
+                                placeholder="Contoh: Yayasan Peduli Kemanusiaan" 
                                 class="w-full px-6 py-4 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all">
                             @error('foundationName') <span class="text-red-500 text-xs mt-1">{{ $message }}</span> @enderror
                         </div>
                         <div>
-                            <div class="relative" x-data="{ slugify(val) { return val.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '') } }">
+                            <div class="relative">
                                 <input type="text" 
-                                    wire:model.blur="foundationSlug" 
-                                    x-on:input="$el.value = slugify($el.value)"
+                                    wire:model="foundationSlug" 
+                                    id="foundationSlug"
+                                    x-on:input="isCustom = true; $el.value = slugify($el.value)"
                                     placeholder="yayasan-anda" 
                                     class="w-full px-6 py-4 rounded-xl border border-slate-200 focus:border-primary-500 focus:ring-4 focus:ring-primary-500/10 transition-all pr-40">
                                 <div class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 font-bold border-l pl-4 border-slate-100">
