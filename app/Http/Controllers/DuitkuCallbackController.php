@@ -22,7 +22,7 @@ class DuitkuCallbackController extends Controller
     {
         $data = $request->all();
         
-        Log::info('Duitku Callback Received', $data);
+        Log::info('Duitku Callback Received');
 
         $merchantOrderId = $data['merchantOrderId'] ?? '';
         $resultCode = $data['resultCode'] ?? '';

@@ -52,12 +52,12 @@ Route::group(['domain' => config('tenancy.base_domain')], function () {
     Route::get('/', \App\Livewire\SaaS\LandingPage::class)->name('central.landing');
     Route::get('/register', \App\Livewire\SaaS\Registration::class)->name('central.register');
     Route::get('/registration-success', \App\Livewire\SaaS\RegistrationSuccess::class)->name('central.registration_success');
+});
 
-    // Duitku Callback (Central)
-    Route::post('/webhooks/duitku/callback', [\App\Http\Controllers\DuitkuCallbackController::class, 'handle'])->name('webhooks.duitku.callback');
-    Route::get('/webhooks/duitku/callback', function () {
-        return response('Duitku Webhook Endpoint Active', 200);
-    });
+// Duitku Callback (Global - accessible from any domain including dev/production)
+Route::post('/webhooks/duitku/callback', [\App\Http\Controllers\DuitkuCallbackController::class, 'handle'])->name('webhooks.duitku.callback');
+Route::get('/webhooks/duitku/callback', function () {
+    return response('Duitku Webhook Endpoint Active', 200);
 });
 
 Route::middleware(['tenant.required'])->group(function () {
